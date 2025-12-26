@@ -14,7 +14,7 @@ This example demonstrates the full calibration workflow including:
 7. Application of calibrated parameters
 
 Author: PyADM1 Team
-Date: 2024
+Date: 2025
 """
 
 import numpy as np
@@ -26,8 +26,8 @@ from pyadm1.configurator import BiogasPlant
 from pyadm1.substrates import Feedstock
 from pyadm1.components.biological import Digester
 from pyadm1.components.energy import CHP
-from pyadm1.calibration import InitialCalibrator
-from pyadm1.io import MeasurementData
+from src.calibration import InitialCalibrator
+from src.io import MeasurementData
 from pyadm1.core.adm1 import get_state_zero_from_initial_state
 
 

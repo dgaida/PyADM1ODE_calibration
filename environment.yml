@@ -1,17 +1,26 @@
+# ============================================================================
+# environment.yml
+# ============================================================================
 name: biogas
 channels:
   - conda-forge
   - defaults
 dependencies:
-  - python>=3.8
-  - matplotlib
-  - numpy
-  - pandas
-  - scipy
-  - sqlalchemy
-  - psycopg2
+  - python>=3.10
+  - numpy>=1.20.0
+  - pandas>=1.3.0
+  - scipy>=1.7.0
+  - matplotlib>=3.5.0
+  - sqlalchemy>=2.0.0
+  - psycopg2>=2.9.0
   - pip
   - pip:
-    - pythonnet
-    # Note: vs2015_runtime is only needed on Windows
-    # Install manually on Windows with: pip install vs2015_runtime
+    # PyADM1ODE base package from GitHub
+    - git+https://github.com/dgaida/PyADM1ODE.git
+    # Development tools
+    - pytest>=7.0
+    - pytest-cov>=3.0
+    - pytest-asyncio>=0.21.0
+    - black>=23.0
+    - ruff>=0.5.0
+    - mypy>=1.0

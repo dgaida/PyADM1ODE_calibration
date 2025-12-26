@@ -1,4 +1,6 @@
-# .github/workflows/release.yml
+# ============================================================================
+# .github/workflows/release.yml - MINOR UPDATES
+# ============================================================================
 name: Release
 
 on:
@@ -39,5 +41,14 @@ jobs:
           generate_release_notes: true
           draft: false
           prerelease: false
+          body: |
+            PyADM1ODE_calibration release ${{ github.ref_name }}
+            
+            ## Installation
+            ```bash
+            pip install git+https://github.com/dgaida/PyADM1ODE_calibration.git@${{ github.ref_name }}
+            ```
+            
+            See [CHANGELOG.md](CHANGELOG.md) for details.
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

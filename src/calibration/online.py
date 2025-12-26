@@ -26,8 +26,8 @@ References:
       Wastewater Treatment Processes.
 
 Example:
-    >>> from pyadm1.calibration.online import OnlineCalibrator
-    >>> from pyadm1.io import MeasurementData
+    >>> from src.calibration.online import OnlineCalibrator
+    >>> from src.io import MeasurementData
     >>> from pyadm1.configurator import BiogasPlant
     >>>
     >>> # Create online calibrator
@@ -55,9 +55,9 @@ from dataclasses import dataclass, field
 from datetime import datetime, timedelta
 import time
 
-from pyadm1.calibration.parameter_bounds import create_default_bounds, ParameterBounds
-from pyadm1.calibration.validation import CalibrationValidator
-from pyadm1.calibration.optimization import (
+from src.calibration import create_default_bounds, ParameterBounds
+from src.calibration import CalibrationValidator
+from src.calibration.optimization import (
     create_optimizer,
     MultiObjectiveFunction,
     ParameterConstraints,

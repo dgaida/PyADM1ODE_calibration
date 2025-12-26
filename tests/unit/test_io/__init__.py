@@ -1,10 +1,6 @@
 # ============================================================================
-# tests/unit/__init__.py
+# tests/unit/test_io/__init__.py
 # ============================================================================
 """
-Unit Tests for PyADM1ODE_calibration
-
-Unit tests for individual modules and functions.
+Unit tests for io module
 """
-
-__version__ = "0.1.0"

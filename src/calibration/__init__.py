@@ -32,8 +32,8 @@ Subpackage:
                  optimization with Pareto front analysis.
 
 Example:
-    >>> from pyadm1.calibration import Calibrator
-    >>> from pyadm1.io import MeasurementData
+    >>> from src.calibration import Calibrator
+    >>> from src.io import MeasurementData
     >>>
     >>> # Load measurement data
     >>> measurements = MeasurementData.from_csv("plant_data.csv")
@@ -57,10 +57,10 @@ Example:
 
 from .calibrator import Calibrator, CalibrationResult
 from .initial import InitialCalibrator
-
 from .online import OnlineCalibrator
 from .parameter_bounds import (
     ParameterBounds,
+    ParameterBound,
     BoundType,
     create_default_bounds,
 )
@@ -70,7 +70,7 @@ from .validation import (
 )
 
 # Import optimization subpackage
-from src.calibration import optimization
+from . import optimization
 
 __all__ = [
     "Calibrator",
@@ -78,6 +78,7 @@ __all__ = [
     "InitialCalibrator",
     "OnlineCalibrator",
     "ParameterBounds",
+    "ParameterBound",
     "BoundType",
     "create_default_bounds",
     "CalibrationValidator",

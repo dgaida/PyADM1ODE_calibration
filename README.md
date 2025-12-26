@@ -1,6 +1,8 @@
-# PyADM1ODE_calibration - Advanced Biogas Plant Simulation Framework
+# PyADM1ODE_calibration
 
-[![Python 3.8+](https://img.shields.io/badge/python-3.8+-blue.svg)](https://www.python.org/downloads/)
+> **Note**: This is a calibration-focused package that only works together with [PyADM1ODE](https://github.com/dgaida/PyADM1ODE).
+
+[![Python 3.10+](https://img.shields.io/badge/python-3.10+-blue.svg)](https://www.python.org/downloads/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Code Quality](https://github.com/dgaida/PyADM1ODE_calibration/actions/workflows/lint.yml/badge.svg)](https://github.com/dgaida/PyADM1ODE_calibration/actions/workflows/lint.yml)
 [![Tests](https://github.com/dgaida/PyADM1ODE_calibration/actions/workflows/tests.yml/badge.svg)](https://github.com/dgaida/PyADM1ODE_calibration/actions/workflows/tests.yml)
@@ -8,435 +10,405 @@
 [![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
 [![Ruff](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/astral-sh/ruff/main/assets/badge/v2.json)](https://github.com/astral-sh/ruff)
 
-A comprehensive Python framework for modeling, simulating, and optimizing agricultural biogas plants based on the Anaerobic Digestion Model No. 1 (ADM1).
+**Advanced parameter calibration framework for PyADM1ODE biogas plant models**
+
+Automated calibration and re-calibration of Anaerobic Digestion Model No. 1 (ADM1) parameters using real plant measurement data with multiple optimization algorithms, comprehensive validation, and online adaptation capabilities.
 
 ## Overview
 
-PyADM1 provides a modular, extensible platform for:
+PyADM1ODE_calibration provides a complete calibration framework for [PyADM1ODE](https://github.com/dgaida/PyADM1ODE) biogas plant models:
 
-- **Component-based plant modeling**: Build complex biogas plant configurations from modular components (digesters, CHP units, pumps, mixers, feeders, etc.)
-- **High-fidelity ADM1 simulation**: Agricultural biogas-specific implementation of ADM1 as pure ODE system
-- **Automated model configuration**: Build plant models programmatically via MCP server for LLM integration
-- **Parallel scenario simulation**: Run multiple simulations with varying parameters simultaneously
-- **Online calibration**: Automatic parameter calibration and re-calibration during plant operation
-- **Validation framework**: Comprehensive testing against established models (SIMBA#, [ADM1F](https://github.com/lanl/ADM1F))
+- **Initial Calibration**: Batch optimization from historical measurement data
+- **Online Re-Calibration**: Real-time parameter adjustment during plant operation
+- **Multiple Optimization Algorithms**: Differential Evolution, Nelder-Mead, L-BFGS-B, Particle Swarm
+- **Multi-Objective Optimization**: Balance multiple outputs (CH₄, pH, VFA) with weighted objectives
+- **Comprehensive Validation**: Goodness-of-fit metrics, residual analysis, cross-validation
+- **Parameter Identifiability**: Sensitivity analysis and correlation detection
+- **Data Management**: CSV/database import, validation, outlier detection, gap filling
 
 ## Key Features
 
-### 🧩 Modular Component System
-- **Biological**: Digesters, hydrolysis tanks, separators
-- **Mechanical**: Pumps, mixers, valves, heat exchangers
-- **Energy**: CHP units, boilers, gas storage, flares
-- **Feeding**: Substrate storage, dosing systems, mixer wagons
-- **Sensors**: Physical, chemical, and gas sensors
+### 🎯 Calibration Methods
 
-### 🔧 Plant Configurator
-- Template-based plant design (single-stage, two-stage, custom)
-- JSON-based configuration with validation
-- Component registry for dynamic loading
-- Connection management with type safety
+- **Initial calibration** from 7-30 days of stable operation data
+- **Online re-calibration** with variance-based triggering
+- **Bounded parameter updates** to prevent unrealistic drift
+- **Substrate-dependent parameters** (k_dis, k_hyd_*, k_m_*)
+- **Yield coefficients and kinetic parameters** (Y_*, K_S_*)
 
-### ⚡ High-Performance Simulation
-- Pure ODE implementation (no DAEs) for numerical stability
-- Parallel execution of multiple scenarios
-- Parameter sweeps for sensitivity analysis
-- Time-series data management
+### 🔧 Optimization Algorithms
 
-### 🎯 Calibration Framework
-- Initial calibration from measurement data
-- Online re-calibration with bounded parameter adjustments
-- Multiple optimization algorithms
-- Variance-based triggering for re-calibration
+| Algorithm | Type | Best For | Speed |
+|-----------|------|----------|-------|
+| Differential Evolution | Global | Initial calibration | Slow ⭐⭐ |
+| Particle Swarm | Global | Alternative to DE | Medium ⭐⭐⭐ |
+| Nelder-Mead | Local | Online re-calibration | Fast ⭐⭐⭐⭐ |
+| L-BFGS-B | Gradient | Smooth problems | Very Fast ⭐⭐⭐⭐⭐ |
 
-### ✅ Validation & Testing
-- Comparison with SIMBA# and ADM1F models
-- Measurement data validation
-- Comprehensive test suite (unit, integration, validation)
+### 📊 Validation & Analysis
 
-## Project Structure
+- **Goodness-of-fit**: RMSE, MAE, R², Nash-Sutcliffe Efficiency, PBIAS
+- **Residual analysis**: Normality tests, autocorrelation, heteroscedasticity
+- **Sensitivity analysis**: Local gradients, normalized indices, variance contribution
+- **Identifiability**: Correlation matrices, confidence intervals, VIF
+- **Cross-validation**: k-fold validation for generalization assessment
+
+### 💾 Data Management
+
+- **Measurement data**: CSV/PostgreSQL import with validation
+- **Outlier detection**: Z-score, IQR, moving window methods
+- **Gap filling**: Interpolation, forward/backward fill, mean/median
+- **Data validation**: Range checks, missing data analysis, quality scoring
+- **Database storage**: Plant configurations, calibration history, simulation results
+
+## Installation
+
+### Prerequisites
+
+- Python 3.10 or higher
+- [PyADM1ODE](https://github.com/dgaida/PyADM1ODE) base package
+
+### From GitHub
+
+```bash
+# Clone repository
+git clone https://github.com/dgaida/PyADM1ODE_calibration.git
+cd PyADM1ODE_calibration
+
+# Install in development mode
+pip install -e .
+
+# Or install with all dependencies
+pip install -e ".[dev,docs]"
 ```
-PyADM1/
-├── README.md
-├── LICENSE
-├── pyproject.toml
-├── requirements.txt
-├── CONTRIBUTING.md
-├── CHANGELOG.md
-│
-├── docs/                              # Documentation
-│   ├── conf.py
-│   ├── index.rst
-│   ├── user_guide/
-│   │   ├── installation.md
-│   │   ├── quickstart.md
-│   │   ├── components.md
-│   │   └── calibration.md
-│   ├── api_reference/
-│   │   ├── core.rst
-│   │   ├── components.rst
-│   │   ├── configurator.rst
-│   │   └── calibration.rst
-│   ├── examples/
-│   │   ├── basic_digester.md
-│   │   ├── multi_stage_plant.md
-│   │   └── parallel_simulation.md
-│   └── development/
-│       ├── architecture.md
-│       ├── adding_components.md
-│       └── testing.md
-│
-├── pyadm1/                           # Main package
-│   ├── __init__.py
-│   ├── __version__.py
-│   │
-│   ├── core/                         # Core ADM1 implementation
-│   │   ├── __init__.py
-│   │   ├── adm1.py                  # Main ADM1 ODE system
-│   │   ├── adm_params.py            # ADM1 parameters
-│   │   ├── adm_equations.py         # Process rates, inhibitions
-│   │   └── solver.py                # ODE solver wrapper
-│   │
-│   ├── components/                   # Modular components
-│   │   ├── __init__.py
-│   │   ├── base.py                  # Base classes for all components
-│   │   ├── registry.py              # Component registry
-│   │   │
-│   │   ├── biological/              # Biological processes
-│   │   │   ├── __init__.py
-│   │   │   ├── digester.py         # Fermenter component
-│   │   │   ├── hydrolysis.py       # Hydrolysis tank
-│   │   │   └── separator.py        # Solid-liquid separation
-│   │   │
-│   │   ├── mechanical/              # Mechanical components
-│   │   │   ├── __init__.py
-│   │   │   ├── pump.py             # Pumps
-│   │   │   ├── mixer.py            # Agitators/stirrers
-│   │   │   ├── valve.py            # Valves
-│   │   │   └── heat_exchanger.py   # Heat exchangers
-│   │   │
-│   │   ├── energy/                  # Energy components
-│   │   │   ├── __init__.py
-│   │   │   ├── chp.py              # Combined heat and power
-│   │   │   ├── boiler.py           # Boilers
-│   │   │   ├── gas_storage.py      # Gas storage
-│   │   │   └── flare.py            # Flares
-│   │   │
-│   │   ├── feeding/                 # Substrate components
-│   │   │   ├── __init__.py
-│   │   │   ├── substrate_storage.py # Substrate storage
-│   │   │   ├── feeder.py           # Dosing systems
-│   │   │   └── mixer_wagon.py      # Mixer wagons
-│   │   │
-│   │   └── sensors/                 # Sensor components
-│   │       ├── __init__.py
-│   │       ├── physical.py         # pH, T, pressure, etc.
-│   │       ├── chemical.py         # VFA, NH4, etc.
-│   │       └── gas.py              # CH4, CO2, H2S
-│   │
-│   ├── substrates/                   # Substrate management
-│   │   ├── __init__.py
-│   │   ├── feedstock.py            # Feedstock class
-│   │   ├── substrate_db.py         # Substrate database
-│   │   ├── xml_loader.py           # XML parser for substrates
-│   │   └── characterization.py     # Substrate characterization
-│   │
-│   ├── configurator/                 # Model configurator
-│   │   ├── __init__.py
-│   │   ├── plant_builder.py        # Plant builder
-│   │   ├── connection_manager.py   # Connection management
-│   │   ├── validation.py           # Model validation
-│   │   ├── templates/              # Plant templates
-│   │   │   ├── __init__.py
-│   │   │   ├── single_stage.py
-│   │   │   ├── two_stage.py
-│   │   │   └── custom.py
-│   │   │
-│   │   └── mcp/                     # MCP server for LLM integration
-│   │       ├── __init__.py
-│   │       ├── server.py           # FastMCP server
-│   │       ├── tools.py            # MCP tools
-│   │       ├── prompts.py          # System prompts
-│   │       └── schemas.py          # Data schemas
-│   │
-│   ├── simulation/                   # Simulation engine
-│   │   ├── __init__.py
-│   │   ├── simulator.py            # Main simulator
-│   │   ├── parallel.py             # Parallel simulation
-│   │   ├── scenarios.py            # Scenario management
-│   │   ├── time_series.py          # Time series handling
-│   │   └── results.py              # Result management
-│   │
-│   ├── calibration/                  # Calibration framework
-│   │   ├── __init__.py
-│   │   ├── calibrator.py           # Main calibrator
-│   │   ├── optimization/
-│   │   │   ├── __init__.py
-│   │   │   ├── optimizer.py       # Optimization algorithms
-│   │   │   ├── objective.py       # Objective functions
-│   │   │   └── constraints.py     # Parameter constraints
-│   │   │
-│   │   ├── initial.py              # Initial calibration
-│   │   ├── online.py               # Online re-calibration
-│   │   ├── parameter_bounds.py     # Parameter bounds
-│   │   └── validation.py           # Calibration validation
-│   │
-│   ├── io/                          # Input/output
-│   │   ├── __init__.py
-│   │   ├── json_handler.py         # JSON import/export
-│   │   ├── csv_handler.py          # CSV import/export
-│   │   ├── database.py             # Database interface
-│   │   └── measurement_data.py     # Measurement data import
-│   │
-│   ├── utils/                       # Utility functions
-│   │   ├── __init__.py
-│   │   ├── math_helpers.py         # Mathematical helpers
-│   │   ├── unit_conversion.py      # Unit conversion
-│   │   ├── logging.py              # Logging configuration
-│   │   └── validators.py           # Validation functions
-│   │
-│   └── dlls/                        # C# DLLs
-│       ├── plant.dll
-│       ├── substrates.dll
-│       ├── biogas.dll
-│       └── physchem.dll
-│
-├── data/                            # Data directory
-│   ├── substrates/
-│   │   ├── substrate_gummersbach.xml
-│   │   └── substrate_database.json
-│   ├── initial_states/
-│   │   └── digester_initial*.csv
-│   ├── plant_templates/            # Plant templates
-│   │   ├── standard_single_stage.json
-│   │   └── standard_two_stage.json
-│   └── validation_data/            # Validation data
-│       ├── simba_comparison/
-│       └── adm1f_comparison/
-│
-├── examples/                        # Examples
-│   ├── __init__.py
-│   ├── 01_basic_digester.py
-│   ├── 02_two_stage_plant.py
-│   ├── 03_chp_integration.py
-│   ├── 04_substrate_optimization.py
-│   ├── 05_parallel_simulation.py
-│   ├── 06_calibration.py
-│   ├── 07_mcp_usage.py
-│   └── notebooks/
-│       ├── tutorial_basic.ipynb
-│       └── tutorial_calibration.ipynb
-│
-├── tests/                           # Tests
-│   ├── __init__.py
-│   ├── conftest.py
-│   │
-│   ├── unit/                        # Unit tests
-│   │   ├── test_core/
-│   │   │   ├── test_adm1.py
-│   │   │   └── test_adm_params.py
-│   │   ├── test_components/
-│   │   │   ├── test_digester.py
-│   │   │   ├── test_chp.py
-│   │   │   └── test_pumps.py
-│   │   ├── test_configurator/
-│   │   │   └── test_plant_builder.py
-│   │   └── test_calibration/
-│   │       └── test_calibrator.py
-│   │
-│   ├── integration/                 # Integration tests
-│   │   ├── test_plant_simulation.py
-│   │   ├── test_mcp.py
-│   │   └── test_parallel_sim.py
-│   │
-│   └── validation/                  # Validation tests
-│       ├── test_simba_comparison.py
-│       ├── test_adm1f_comparison.py
-│       └── test_measurement_data.py
-│
-├── benchmarks/                      # Performance tests
-│   ├── __init__.py
-│   ├── benchmark_adm1.py
-│   └── benchmark_parallel.py
-│
-├── scripts/                         # Helper scripts
-│   ├── setup_dev_env.sh
-│   ├── run_calibration.py
-│   ├── generate_validation_data.py
-│   └── start_mcp_server.sh
-│
-└── .github/                         # GitHub CI/CD
-    ├── workflows/
-    │   ├── tests.yml
-    │   ├── lint.yml
-    │   ├── build-docs.yml
-    │   └── release.yml
-    └── ISSUE_TEMPLATE/
-        ├── bug_report.md
-        └── feature_request.md
+
+### Using Conda
+
+```bash
+# Create environment
+conda env create -f environment.yml
+conda activate biogas
+
+# Install package
+pip install -e .
 ```
 
 ## Quick Start
 
-### Basic Usage
+### Basic Calibration Workflow
+
 ```python
-from pyadm1 import BiogasPlant
-from pyadm1.components.biological import Digester
-from pyadm1.components.energy import CHP
-from pyadm1.substrates import Feedstock
+from pyadm1ode_calibration.calibration import InitialCalibrator
+from pyadm1ode_calibration.io import MeasurementData
+from pyadm1ode import BiogasPlant
 
-# Create feedstock
-feedstock = Feedstock(feeding_freq=48)
+# 1. Load plant model
+plant = BiogasPlant.from_json("plant.json", feedstock)
 
-# Build plant
-plant = BiogasPlant("My Biogas Plant")
-plant.add_component(Digester("main_digester", feedstock, V_liq=2000))
-plant.add_component(CHP("chp1", P_el_nom=500))
-plant.connect("main_digester", "chp1", connection_type="gas")
+# 2. Load and validate measurement data
+measurements = MeasurementData.from_csv(
+    "plant_measurements.csv",
+    timestamp_column="timestamp",
+    resample="1H"
+)
 
-# Initialize and simulate
-plant.initialize()
-results = plant.simulate(duration=30, dt=1/24)
+# Validate data quality
+validation = measurements.validate()
+print(f"Data quality: {validation.quality_score:.2f}")
 
-# Save configuration
-plant.to_json("my_plant.json")
-```
+# Clean data
+measurements.remove_outliers(method="zscore", threshold=3.0)
+measurements.fill_gaps(method="interpolate", limit=3)
 
-### Using the MCP Server
-```python
-from pyadm1.configurator.mcp import MCPServer
+# 3. Create calibrator and run calibration
+calibrator = InitialCalibrator(plant, verbose=True)
 
-# Start MCP server
-server = MCPServer()
-server.start()
-
-# Server provides tools for LLM:
-# - create_plant: Create new plant model
-# - add_component: Add component to plant
-# - connect_components: Connect components
-# - simulate_plant: Run simulation
-# - calibrate_model: Calibrate parameters
-```
-
-### Parallel Simulation
-```python
-from pyadm1.simulation import ParallelSimulator
-
-# Create scenarios with parameter variations
-scenarios = [
-    {"k_dis": 0.5, "Y_su": 0.1},
-    {"k_dis": 0.6, "Y_su": 0.11},
-    {"k_dis": 0.7, "Y_su": 0.12},
-]
-
-# Run parallel simulations
-sim = ParallelSimulator(plant)
-results = sim.run_scenarios(scenarios, duration=30)
-```
-
-### Model Calibration
-```python
-from pyadm1.calibration import Calibrator
-from pyadm1.io import MeasurementData
-
-# Load measurement data
-measurements = MeasurementData.from_csv("plant_data.csv")
-
-# Calibrate model
-calibrator = Calibrator(plant)
-calibrated_params = calibrator.calibrate_initial(
+result = calibrator.calibrate(
     measurements=measurements,
     parameters=["k_dis", "k_hyd_ch", "Y_su"],
-    bounds={"k_dis": (0.3, 0.8)},
+    bounds={"k_dis": (0.3, 0.8), "Y_su": (0.05, 0.15)},
+    objectives=["Q_ch4", "pH"],
+    weights={"Q_ch4": 0.8, "pH": 0.2},
+    method="differential_evolution",
+    validation_split=0.2,
+    max_iterations=100
 )
 
-# Online re-calibration (triggered by high variance)
-calibrator.calibrate_online(
-    measurements=new_measurements,
-    variance_threshold=0.1,
+# 4. Check results
+if result.success:
+    print(f"Calibration successful!")
+    print(f"Objective value: {result.objective_value:.4f}")
+    print(f"Calibrated parameters:")
+    for param, value in result.parameters.items():
+        initial = result.initial_parameters[param]
+        change = (value - initial) / initial * 100
+        print(f"  {param}: {initial:.4f} → {value:.4f} ({change:+.1f}%)")
+    
+    # Apply to plant
+    calibrator.apply_calibration(result)
+```
+
+### Online Re-Calibration
+
+```python
+from pyadm1ode_calibration.calibration import OnlineCalibrator
+
+# Create online calibrator
+calibrator = OnlineCalibrator(plant, verbose=True)
+
+# Configure trigger conditions
+calibrator.set_trigger(
+    variance_threshold=0.15,      # Trigger at 15% variance
+    time_threshold=24.0,          # Min 24h between calibrations
+    consecutive_violations=3      # Require 3 consecutive violations
+)
+
+# Monitor and re-calibrate when needed
+recent_data = MeasurementData.from_csv("recent_measurements.csv")
+
+if calibrator.should_recalibrate(recent_data):
+    result = calibrator.calibrate(
+        measurements=recent_data,
+        parameters=["k_dis", "Y_su"],
+        max_parameter_change=0.10,  # Max 10% change
+        time_window=7,               # Use last 7 days
+        method="nelder_mead"
+    )
+    
+    if result.success:
+        calibrator.apply_calibration(result)
+```
+
+### Database Integration
+
+```python
+from pyadm1ode_calibration.io import Database
+
+# Connect to PostgreSQL database
+db = Database("postgresql://user:pass@localhost/biogas")
+db.create_all_tables()
+
+# Store measurement data
+db.store_measurements(
+    plant_id="plant1",
+    data=measurements_df,
+    source="SCADA"
+)
+
+# Load measurement data
+data = db.load_measurements(
+    plant_id="plant1",
+    start_time="2024-01-01",
+    end_time="2024-01-31"
+)
+
+# Store calibration results
+db.store_calibration(
+    plant_id="plant1",
+    calibration_type="initial",
+    method="differential_evolution",
+    parameters=result.parameters,
+    objective_value=result.objective_value,
+    objectives=["Q_ch4", "pH"],
+    validation_metrics=result.validation_metrics,
+    success=result.success
 )
 ```
 
-## Core Concepts
+## Project Structure
 
-### Components
+```
+PyADM1ODE_calibration/
+├── src/
+│   ├── calibration/                 # Calibration framework
+│   │   ├── __init__.py
+│   │   ├── calibrator.py           # Main Calibrator class
+│   │   ├── initial.py              # Initial calibration
+│   │   ├── online.py               # Online re-calibration
+│   │   ├── parameter_bounds.py     # Parameter bounds management
+│   │   ├── validation.py           # Calibration validation
+│   │   └── optimization/           # Optimization algorithms
+│   │       ├── __init__.py
+│   │       ├── optimizer.py        # Optimizer base classes
+│   │       ├── objective.py        # Objective functions
+│   │       └── constraints.py      # Parameter constraints
+│   │
+│   └── io/                         # Data input/output
+│       ├── __init__.py
+│       ├── csv_handler.py          # CSV import/export
+│       ├── database.py             # PostgreSQL database interface
+│       └── measurement_data.py     # Measurement data management
+│
+├── tests/                          # Test suite
+│   ├── unit/
+│   │   ├── test_calibration/
+│   │   └── test_io/
+│   ├── integration/
+│   └── validation/
+│
+├── scripts/                        # Utility scripts
+│   ├── calibration_example.py     # Complete example workflow
+│   ├── generate_measurement_data.py
+│   └── test_calibration.py
+│
+├── data/                           # Example data
+│   ├── initial_states/
+│   └── plant_measurements_csv.md
+│
+├── docs/                           # Documentation
+│   ├── user_guide/
+│   │   └── calibration.md
+│   └── examples/
+│
+├── .github/
+│   └── workflows/                  # GitHub Actions CI/CD
+│
+├── README.md
+├── pyproject.toml
+├── requirements.txt
+└── environment.yml
+```
 
-All plant components inherit from `Component` base class and provide:
-- `step(t, dt, inputs)`: Perform one simulation time step
-- `initialize(state)`: Initialize component state
-- `to_dict()` / `from_dict()`: Serialization
+## Documentation
 
-### Plant Configuration
+### User Guide
 
-Plants are configured through:
-- **Programmatic API**: Direct component instantiation
-- **JSON files**: Load/save complete configurations
-- **Templates**: Pre-defined plant layouts
-- **MCP Server**: LLM-driven configuration from natural language
+- [Calibration Guide](docs/user_guide/calibration.md) - Complete calibration workflow
+- [Example Workflow](docs/examples/calibration_workflow.md) - Step-by-step tutorial
+- [API Reference](docs/api_reference/) - Detailed API documentation
 
-### Substrate Management
+### Example Scripts
 
-Substrates are characterized by:
-- Weender analysis (fiber, protein, lipids)
-- Van Soest fractions (NDF, ADF, ADL)
-- Physical properties (pH, TS, VS, COD)
-- Kinetic parameters (disintegration, hydrolysis rates)
+- [`scripts/calibration_example.py`](scripts/calibration_example.py) - Complete calibration workflow
+- [`scripts/generate_measurement_data.py`](scripts/generate_measurement_data.py) - Generate synthetic test data
+- [`scripts/test_calibration.py`](scripts/test_calibration.py) - Test parameter bounds and data loading
 
-### Simulation Engine
+## Calibration Parameters
 
-The simulation engine:
-- Uses BDF solver for stiff ODEs
-- Supports variable time steps
-- Manages component dependencies
-- Handles liquid, gas, heat, and power flows
+### Substrate-Dependent Parameters
 
-## Research Applications
+Most commonly calibrated for different substrates:
 
-This framework supports research in:
+| Parameter | Description | Unit | Typical Range |
+|-----------|-------------|------|---------------|
+| `k_dis` | Disintegration rate | 1/d | 0.3 - 0.8 |
+| `k_hyd_ch` | Carbohydrate hydrolysis | 1/d | 5.0 - 15.0 |
+| `k_hyd_pr` | Protein hydrolysis | 1/d | 5.0 - 15.0 |
+| `k_hyd_li` | Lipid hydrolysis | 1/d | 5.0 - 15.0 |
 
-- **Process optimization**: Substrate feed strategies, retention time
-- **Control systems**: Model predictive control, feedback controllers
-- **Plant design**: Component sizing, layout optimization
-- **Energy management**: CHP scheduling, heat integration
-- **Substrate evaluation**: Biogas potential assessment
+### Yield Coefficients
 
-## Validation
+| Parameter | Description | Unit | Typical Range |
+|-----------|-------------|------|---------------|
+| `Y_su` | Sugar degrader yield | kg COD/kg COD | 0.05 - 0.15 |
+| `Y_aa` | Amino acid degrader yield | kg COD/kg COD | 0.04 - 0.12 |
+| `Y_fa` | LCFA degrader yield | kg COD/kg COD | 0.03 - 0.10 |
 
-The framework has been validated against:
-- **SIMBA#**: Commercial biogas simulation software
-- **[ADM1F](https://github.com/lanl/ADM1F)**: LANL's Fortran ADM1 implementation
-- **Real plant data**: Multiple agricultural biogas plants
+### Maximum Uptake Rates
 
-## Development Status
+| Parameter | Description | Unit | Typical Range |
+|-----------|-------------|------|---------------|
+| `k_m_c4` | C4 uptake rate | 1/d | 15.0 - 30.0 |
+| `k_m_pro` | Propionate uptake rate | 1/d | 8.0 - 18.0 |
+| `k_m_ac` | Acetate uptake rate | 1/d | 4.0 - 12.0 |
+| `k_m_h2` | Hydrogen uptake rate | 1/d | 25.0 - 45.0 |
 
-- ✅ Core ADM1 implementation
-- ✅ Basic components (Digester, CHP, Heating)
-- ✅ Plant configuration and JSON I/O
-- 🚧 Extended component library (in progress)
-- 🚧 MCP server implementation (in progress)
-- 🚧 Parallel simulation (in progress)
-- 🚧 Calibration framework (in progress)
-- 📋 Validation framework (planned)
+## Data Requirements
+
+### Minimum Requirements
+
+- **Duration**: 7-30 days of stable operation
+- **Frequency**: Hourly measurements (daily for lab analyses)
+- **Quality**: < 10% missing data, validated ranges
+
+### Required Measurements
+
+| Measurement | Unit | Critical | Frequency |
+|-------------|------|----------|-----------|
+| Biogas production (Q_gas) | m³/d | ✓ | Hourly |
+| Methane production (Q_ch4) | m³/d | ✓ | Hourly |
+| pH | - | ✓ | Hourly |
+| VFA | g HAc eq/L | ✓ | Daily |
+| TAC | g CaCO₃ eq/L | | Daily |
+| Temperature | K | ✓ | Hourly |
+| Substrate feeds | m³/d | ✓ | Continuous |
+
+### Optional Measurements
+
+- CO₂ production (Q_co2)
+- FOS/TAC ratio
+- NH₄-N concentration
+- Electrical power (P_el)
+- Thermal power (P_th)
+
+## Validation Metrics
+
+### Goodness-of-Fit
+
+| Metric | Excellent | Good | Fair | Poor |
+|--------|-----------|------|------|------|
+| **R²** | > 0.90 | 0.75-0.90 | 0.50-0.75 | < 0.50 |
+| **NSE** | > 0.90 | 0.70-0.90 | 0.50-0.70 | < 0.50 |
+| **PBIAS** | < ±5% | ±5-±10% | ±10-±25% | > ±25% |
+
+### Interpretation
+
+- **R² > 0.75**: Good model fit, parameters reliable
+- **PBIAS < 10%**: Low systematic bias
+- **NSE > 0.70**: Model better than mean prediction
+
+## Performance
+
+### Typical Calibration Times
+
+| Configuration | Time | Notes |
+|---------------|------|-------|
+| 3 parameters, DE, 100 iter | 5-10 min | Initial calibration |
+| 5 parameters, DE, 200 iter | 20-30 min | Comprehensive calibration |
+| 2 parameters, NM, 50 iter | 1-2 min | Online re-calibration |
+
+*Times based on 30 days of hourly data on standard desktop PC*
+
+## Testing
+
+```bash
+# Run all tests
+pytest tests/ -v
+
+# Run specific test categories
+pytest tests/unit/test_calibration/ -v
+pytest tests/unit/test_io/ -v
+
+# Run with coverage
+pytest tests/ --cov=src --cov-report=html
+
+# Run only fast tests
+pytest tests/ -v -m "not slow"
+```
 
 ## Contributing
 
-We welcome contributions! Please see [CONTRIBUTING.md](CONTRIBUTING.md) for guidelines.
+We welcome contributions! Areas where we need help:
 
-Areas where we need help:
-- Additional component implementations
-- Validation data from real plants
+- Additional optimization algorithms
+- More sophisticated online calibration strategies
+- Bayesian calibration with uncertainty quantification
+- Real plant validation data
 - Performance optimization
-- Documentation and examples
-- Integration with other tools
+- Documentation improvements
+
+Please see [CONTRIBUTING.md](CONTRIBUTING.md) for guidelines.
 
 ## Citation
 
 If you use PyADM1ODE_calibration in your research, please cite:
+
 ```bibtex
-@software{pyadm1,
+@software{pyadm1_calibration,
   author = {Gaida, Daniel},
-  title = {PyADM1: Advanced Biogas Plant Simulation Framework},
-  year = {2024},
-  url = {https://github.com/dgaida/PyADM1}
+  title = {PyADM1ODE\_calibration: Parameter Calibration Framework for Biogas Plant Models},
+  year = {2026},
+  url = {https://github.com/dgaida/PyADM1ODE_calibration}
 }
 
 @phdthesis{gaida2014dynamic,
@@ -449,11 +421,9 @@ If you use PyADM1ODE_calibration in your research, please cite:
 
 ## Related Publications
 
-- **Gaida, D. (2024).** *Synergizing Language Models and Biogas Plant Control: A GPT-4 Approach.* 18th IWA World Conference on Anaerobic Digestion, Istanbul, Turkey.
-
+- **Gaida, D. (2014).** *Dynamic real-time substrate feed optimization of anaerobic co-digestion plants.* PhD thesis, Leiden University.
 - **Batstone, D.J., et al. (2002).** *Anaerobic Digestion Model No. 1 (ADM1).* IWA Publishing, London.
-
-- **Sadrimajd, P., Mannion, P., Howley, E., & Lens, P.N.L. (2021).** *PyADM1: a Python implementation of Anaerobic Digestion Model No. 1.* bioRxiv. DOI: [10.1101/2021.03.03.433746](https://doi.org/10.1101/2021.03.03.433746)
+- **Dochain, D. & Vanrolleghem, P. (2001).** *Dynamical Modelling & Estimation in Wastewater Treatment Processes.* IWA Publishing.
 
 ## License
 
@@ -461,9 +431,8 @@ This project is licensed under the MIT License - see [LICENSE](LICENSE) for deta
 
 ## Acknowledgments
 
-- Original [PyADM1](https://github.com/CaptainFerMag/PyADM1) implementation by Peyman Sadrimajd et al. that motivated me to create this project
 - ADM1 development by IWA Task Group
-- SIMBA implementation by ifak e.V.
+- SIMBA# implementation by ifak e.V.
 
 ## Contact
 
@@ -474,4 +443,4 @@ This project is licensed under the MIT License - see [LICENSE](LICENSE) for deta
 
 ---
 
-**Note**: This is an active research project. APIs may change as development progresses. For production use, please use tagged releases.
+**Note**: This package requires [PyADM1ODE](https://github.com/dgaida/PyADM1ODE) to be installed.

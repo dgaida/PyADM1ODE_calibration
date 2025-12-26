@@ -26,7 +26,7 @@ Demonstrates complete workflow:
    - Post-calibration validation
 
 Usage:
-    python scripts/calibration_example.py
+    python examples/calibration_example.py
 """
 
 import sys
@@ -35,10 +35,10 @@ from pathlib import Path
 # Add pyadm1 to path if needed
 # sys.path.insert(0, str(Path(__file__).parent.parent))
 
-from pyadm1.calibration.parameter_bounds import (
+from src.calibration import (
     create_default_bounds,
 )
-from pyadm1.io.measurement_data import (
+from src.io import (
     MeasurementData,
 )
 

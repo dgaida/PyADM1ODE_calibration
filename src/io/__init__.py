@@ -48,7 +48,7 @@ Example:
 
 # from pyadm1.io.json_handler import JSONHandler
 from .csv_handler import CSVHandler
-from .database import Database, DatabaseConfig
+from .database import Database, DatabaseConfig, Plant
 from .measurement_data import (
     MeasurementData,
     DataValidator,
@@ -60,6 +60,7 @@ __all__ = [
     "CSVHandler",
     "Database",
     "DatabaseConfig",
+    "Plant",
     "MeasurementData",
     "DataValidator",
     "OutlierDetector",

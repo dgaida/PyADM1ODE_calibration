@@ -20,7 +20,7 @@ import numpy as np
 import tempfile
 import os
 
-from pyadm1.io.csv_handler import CSVHandler
+from src.io import CSVHandler
 
 
 # ============================================================================

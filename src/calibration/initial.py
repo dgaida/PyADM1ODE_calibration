@@ -16,8 +16,8 @@ and identifiability analysis detects parameters that cannot be reliably estimate
 from the available data.
 
 Example:
-    >>> from pyadm1.calibration.initial import InitialCalibrator
-    >>> from pyadm1.io import MeasurementData
+    >>> from src.calibration import InitialCalibrator
+    >>> from src.io import MeasurementData
     >>> from pyadm1.configurator import BiogasPlant
     >>>
     >>> # Load plant and measurements
@@ -50,15 +50,15 @@ from dataclasses import dataclass
 from scipy.optimize import differential_evolution, minimize
 import time
 
-from pyadm1.calibration.parameter_bounds import create_default_bounds
-from pyadm1.calibration.validation import CalibrationValidator
-from pyadm1.calibration.optimization import (
+from src.calibration import create_default_bounds
+from src.calibration import CalibrationValidator
+from src.calibration.optimization import (
     create_optimizer,
     MultiObjectiveFunction,
     WeightedSumObjective,
     ParameterConstraints,
 )
-from pyadm1.io import MeasurementData
+from src.io import MeasurementData
 
 
 @dataclass

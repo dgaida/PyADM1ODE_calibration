@@ -10,7 +10,7 @@ Unit tests
 import numpy as np
 import pytest
 
-from pyadm1.calibration.parameter_bounds import (
+from src.calibration import (
     ParameterBound,
     ParameterBounds,
     BoundType,

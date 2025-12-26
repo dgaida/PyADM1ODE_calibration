@@ -1,4 +1,6 @@
-# .github/workflows/tests.yml
+# ============================================================================
+# .github/workflows/tests.yml - CORRECTED VERSION
+# ============================================================================
 name: Tests
 
 on:
@@ -32,7 +34,6 @@ jobs:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        # Conditional matrix based on event type
         # Quick tests: ubuntu-latest + Python 3.11 only
         # Full tests: all OS and all Python versions
         os: >-
@@ -45,7 +46,7 @@ jobs:
           ${{ (github.event_name == 'workflow_dispatch' && github.event.inputs.full_test == 'true'
                 || contains(github.event.head_commit.message, '[full-test]')
                 || contains(github.event.head_commit.message, '[full ci]'))
-              && fromJSON('["3.10", "3.11"]')
+              && fromJSON('["3.10", "3.11", "3.12"]')
               || fromJSON('["3.11"]') }}
       fail-fast: false
 
@@ -62,17 +63,20 @@ jobs:
           --health-retries 5
 
     steps:
-    - uses: actions/checkout@v3
+    - uses: actions/checkout@v4
 
     - name: Set up Python ${{ matrix.python-version }}
-      uses: actions/setup-python@v4
+      uses: actions/setup-python@v5
       with:
         python-version: ${{ matrix.python-version }}
+        cache: 'pip'
+        cache-dependency-path: |
+          pyproject.toml
+          requirements.txt
 
     - name: Display test mode
       run: |
-        if [[ "${{ github.event_name }}" == "schedule" ]] || \
-           [[ "${{ github.event_name }}" == "workflow_dispatch" && "${{ github.event.inputs.full_test }}" == "true" ]] || \
+        if [[ "${{ github.event_name }}" == "workflow_dispatch" && "${{ github.event.inputs.full_test }}" == "true" ]] || \
            [[ "${{ contains(github.event.head_commit.message, '[full-test]') }}" == "true" ]] || \
            [[ "${{ contains(github.event.head_commit.message, '[full ci]') }}" == "true" ]]; then
           echo "🔥 Running FULL test suite on all platforms"
@@ -81,32 +85,21 @@ jobs:
         fi
       shell: bash
 
-    - name: Install Mono (Linux)
-      if: runner.os == 'Linux'
-      run: |
-        sudo apt-get update
-        sudo apt-get install -y mono-complete
-        mono --version
-
-    - name: Disable pythonnet on macOS
-      if: runner.os == 'macOS'
-      run: |
-        echo "PYTHONNET_RUNTIME=Null" >> $GITHUB_ENV
-
-    - name: Setup .NET Framework (Windows)
-      if: runner.os == 'Windows'
-      run: |
-        echo ".NET Framework should be pre-installed on Windows runners"
-
     - name: Install dependencies
       run: |
         python -m pip install --upgrade pip
         pip install pytest pytest-cov pytest-asyncio
         pip install -r requirements.txt
 
-    - name: Run tests with .NET runtime
+    - name: Install package in development mode
       run: |
-        pytest -v -rs --cov=src --cov-report=xml --cov-report=term
+        pip install -e ".[dev]"
+
+    - name: Run tests with coverage
+      env:
+        DATABASE_URL: postgresql://postgres:postgres@localhost:5432/test_biogas
+      run: |
+        pytest tests/ -v -rs --cov=src --cov-report=xml --cov-report=term
       continue-on-error: false
 
     - name: Upload coverage to Codecov
@@ -115,5 +108,5 @@ jobs:
       with:
         file: ./coverage.xml
         flags: unittests
-        name: codecov-umbrella
+        name: codecov-pyadm1ode-calibration
         fail_ci_if_error: false
