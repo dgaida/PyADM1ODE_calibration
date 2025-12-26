@@ -16,7 +16,7 @@ Features:
 Example:
     >>> from pyadm1ode_calibration import Calibrator
     >>> from pyadm1ode_calibration import MeasurementData
-    >>> from pyadm1.configurator import BiogasPlant
+    >>> from pyadm1 import BiogasPlant
     >>>
     >>> # Load plant and data
     >>> plant = BiogasPlant.from_json("plant.json", feedstock)
@@ -51,7 +51,7 @@ import numpy as np
 import json
 
 from pyadm1ode_calibration import MeasurementData
-from pyadm1.configurator import BiogasPlant
+from pyadm1 import BiogasPlant
 
 
 @dataclass

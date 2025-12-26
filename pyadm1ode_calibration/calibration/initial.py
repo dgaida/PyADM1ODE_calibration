@@ -18,7 +18,7 @@ from the available data.
 Example:
     >>> from pyadm1ode_calibration.calibration import InitialCalibrator
     >>> from pyadm1ode_calibration.io import MeasurementData
-    >>> from pyadm1.configurator import BiogasPlant
+    >>> from pyadm1 import BiogasPlant
     >>>
     >>> # Load plant and measurements
     >>> plant = BiogasPlant.from_json("plant.json", feedstock)
@@ -50,15 +50,15 @@ from dataclasses import dataclass
 from scipy.optimize import differential_evolution, minimize
 import time
 
-from pyadm1ode_calibration.calibration import create_default_bounds
-from pyadm1ode_calibration.calibration import CalibrationValidator
+from pyadm1ode_calibration import create_default_bounds
+from pyadm1ode_calibration import CalibrationValidator
 from pyadm1ode_calibration.calibration.optimization import (
     create_optimizer,
     MultiObjectiveFunction,
     WeightedSumObjective,
     ParameterConstraints,
 )
-from pyadm1ode_calibration.io import MeasurementData
+from pyadm1ode_calibration import MeasurementData
 
 
 @dataclass

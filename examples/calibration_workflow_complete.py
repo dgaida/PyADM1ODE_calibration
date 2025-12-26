@@ -22,8 +22,8 @@ import pandas as pd
 from pathlib import Path
 
 # PyADM1 imports
-from pyadm1.configurator import BiogasPlant
-from pyadm1.substrates import Feedstock
+from pyadm1 import BiogasPlant
+from pyadm1 import Feedstock
 from pyadm1.components.biological import Digester
 from pyadm1.components.energy import CHP
 from pyadm1ode_calibration import InitialCalibrator

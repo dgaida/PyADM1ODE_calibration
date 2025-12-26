@@ -14,7 +14,7 @@ Features:
 - Bounds validation and consistency checking
 
 Example:
-    >>> from pyadm1.calibration.parameter_bounds import (
+    >>> from pyadm1 import (
     ...     create_default_bounds,
     ...     ParameterBounds,
     ...     BoundType

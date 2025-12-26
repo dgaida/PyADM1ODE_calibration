@@ -28,7 +28,7 @@ References:
 Example:
     >>> from pyadm1ode_calibration.calibration.online import OnlineCalibrator
     >>> from pyadm1ode_calibration.io import MeasurementData
-    >>> from pyadm1.configurator import BiogasPlant
+    >>> from pyadm1 import BiogasPlant
     >>>
     >>> # Create online calibrator
     >>> calibrator = OnlineCalibrator(plant, verbose=True)
@@ -55,14 +55,14 @@ from dataclasses import dataclass, field
 from datetime import datetime, timedelta
 import time
 
-from pyadm1ode_calibration.calibration import create_default_bounds, ParameterBounds
-from pyadm1ode_calibration.calibration import CalibrationValidator
+from pyadm1ode_calibration import create_default_bounds, ParameterBounds
+from pyadm1ode_calibration import CalibrationValidator
 from pyadm1ode_calibration.calibration.optimization import (
     create_optimizer,
     MultiObjectiveFunction,
     ParameterConstraints,
 )
-from pyadm1.io import MeasurementData
+from pyadm1 import MeasurementData
 
 
 @dataclass
