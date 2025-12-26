@@ -12,7 +12,7 @@ import pandas as pd
 import numpy as np
 
 # import pytest
-from src.io import (
+from src import (
     MeasurementData,
     OutlierDetector,
     # DataValidator,

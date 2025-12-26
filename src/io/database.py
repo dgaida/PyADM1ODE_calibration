@@ -17,7 +17,7 @@ Features:
 - Connection pooling and error handling
 
 Example:
-    >>> from pyadm1.io import Database
+    >>> from src import Database
     >>>
     >>> # Connect to database
     >>> db = Database("postgresql://user:pass@localhost/biogas")

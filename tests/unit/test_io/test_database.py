@@ -20,7 +20,7 @@ import pandas as pd
 import numpy as np
 from datetime import timedelta
 
-from src.io import (
+from src import (
     Database,
     DatabaseConfig,
     Plant,

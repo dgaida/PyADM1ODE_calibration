@@ -10,7 +10,7 @@ Unit tests
 import numpy as np
 import pytest
 
-from src.calibration import (
+from src import (
     ParameterBound,
     ParameterBounds,
     BoundType,

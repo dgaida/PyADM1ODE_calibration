@@ -20,7 +20,7 @@ import numpy as np
 import tempfile
 import os
 
-from src.io import CSVHandler
+from src import CSVHandler
 
 
 # ============================================================================
