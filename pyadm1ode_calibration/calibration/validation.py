@@ -15,8 +15,8 @@ Features:
 - Validation reports with comprehensive statistics
 
 Example:
-    >>> from src import CalibrationValidator
-    >>> from src import MeasurementData
+    >>> from pyadm1ode_calibration import CalibrationValidator
+    >>> from pyadm1ode_calibration import MeasurementData
     >>>
     >>> # Load measurement data
     >>> measurements = MeasurementData.from_csv("plant_data.csv")
@@ -45,7 +45,7 @@ from dataclasses import dataclass, field
 from scipy import stats
 import warnings
 
-from src import MeasurementData
+from pyadm1ode_calibration import MeasurementData
 
 
 @dataclass

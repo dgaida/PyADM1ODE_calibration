@@ -12,7 +12,7 @@ import pandas as pd
 import numpy as np
 
 # import pytest
-from src import (
+from pyadm1ode_calibration import (
     MeasurementData,
     OutlierDetector,
     # DataValidator,

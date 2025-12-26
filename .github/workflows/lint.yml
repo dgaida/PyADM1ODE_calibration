@@ -50,7 +50,7 @@ jobs:
 
       - name: Type check with mypy
         run: |
-          mypy src --ignore-missing-imports --no-strict-optional
+          mypy pyadm1ode_calibration --ignore-missing-imports --no-strict-optional
         continue-on-error: true
 
   security:
@@ -73,5 +73,5 @@ jobs:
 
       - name: Run security checks with Bandit
         run: |
-          bandit -r src/ -ll -f github
+          bandit -r pyadm1ode_calibration/ -ll -f github
         continue-on-error: true

@@ -219,7 +219,7 @@ db.store_calibration(
 
 ```
 PyADM1ODE_calibration/
-├── src/
+├── pyadm1ode_calibration/
 │   ├── calibration/                 # Calibration framework
 │   │   ├── __init__.py
 │   │   ├── calibrator.py           # Main Calibrator class
@@ -380,7 +380,7 @@ pytest tests/unit/test_calibration/ -v
 pytest tests/unit/test_io/ -v
 
 # Run with coverage
-pytest tests/ --cov=src --cov-report=html
+pytest tests/ --cov=pyadm1ode_calibration --cov-report=html
 
 # Run only fast tests
 pytest tests/ -v -m "not slow"

@@ -26,8 +26,8 @@ from pyadm1.configurator import BiogasPlant
 from pyadm1.substrates import Feedstock
 from pyadm1.components.biological import Digester
 from pyadm1.components.energy import CHP
-from src.calibration import InitialCalibrator
-from src.io import MeasurementData
+from pyadm1ode_calibration import InitialCalibrator
+from pyadm1ode_calibration import MeasurementData
 from pyadm1.core.adm1 import get_state_zero_from_initial_state
 
 

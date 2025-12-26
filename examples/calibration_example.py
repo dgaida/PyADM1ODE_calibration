@@ -35,10 +35,10 @@ from pathlib import Path
 # Add pyadm1 to path if needed
 # sys.path.insert(0, str(Path(__file__).parent.parent))
 
-from src.calibration import (
+from pyadm1ode_calibration.calibration import (
     create_default_bounds,
 )
-from src.io import (
+from pyadm1ode_calibration.io import (
     MeasurementData,
 )
 

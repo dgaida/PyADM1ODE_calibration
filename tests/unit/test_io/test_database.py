@@ -20,7 +20,7 @@ import pandas as pd
 import numpy as np
 from datetime import timedelta
 
-from src import (
+from pyadm1ode_calibration import (
     Database,
     DatabaseConfig,
     Plant,

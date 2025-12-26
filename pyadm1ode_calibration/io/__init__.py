@@ -21,7 +21,7 @@ Modules:
                      resampling to consistent time intervals, and gap filling.
 
 Example:
-    >>> from src.io import (
+    >>> from pyadm1ode_calibration.io import (
     ...     JSONHandler,
     ...     CSVHandler,
     ...     Database,

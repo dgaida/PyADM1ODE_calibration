@@ -1,5 +1,5 @@
 # ============================================================================
-# src/__init__.py
+# pyadm1ode_calibration/__init__.py
 # ============================================================================
 """
 PyADM1ODE_calibration - Parameter Calibration Framework for Biogas Plant Models

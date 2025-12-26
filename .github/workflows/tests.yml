@@ -99,7 +99,7 @@ jobs:
       env:
         DATABASE_URL: postgresql://postgres:postgres@localhost:5432/test_biogas
       run: |
-        pytest tests/ -v -rs --cov=src --cov-report=xml --cov-report=term
+        pytest tests/ -v -rs --cov=pyadm1ode_calibration --cov-report=xml --cov-report=term
       continue-on-error: false
 
     - name: Upload coverage to Codecov

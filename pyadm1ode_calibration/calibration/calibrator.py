@@ -14,8 +14,8 @@ Features:
 - Calibration history tracking
 
 Example:
-    >>> from src import Calibrator
-    >>> from src import MeasurementData
+    >>> from pyadm1ode_calibration import Calibrator
+    >>> from pyadm1ode_calibration import MeasurementData
     >>> from pyadm1.configurator import BiogasPlant
     >>>
     >>> # Load plant and data
@@ -50,7 +50,7 @@ from datetime import datetime
 import numpy as np
 import json
 
-from src import MeasurementData
+from pyadm1ode_calibration import MeasurementData
 from pyadm1.configurator import BiogasPlant
 
 

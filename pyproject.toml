@@ -72,7 +72,7 @@ Documentation = "https://github.com/dgaida/PyADM1ODE_calibration#readme"
 "Bug Tracker" = "https://github.com/dgaida/PyADM1ODE_calibration/issues"
 
 [tool.setuptools]
-packages = ["src", "src.calibration", "src.calibration.optimization", "src.io"]
+packages = ["pyadm1ode_calibration", "pyadm1ode_calibration.calibration", "pyadm1ode_calibration.calibration.optimization", "pyadm1ode_calibration.io"]
 package-dir = {"" = "."}
 
 [tool.setuptools.package-data]
@@ -122,7 +122,7 @@ python_classes = ["Test*"]
 python_functions = ["test_*"]
 addopts = [
     "--strict-markers",
-    "--cov=src",
+    "--cov=pyadm1ode_calibration",
     "--cov-report=term-missing",
     "--cov-report=html",
     "--cov-report=xml",
@@ -132,7 +132,7 @@ markers = [
 ]
 
 [tool.coverage.run]
-source = ["src"]
+source = ["pyadm1ode_calibration"]
 omit = [
     "*/tests/*",
 ]

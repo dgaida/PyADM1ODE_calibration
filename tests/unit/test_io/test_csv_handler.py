@@ -20,7 +20,7 @@ import numpy as np
 import tempfile
 import os
 
-from src import CSVHandler
+from pyadm1ode_calibration import CSVHandler
 
 
 # ============================================================================
