@@ -32,8 +32,8 @@ Subpackage:
                  optimization with Pareto front analysis.
 
 Example:
-    >>> from pyadm1ode_calibration.calibration import Calibrator
-    >>> from pyadm1ode_calibration.io import MeasurementData
+    >>> from pyadm1ode_calibration import Calibrator
+    >>> from pyadm1ode_calibration import MeasurementData
     >>>
     >>> # Load measurement data
     >>> measurements = MeasurementData.from_csv("plant_data.csv")
