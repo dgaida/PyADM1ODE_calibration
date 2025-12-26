@@ -85,6 +85,12 @@ jobs:
         fi
       shell: bash
 
+    - name: Install Mono runtime (Linux)
+      if: runner.os == 'Linux'
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y mono-complete
+
     - name: Install dependencies
       run: |
         python -m pip install --upgrade pip
@@ -94,6 +100,33 @@ jobs:
     - name: Install package in development mode
       run: |
         pip install -e ".[dev]"
+
+    - name: Verify PyADM1 installation
+      run: |
+        python -c "
+        import sys
+        try:
+            import pyadm1
+            print(f'✓ pyadm1 version: {pyadm1.__version__}')
+            print(f'✓ pyadm1 location: {pyadm1.__file__}')
+
+            # Check subpackages
+            from pyadm1 import core, substrates, simulation, components, configurator
+            print('✓ All main subpackages imported successfully')
+
+            # Check if DLLs are accessible
+            import os
+            dll_path = os.path.join(os.path.dirname(pyadm1.__file__), 'dlls')
+            if os.path.exists(dll_path):
+                dlls = os.listdir(dll_path)
+                print(f'✓ Found {len(dlls)} DLLs: {dlls}')
+            else:
+                print('✗ DLL directory not found')
+
+        except ImportError as e:
+            print(f'✗ Import error: {e}')
+            sys.exit(1)
+        "
 
     - name: Run tests with coverage
       env:
