@@ -20,7 +20,7 @@ Modules:
                 different penalty functions (quadratic, logarithmic, barrier).
 
 Example:
-    >>> from pyadm1.calibration.optimization import (
+    >>> from src.calibration.optimization import (
     ...     DifferentialEvolutionOptimizer,
     ...     MultiObjectiveFunction,
     ...     ParameterConstraints
@@ -48,7 +48,7 @@ Example:
     ... )
 """
 
-from pyadm1.calibration.optimization.optimizer import (
+from .optimizer import (
     Optimizer,
     GradientFreeOptimizer,
     GradientBasedOptimizer,
@@ -58,14 +58,14 @@ from pyadm1.calibration.optimization.optimizer import (
     LBFGSBOptimizer,
     create_optimizer,
 )
-from pyadm1.calibration.optimization.objective import (
+from .objective import (
     ObjectiveFunction,
     SingleObjective,
     MultiObjectiveFunction,
     WeightedSumObjective,
     LikelihoodObjective,
 )
-from pyadm1.calibration.optimization.constraints import (
+from .constraints import (
     ParameterConstraints,
     BoxConstraint,
     LinearConstraint,

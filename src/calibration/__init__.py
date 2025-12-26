@@ -55,22 +55,22 @@ Example:
     ... )
 """
 
-from pyadm1.calibration.calibrator import Calibrator, CalibrationResult
-from pyadm1.calibration.initial import InitialCalibrator
+from .calibrator import Calibrator, CalibrationResult
+from .initial import InitialCalibrator
 
-from pyadm1.calibration.online import OnlineCalibrator
-from pyadm1.calibration.parameter_bounds import (
+from .online import OnlineCalibrator
+from .parameter_bounds import (
     ParameterBounds,
     BoundType,
     create_default_bounds,
 )
-from pyadm1.calibration.validation import (
+from .validation import (
     CalibrationValidator,
     ValidationMetrics,
 )
 
 # Import optimization subpackage
-from pyadm1.calibration import optimization
+from src.calibration import optimization
 
 __all__ = [
     "Calibrator",

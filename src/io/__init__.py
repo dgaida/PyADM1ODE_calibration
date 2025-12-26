@@ -21,7 +21,7 @@ Modules:
                      resampling to consistent time intervals, and gap filling.
 
 Example:
-    >>> from pyadm1.io import (
+    >>> from src.io import (
     ...     JSONHandler,
     ...     CSVHandler,
     ...     Database,
@@ -47,9 +47,9 @@ Example:
 """
 
 # from pyadm1.io.json_handler import JSONHandler
-from pyadm1.io.csv_handler import CSVHandler
-from pyadm1.io.database import Database, DatabaseConfig
-from pyadm1.io.measurement_data import (
+from .csv_handler import CSVHandler
+from .database import Database, DatabaseConfig
+from .measurement_data import (
     MeasurementData,
     DataValidator,
     OutlierDetector,
