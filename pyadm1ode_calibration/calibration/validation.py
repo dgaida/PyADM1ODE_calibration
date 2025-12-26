@@ -45,7 +45,7 @@ from dataclasses import dataclass, field
 from scipy import stats
 import warnings
 
-from pyadm1ode_calibration import MeasurementData
+from .. import MeasurementData
 
 
 @dataclass

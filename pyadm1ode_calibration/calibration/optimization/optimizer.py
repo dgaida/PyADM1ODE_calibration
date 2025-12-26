@@ -12,8 +12,8 @@ Available optimizers:
 - Multi-objective: NSGA-II (evolutionary multi-objective optimization)
 
 Example:
-    >>> from pyadm1.calibration.optimization import DifferentialEvolutionOptimizer
-    >>> from pyadm1.calibration.optimization import WeightedSumObjective
+    >>> from pyadm1ode_calibration.calibration.optimization import DifferentialEvolutionOptimizer
+    >>> from pyadm1ode_calibration.calibration.optimization import WeightedSumObjective
     >>>
     >>> # Create objective function
     >>> objective = WeightedSumObjective(

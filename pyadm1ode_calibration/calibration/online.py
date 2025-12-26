@@ -55,14 +55,14 @@ from dataclasses import dataclass, field
 from datetime import datetime, timedelta
 import time
 
-from pyadm1ode_calibration import create_default_bounds, ParameterBounds
-from pyadm1ode_calibration import CalibrationValidator
-from pyadm1ode_calibration.calibration.optimization import (
+from . import create_default_bounds, ParameterBounds
+from . import CalibrationValidator
+from .optimization import (
     create_optimizer,
     MultiObjectiveFunction,
     ParameterConstraints,
 )
-from pyadm1 import MeasurementData
+from .. import MeasurementData
 
 
 @dataclass
