@@ -72,8 +72,7 @@ Documentation = "https://github.com/dgaida/PyADM1ODE_calibration#readme"
 "Bug Tracker" = "https://github.com/dgaida/PyADM1ODE_calibration/issues"
 
 [tool.setuptools]
-packages = ["pyadm1ode_calibration", "pyadm1ode_calibration.calibration", "pyadm1ode_calibration.calibration.optimization", "pyadm1ode_calibration.io"]
-package-dir = {"" = "."}
+packages = {find = {}}
 
 [tool.setuptools.package-data]
 pyadm1ode_calibration = ["py.typed"]
