@@ -1,0 +1,17 @@
+name: biogas
+channels:
+  - conda-forge
+  - defaults
+dependencies:
+  - python>=3.8
+  - matplotlib
+  - numpy
+  - pandas
+  - scipy
+  - sqlalchemy
+  - psycopg2
+  - pip
+  - pip:
+    - pythonnet
+    # Note: vs2015_runtime is only needed on Windows
+    # Install manually on Windows with: pip install vs2015_runtime
