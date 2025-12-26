@@ -143,7 +143,7 @@ if result.success:
         initial = result.initial_parameters[param]
         change = (value - initial) / initial * 100
         print(f"  {param}: {initial:.4f} → {value:.4f} ({change:+.1f}%)")
-    
+
     # Apply to plant
     calibrator.apply_calibration(result)
 ```
@@ -174,7 +174,7 @@ if calibrator.should_recalibrate(recent_data):
         time_window=7,               # Use last 7 days
         method="nelder_mead"
     )
-    
+
     if result.success:
         calibrator.apply_calibration(result)
 ```

@@ -44,7 +44,7 @@ dependencies = [
     "scipy>=1.7.0",
     "sqlalchemy>=2.0.0",
     "psycopg2-binary>=2.9.0",
-    "pyadm1ode @ git+https://github.com/dgaida/PyADM1ODE.git",
+    "pyadm1 @ git+https://github.com/dgaida/PyADM1ODE.git",
 ]
 
 [project.optional-dependencies]

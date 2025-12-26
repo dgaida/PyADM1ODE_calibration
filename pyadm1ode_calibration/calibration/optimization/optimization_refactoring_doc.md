@@ -247,7 +247,7 @@ class InitialCalibrator:
             weights=weights,
             parameter_names=parameters
         )
-        
+
         # Create optimizer
         optimizer = create_optimizer(
             method=method,
@@ -255,10 +255,10 @@ class InitialCalibrator:
             max_iterations=max_iterations,
             population_size=population_size
         )
-        
+
         # Run optimization
         result = optimizer.optimize(objective)
-        
+
         return self._convert_to_calibration_result(result)
 ```
 
@@ -276,10 +276,10 @@ class OnlineCalibrator:
             bounds=bounded_ranges,
             max_iterations=max_iterations
         )
-        
+
         # Use current parameters as initial guess
         initial_guess = np.array([current_parameters[p] for p in parameters])
-        
+
         result = optimizer.optimize(objective, initial_guess)
 ```
 
