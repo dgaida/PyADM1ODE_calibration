@@ -64,7 +64,7 @@ def sample_plant_data():
 @pytest.fixture
 def sample_measurement_data():
     """Sample measurement data as DataFrame."""
-    dates = pd.date_range("2024-01-01", periods=24, freq="H")
+    dates = pd.date_range("2024-01-01", periods=24, freq="h")
     return pd.DataFrame(
         {
             "timestamp": dates,
@@ -333,7 +333,7 @@ class TestSimulationResults:
         """Test storing simulation results."""
         temp_db.create_plant(**sample_plant_data)
 
-        simulation = temp_db.store_simulation(
+        temp_db.store_simulation(
             simulation_id="sim_001",
             plant_id=sample_plant_data["plant_id"],
             results=sample_simulation_results,
@@ -342,11 +342,18 @@ class TestSimulationResults:
             scenario="baseline",
         )
 
-        assert simulation.id == "sim_001"
-        assert simulation.plant_id == sample_plant_data["plant_id"]
-        assert simulation.status == "completed"
-        assert simulation.avg_Q_gas is not None
-        assert simulation.avg_Q_ch4 is not None
+        # Access attributes within session context to avoid DetachedInstanceError
+        with temp_db.get_session() as session:
+            # Re-query the simulation to get it attached to this session
+            from pyadm1ode_calibration.io.database import Simulation
+
+            sim = session.query(Simulation).filter(Simulation.id == "sim_001").first()
+
+            assert sim.id == "sim_001"
+            assert sim.plant_id == sample_plant_data["plant_id"]
+            assert sim.status == "completed"
+            assert sim.avg_Q_gas is not None
+            assert sim.avg_Q_ch4 is not None
 
     def test_store_simulation_invalid_plant(self, temp_db, sample_simulation_results):
         """Test storing simulation for nonexistent plant raises error."""
@@ -638,7 +645,7 @@ class TestErrorHandling:
 
         df = pd.DataFrame(
             {
-                "timestamp": pd.date_range("2024-01-01", periods=5, freq="H"),
+                "timestamp": pd.date_range("2024-01-01", periods=5, freq="h"),
                 "pH": [7.2, np.nan, 7.3, 7.4, np.nan],
                 "Q_gas": [1200, 1210, np.nan, 1230, 1240],
             }
