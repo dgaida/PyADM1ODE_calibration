@@ -440,7 +440,7 @@ class TestCalibrationHistory:
         """Test storing calibration results."""
         temp_db.create_plant(**sample_plant_data)
 
-        calibration = temp_db.store_calibration(
+        temp_db.store_calibration(
             plant_id=sample_plant_data["plant_id"],
             calibration_type="initial",
             method="differential_evolution",
@@ -451,10 +451,17 @@ class TestCalibrationHistory:
             success=True,
         )
 
-        assert calibration.plant_id == sample_plant_data["plant_id"]
-        assert calibration.method == "differential_evolution"
-        assert calibration.parameters["k_dis"] == 0.55
-        assert calibration.success is True
+        # Access attributes within session context to avoid DetachedInstanceError
+        with temp_db.get_session() as session:
+            # Re-query the calibration to get it attached to this session
+            from pyadm1ode_calibration.io.database import Calibration
+
+            cal = session.query(Calibration).filter(Calibration.plant_id == sample_plant_data["plant_id"]).first()
+
+            assert cal.plant_id == sample_plant_data["plant_id"]
+            assert cal.method == "differential_evolution"
+            assert cal.parameters["k_dis"] == 0.55
+            assert cal.success is True
 
     def test_load_calibrations(self, temp_db, sample_plant_data):
         """Test loading calibration history."""
