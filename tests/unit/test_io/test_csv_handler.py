@@ -110,7 +110,7 @@ def sample_substrate_data_german():
 @pytest.fixture
 def sample_measurement_data():
     """Sample measurement time series data."""
-    dates = pd.date_range("2024-01-01", periods=24, freq="H")
+    dates = pd.date_range("2024-01-01", periods=24, freq="h")
     return pd.DataFrame(
         {
             "timestamp": dates,
@@ -296,7 +296,7 @@ class TestMeasurementData:
 
     def test_load_measurement_data_german_columns(self, handler, temp_csv_file):
         """Test loading measurement data with German column names."""
-        dates = pd.date_range("2024-01-01", periods=5, freq="H")
+        dates = pd.date_range("2024-01-01", periods=5, freq="h")
         df = pd.DataFrame(
             {
                 "Zeitstempel": dates,
@@ -662,7 +662,7 @@ class TestPerformance:
     def test_load_large_measurement_file(self, handler, temp_csv_file):
         """Test loading large measurement file."""
         # Create large dataset (1 year of hourly data)
-        dates = pd.date_range("2024-01-01", periods=8760, freq="H")
+        dates = pd.date_range("2024-01-01", periods=8760, freq="h")
         df = pd.DataFrame(
             {
                 "timestamp": dates,

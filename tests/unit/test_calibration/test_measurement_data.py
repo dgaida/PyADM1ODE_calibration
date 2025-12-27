@@ -22,7 +22,7 @@ from pyadm1ode_calibration import (
 def test_from_csv_loading(tmp_path):
     # Create sample CSV
     csv = tmp_path / "test.csv"
-    df = pd.DataFrame({"timestamp": pd.date_range("2024-01-01", periods=5, freq="H"), "Q_ch4": [1, 2, 3, 4, 5]})
+    df = pd.DataFrame({"timestamp": pd.date_range("2024-01-01", periods=5, freq="h"), "Q_ch4": [1, 2, 3, 4, 5]})
     df.to_csv(csv, index=False)
 
     data = MeasurementData.from_csv(str(csv))
@@ -34,7 +34,7 @@ def test_from_csv_loading(tmp_path):
 
 
 def test_validation_detects_missing_values():
-    df = pd.DataFrame({"timestamp": pd.date_range("2024-01-01", periods=5, freq="H"), "Q_ch4": [1, np.nan, 3, np.nan, 5]})
+    df = pd.DataFrame({"timestamp": pd.date_range("2024-01-01", periods=5, freq="h"), "Q_ch4": [1, np.nan, 3, np.nan, 5]})
 
     data = MeasurementData(df)
     result = data.validate()
@@ -65,7 +65,7 @@ def test_outlier_detection_moving_window():
 def test_remove_outliers_zscore():
     df = pd.DataFrame(
         {
-            "timestamp": pd.date_range("2024-01-01", periods=6, freq="H"),
+            "timestamp": pd.date_range("2024-01-01", periods=6, freq="h"),
             "Q_ch4": [1, 2, 1000, 3, 4, 3],
         }
     )
@@ -80,7 +80,7 @@ def test_remove_outliers_zscore():
 def test_fill_gaps_interpolate():
     df = pd.DataFrame(
         {
-            "timestamp": pd.date_range("2024-01-01", periods=5, freq="H"),
+            "timestamp": pd.date_range("2024-01-01", periods=5, freq="h"),
             "Q_ch4": [1, np.nan, np.nan, 4, 5],
         }
     )
@@ -95,7 +95,7 @@ def test_fill_gaps_interpolate():
 def test_get_measurement():
     df = pd.DataFrame(
         {
-            "timestamp": pd.date_range("2024-01-01", periods=3, freq="H"),
+            "timestamp": pd.date_range("2024-01-01", periods=3, freq="h"),
             "pH": [7.0, 7.1, 7.2],
         }
     )
@@ -108,7 +108,7 @@ def test_get_measurement():
 
 
 def test_get_time_window():
-    timestamps = pd.date_range("2024-01-01", periods=10, freq="H")
+    timestamps = pd.date_range("2024-01-01", periods=10, freq="h")
     df = pd.DataFrame({"timestamp": timestamps, "Q_ch4": range(10)})
     data = MeasurementData(df)
 
