@@ -55,8 +55,8 @@ from dataclasses import dataclass, field
 from datetime import datetime, timedelta
 import time
 
-from . import create_default_bounds, ParameterBounds
-from . import CalibrationValidator
+from .parameter_bounds import create_default_bounds, ParameterBounds
+from .validation import CalibrationValidator
 from .optimization import (
     create_optimizer,
     MultiObjectiveFunction,
