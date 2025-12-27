@@ -50,8 +50,8 @@ from dataclasses import dataclass
 from scipy.optimize import differential_evolution, minimize
 import time
 
-from . import create_default_bounds
-from . import CalibrationValidator
+from .parameter_bounds import create_default_bounds
+from .validation import CalibrationValidator
 from .optimization import (
     create_optimizer,
     MultiObjectiveFunction,

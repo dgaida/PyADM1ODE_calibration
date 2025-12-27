@@ -50,7 +50,7 @@ from datetime import datetime
 import numpy as np
 import json
 
-from pyadm1ode_calibration import MeasurementData
+from ..io import MeasurementData
 from pyadm1 import BiogasPlant
 
 
@@ -204,7 +204,7 @@ class Calibrator:
             ... )
         """
         # Lazy import to avoid circular dependencies
-        from pyadm1.calibration.initial import InitialCalibrator
+        from .initial import InitialCalibrator
 
         if self._initial_calibrator is None:
             self._initial_calibrator = InitialCalibrator(self.plant, verbose=self.verbose)
@@ -299,7 +299,7 @@ class Calibrator:
             ... )
         """
         # Lazy import to avoid circular dependencies
-        from pyadm1.calibration.online import OnlineCalibrator
+        from .online import OnlineCalibrator
 
         if self._online_calibrator is None:
             self._online_calibrator = OnlineCalibrator(self.plant, verbose=self.verbose)
@@ -389,7 +389,7 @@ class Calibrator:
             >>> metrics = calibrator.validate_calibration(result, validation_data)
             >>> print(f"RMSE: {metrics['rmse']:.2f}")
         """
-        from pyadm1.calibration.validation import CalibrationValidator
+        from .validation import CalibrationValidator
 
         validator = CalibrationValidator(self.plant)
 
