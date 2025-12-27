@@ -602,7 +602,7 @@ class Database:
 
         # Validate data if requested
         if validate:
-            from pyadm1.io.measurement_data import DataValidator
+            from .measurement_data import DataValidator
 
             validation = DataValidator.validate(data)
             if not validation.is_valid:
