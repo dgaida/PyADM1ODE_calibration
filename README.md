@@ -4,6 +4,7 @@
 
 [![Python 3.10+](https://img.shields.io/badge/python-3.10+-blue.svg)](https://www.python.org/downloads/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![codecov](https://codecov.io/gh/dgaida/PyADM1ODE_calibration/branch/main/graph/badge.svg)](https://codecov.io/gh/dgaida/PyADM1ODE_calibration)
 [![Code Quality](https://github.com/dgaida/PyADM1ODE_calibration/actions/workflows/lint.yml/badge.svg)](https://github.com/dgaida/PyADM1ODE_calibration/actions/workflows/lint.yml)
 [![Tests](https://github.com/dgaida/PyADM1ODE_calibration/actions/workflows/tests.yml/badge.svg)](https://github.com/dgaida/PyADM1ODE_calibration/actions/workflows/tests.yml)
 [![CodeQL](https://github.com/dgaida/PyADM1ODE_calibration/actions/workflows/codeql.yml/badge.svg)](https://github.com/dgaida/PyADM1ODE_calibration/actions/workflows/codeql.yml)
