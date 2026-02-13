@@ -58,6 +58,7 @@ from .optimization import (
     WeightedSumObjective,
     ParameterConstraints,
 )
+from .base_calibrator import BaseCalibrator
 from .. import MeasurementData
 
 
@@ -109,7 +110,7 @@ class IdentifiabilityResult:
     reason: str
 
 
-class InitialCalibrator:
+class InitialCalibrator(BaseCalibrator):
     """
     Initial calibrator for ADM1 parameters from historical data.
 
@@ -140,8 +141,7 @@ class InitialCalibrator:
             plant: BiogasPlant instance to calibrate.
             verbose: Enable progress output.
         """
-        self.plant = plant
-        self.verbose = verbose
+        super().__init__(plant, verbose)
         self.parameter_bounds = create_default_bounds()
         self.validator = CalibrationValidator(plant, verbose=False)
 
@@ -705,58 +705,6 @@ class InitialCalibrator:
 
         return objective
 
-    def _simulate_with_parameters(
-        self, parameters: Dict[str, float], measurements: "MeasurementData"
-    ) -> Dict[str, np.ndarray]:
-        """
-        Simulate plant with given parameters and extract outputs.
-
-        This method:
-        1. Applies parameters to all digester components in the plant
-        2. Extracts substrate feed rates from measurements
-        3. Runs plant simulation for the measurement duration
-        4. Extracts and returns relevant outputs
-
-        Args:
-            parameters: Parameter values to apply as {param: value}.
-            measurements: Measurement data containing substrate feeds and duration.
-
-        Returns:
-            Dict[str, np.ndarray]: Simulated outputs as {output_name: array}.
-
-        Raises:
-            ValueError: If no digesters found in plant or substrate feeds missing.
-            RuntimeError: If simulation fails.
-        """
-        # Apply parameters to plant
-        self._apply_parameters_to_plant(parameters)
-
-        # Determine simulation settings
-        n_steps = len(measurements)
-        dt = 1.0 / 24.0  # 1 hour timestep
-        duration = n_steps * dt
-
-        # Extract substrate feeds from measurements
-        Q_substrates = self._extract_substrate_feeds(measurements)
-
-        # Apply substrate feeds to digesters
-        for component_id, component in self.plant.components.items():
-            if component.component_type.value == "digester":
-                # Update substrate feeds for this digester
-                component.Q_substrates = Q_substrates
-                component.adm1.create_influent(Q_substrates, 0)
-
-        # Run simulation
-        try:
-            results = self.plant.simulate(duration=duration, dt=dt, save_interval=dt)
-        except Exception as e:
-            raise RuntimeError(f"Simulation failed: {str(e)}")
-
-        # Extract outputs
-        outputs = self._extract_outputs_from_results(results)
-
-        return outputs
-
     def _get_current_parameters(self) -> Dict[str, float]:
         """
         Get current parameter values from all plant digesters.
@@ -842,57 +790,6 @@ class InitialCalibrator:
             # Default substrate mix if not found in measurements
             # Assumes 2 main substrates (corn silage + cattle manure)
             return [15.0, 10.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
-
-    def _extract_outputs_from_results(self, results: List[Dict[str, Any]]) -> Dict[str, np.ndarray]:
-        """
-        Extract relevant outputs from simulation results.
-
-        Args:
-            results: List of simulation results from plant.simulate().
-
-        Returns:
-            Dict[str, np.ndarray]: Extracted outputs as {output_name: array}.
-        """
-        outputs = {
-            "Q_ch4": [],
-            "Q_gas": [],
-            "pH": [],
-            "VFA": [],
-            "TAC": [],
-            "Q_co2": [],
-        }
-
-        for result in results:
-            components = result.get("components", {})
-
-            # Sum outputs from all digesters
-            q_ch4_total = 0.0
-            q_gas_total = 0.0
-            q_co2_total = 0.0
-            pH_list = []
-            vfa_list = []
-            tac_list = []
-
-            for component_result in components.values():
-                q_ch4_total += component_result.get("Q_ch4", 0.0)
-                q_gas_total += component_result.get("Q_gas", 0.0)
-                q_co2_total += component_result.get("Q_co2", 0.0)
-                if "pH" in component_result:
-                    pH_list.append(component_result["pH"])
-                if "VFA" in component_result:
-                    vfa_list.append(component_result["VFA"])
-                if "TAC" in component_result:
-                    tac_list.append(component_result["TAC"])
-
-            outputs["Q_ch4"].append(q_ch4_total)
-            outputs["Q_gas"].append(q_gas_total)
-            outputs["Q_co2"].append(q_co2_total)
-            outputs["pH"].append(np.mean(pH_list) if pH_list else 7.0)
-            outputs["VFA"].append(np.mean(vfa_list) if vfa_list else 0.0)
-            outputs["TAC"].append(np.mean(tac_list) if tac_list else 0.0)
-
-        # Convert to numpy arrays
-        return {k: np.array(v) for k, v in outputs.items()}
 
     def _setup_objective_weights(self, objectives: List[str], weights: Optional[Dict[str, float]]) -> ObjectiveWeights:
         """

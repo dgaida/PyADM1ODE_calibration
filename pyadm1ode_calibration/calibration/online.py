@@ -62,6 +62,7 @@ from .optimization import (
     MultiObjectiveFunction,
     ParameterConstraints,
 )
+from .base_calibrator import BaseCalibrator
 from .. import MeasurementData
 
 
@@ -127,7 +128,7 @@ class OnlineState:
     total_calibrations: int = 0
 
 
-class OnlineCalibrator:
+class OnlineCalibrator(BaseCalibrator):
     """
     Online calibrator for real-time parameter adjustment during operation.
 
@@ -165,8 +166,7 @@ class OnlineCalibrator:
             verbose: Enable progress output.
             parameter_bounds: Custom parameter bounds. Uses defaults if None.
         """
-        self.plant = plant
-        self.verbose = verbose
+        super().__init__(plant, verbose)
         self.parameter_bounds = parameter_bounds or create_default_bounds()
         self.validator = CalibrationValidator(plant, verbose=False)
 
@@ -779,7 +779,7 @@ class OnlineCalibrator:
             return 0.0
 
     def _simulate_with_parameters(
-        self, parameters: Dict[str, float], measurements: "MeasurementData"
+        self, parameters: Dict[str, float], measurements: "MeasurementData", restore_params: bool = True
     ) -> Dict[str, np.ndarray]:
         """
         Simulate plant with given parameters.
