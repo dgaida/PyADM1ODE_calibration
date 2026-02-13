@@ -456,18 +456,22 @@ class Database:
                 "n_simulations": session.query(Simulation).filter(Simulation.plant_id == plant_id).count(),
                 "n_calibrations": session.query(Calibration).filter(Calibration.plant_id == plant_id).count(),
                 "n_substrates": session.query(Substrate).filter(Substrate.plant_id == plant_id).count(),
-                "first_measurement": session.query(Measurement.timestamp)
-                .filter(Measurement.plant_id == plant_id)
-                .order_by(Measurement.timestamp)
-                .first()[0]
-                if session.query(Measurement.timestamp).filter(Measurement.plant_id == plant_id).count() > 0
-                else None,
-                "last_measurement": session.query(Measurement.timestamp)
-                .filter(Measurement.plant_id == plant_id)
-                .order_by(Measurement.timestamp.desc())
-                .first()[0]
-                if session.query(Measurement.timestamp).filter(Measurement.plant_id == plant_id).count() > 0
-                else None,
+                "first_measurement": (
+                    session.query(Measurement.timestamp)
+                    .filter(Measurement.plant_id == plant_id)
+                    .order_by(Measurement.timestamp)
+                    .first()[0]
+                    if session.query(Measurement.timestamp).filter(Measurement.plant_id == plant_id).count() > 0
+                    else None
+                ),
+                "last_measurement": (
+                    session.query(Measurement.timestamp)
+                    .filter(Measurement.plant_id == plant_id)
+                    .order_by(Measurement.timestamp.desc())
+                    .first()[0]
+                    if session.query(Measurement.timestamp).filter(Measurement.plant_id == plant_id).count() > 0
+                    else None
+                ),
             }
 
     def close(self) -> None:
