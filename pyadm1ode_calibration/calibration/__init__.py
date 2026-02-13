@@ -1,79 +1,29 @@
-"""
-Model Calibration Framework
+from .core.base_calibrator import BaseCalibrator
+from .core.result import CalibrationResult
+from .methods.initial import InitialCalibrator
+from .methods.online import OnlineCalibrator
+from .parameter_bounds import ParameterBounds, ParameterBound, BoundType, create_default_bounds
+from .validation import CalibrationValidator, ValidationMetrics
 
-Tools for initial calibration and online re-calibration of biogas plant models
-against measurement data.
+class Calibrator:
+    """Orchestration layer for calibration."""
+    def __init__(self, plant, verbose: bool = True):
+        self.plant = plant
+        self.verbose = verbose
+        self.initial_calibrator = InitialCalibrator(plant, verbose)
+        self.online_calibrator = OnlineCalibrator(plant, verbose)
 
-Modules:
-    calibrator: Main Calibrator class providing unified interface for initial and
-               online calibration, managing optimization runs, parameter updates,
-               and validation against measurement data with logging and reporting.
+    def run_initial_calibration(self, measurements, parameters, **kwargs):
+        return self.initial_calibrator.calibrate(measurements, parameters, **kwargs)
 
-    initial: Initial calibration from historical measurement data using batch
-            optimization, supports multiple objectives (gas production, pH, VFA),
-            with sensitivity analysis and parameter identifiability assessment.
+    def run_online_calibration(self, measurements, parameters, **kwargs):
+        return self.online_calibrator.calibrate(measurements, parameters, **kwargs)
 
-    online: Online re-calibration during plant operation triggered by high state
-           estimation variance, uses moving window of recent data, enforces parameter
-           bounds to prevent drift from physical values.
-
-    parameter_bounds: Parameter bound management defining physically plausible ranges
-                     for ADM1 parameters, substrate-specific constraints, and penalty
-                     functions for soft constraints during optimization.
-
-    validation: Calibration result validation including goodness-of-fit metrics
-               (RMSE, R², Nash-Sutcliffe), residual analysis, parameter correlation
-               analysis, and cross-validation on held-out data.
-
-Subpackage:
-    optimization: Optimization algorithms and objective functions including
-                 gradient-free methods (Nelder-Mead, differential evolution),
-                 gradient-based methods (L-BFGS-B), and multi-objective
-                 optimization with Pareto front analysis.
-
-Example:
-    >>> from pyadm1ode_calibration import Calibrator
-    >>> from pyadm1ode_calibration import MeasurementData
-    >>>
-    >>> # Load measurement data
-    >>> measurements = MeasurementData.from_csv("plant_data.csv")
-    >>>
-    >>> # Initial calibration
-    >>> calibrator = Calibrator(plant)
-    >>> result = calibrator.calibrate_initial(
-    ...     measurements=measurements,
-    ...     parameters=["k_dis", "k_hyd_ch", "Y_su"],
-    ...     bounds={"k_dis": (0.3, 0.8)},
-    ...     method="differential_evolution"
-    ... )
-    >>>
-    >>> # Online re-calibration
-    >>> calibrator.calibrate_online(
-    ...     measurements=new_measurements,
-    ...     variance_threshold=0.1,
-    ...     max_parameter_change=0.2
-    ... )
-"""
-
-from .calibrator import Calibrator, CalibrationResult
-from .initial import InitialCalibrator
-from .online import OnlineCalibrator
-from .parameter_bounds import (
-    ParameterBounds,
-    ParameterBound,
-    BoundType,
-    create_default_bounds,
-)
-from .validation import (
-    CalibrationValidator,
-    ValidationMetrics,
-)
-
-# Import optimization subpackage
-from . import optimization
+    def apply_calibration(self, result: CalibrationResult):
+        self.online_calibrator.apply_calibration(result)
 
 __all__ = [
-    "Calibrator",
+    "BaseCalibrator",
     "CalibrationResult",
     "InitialCalibrator",
     "OnlineCalibrator",
@@ -83,5 +33,5 @@ __all__ = [
     "create_default_bounds",
     "CalibrationValidator",
     "ValidationMetrics",
-    "optimization",
+    "Calibrator",
 ]

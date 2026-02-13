@@ -290,7 +290,7 @@ class TestMeasurementData:
         """Test loading measurement data with resampling."""
         sample_measurement_data.to_csv(temp_csv_file, index=False)
 
-        df = handler.load_measurement_data(temp_csv_file, resample="2H")
+        df = handler.load_measurement_data(temp_csv_file, resample="2h")
 
         assert len(df) == 12  # Resampled from 24 hourly to 12 2-hourly
 
