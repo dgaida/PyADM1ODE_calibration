@@ -120,6 +120,8 @@ python_files = ["test_*.py"]
 python_classes = ["Test*"]
 python_functions = ["test_*"]
 addopts = [
+    "--doctest-modules",
+    "--doctest-glob=*.md",
     "--strict-markers",
     "--cov=pyadm1ode_calibration",
     "--cov-report=term-missing",

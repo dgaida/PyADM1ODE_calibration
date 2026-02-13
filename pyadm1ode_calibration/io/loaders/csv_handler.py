@@ -359,7 +359,7 @@ class CSVHandler:
             sep: Column separator
             encoding: File encoding
             parse_dates: Parse timestamp column
-            resample: Resample frequency (e.g., "1H", "1D")
+            resample: Resample frequency (e.g., "1h", "1d")
 
         Returns:
             DataFrame with measurements
@@ -368,7 +368,7 @@ class CSVHandler:
             >>> handler = CSVHandler()
             >>> data = handler.load_measurement_data(
             ...     "plant_data.csv",
-            ...     resample="1H"
+            ...     resample="1h"
             ... )
         """
         # Auto-detect separator
@@ -687,7 +687,7 @@ class CSVHandler:
             if param in data:
                 value = data[param]
                 if value < min_val or value > max_val:
-                    warnings.warn(f"Parameter '{param}' = {value} is outside expected " f"range [{min_val}, {max_val}]")
+                    warnings.warn(f"Parameter '{param}' = {value} is outside expected range [{min_val}, {max_val}]")
 
         return data
 

@@ -29,7 +29,6 @@ from pyadm1ode_calibration import (
 from sqlalchemy import inspect
 from sqlalchemy.exc import IntegrityError
 
-
 # ============================================================================
 # Fixtures
 # ============================================================================
@@ -222,9 +221,9 @@ class TestPlantManagement:
         assert plant.name == sample_plant_data["name"]
 
     def test_get_nonexistent_plant(self, temp_db):
-        """Test retrieving nonexistent plant returns None."""
-        plant = temp_db.get_plant("nonexistent")
-        assert plant is None
+        """Test retrieving nonexistent plant raises ValueError."""
+        with pytest.raises(ValueError, match="not found"):
+            temp_db.get_plant("nonexistent")
 
     def test_list_plants(self, temp_db):
         """Test listing all plants."""
@@ -345,7 +344,7 @@ class TestSimulationResults:
         # Access attributes within session context to avoid DetachedInstanceError
         with temp_db.get_session() as session:
             # Re-query the simulation to get it attached to this session
-            from pyadm1ode_calibration.io.database import Simulation
+            from pyadm1ode_calibration.io.persistence.database import Simulation
 
             sim = session.query(Simulation).filter(Simulation.id == "sim_001").first()
 
@@ -454,7 +453,7 @@ class TestCalibrationHistory:
         # Access attributes within session context to avoid DetachedInstanceError
         with temp_db.get_session() as session:
             # Re-query the calibration to get it attached to this session
-            from pyadm1ode_calibration.io.database import Calibration
+            from pyadm1ode_calibration.io.persistence.database import Calibration
 
             cal = session.query(Calibration).filter(Calibration.plant_id == sample_plant_data["plant_id"]).first()
 
@@ -557,7 +556,7 @@ class TestSubstrateData:
                 plant_id=sample_plant_data["plant_id"],
                 substrate_name=f"Sample {i}",
                 substrate_type="maize",
-                sample_date=f"2024-01-{15+i:02d}",
+                sample_date=f"2024-01-{15 + i:02d}",
                 lab_data=sample_substrate_data,
             )
 

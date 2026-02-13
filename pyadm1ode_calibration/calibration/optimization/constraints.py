@@ -552,8 +552,7 @@ class ParameterConstraints:
                 value = parameters[name]
                 if not constraint.is_feasible(value):
                     errors.append(
-                        f"Parameter '{name}' = {value:.4f} violates bounds "
-                        f"[{constraint.lower:.4f}, {constraint.upper:.4f}]"
+                        f"Parameter '{name}' = {value:.4f} violates bounds [{constraint.lower:.4f}, {constraint.upper:.4f}]"
                     )
 
         # Check linear constraints

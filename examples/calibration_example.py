@@ -306,7 +306,7 @@ def example_calibration_workflow():
 
     print("\nObjectives for calibration:")
     for obj_name, obj_series in objectives.items():
-        print(f"  {obj_name}: {len(obj_series)} values, " f"mean={obj_series.mean():.2f}, std={obj_series.std():.2f}")
+        print(f"  {obj_name}: {len(obj_series)} values, mean={obj_series.mean():.2f}, std={obj_series.std():.2f}")
 
     # 4. Optimization setup (pseudo-code)
     print("\n4. Optimization setup:")
