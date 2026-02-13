@@ -4,18 +4,18 @@ Calibration Result Validation
 """
 
 import numpy as np
-import pandas as pd
 from typing import Dict, List, Optional, Tuple, Any
 from dataclasses import dataclass, field
 from scipy import stats
 import warnings
-from ..exceptions import DataValidationError, SimulationError
+from ..exceptions import DataValidationError
 from ..io.loaders.measurement_data import MeasurementData
 
 
 @dataclass
 class ValidationMetrics:
     """Comprehensive validation metrics for calibration results."""
+
     objective: str
     n_samples: int
     rmse: float
@@ -54,6 +54,7 @@ class ValidationMetrics:
 @dataclass
 class ResidualAnalysis:
     """Results from residual analysis."""
+
     objective: str
     residuals: np.ndarray
     standardized_residuals: np.ndarray
@@ -75,6 +76,7 @@ class ResidualAnalysis:
 @dataclass
 class ParameterCorrelation:
     """Parameter correlation analysis results."""
+
     correlation_matrix: np.ndarray
     parameter_names: List[str]
     high_correlations: List[Tuple[str, str, float]] = field(default_factory=list)
@@ -262,10 +264,20 @@ class CalibrationValidator:
         me = float(np.mean(residuals))
 
         return ValidationMetrics(
-            objective=objective, n_samples=n, rmse=float(rmse), mae=float(mae), r2=r2, nse=r2,
-            pbias=pbias, correlation=correlation, mape=mape, me=me,
-            observations_mean=float(obs_mean), observations_std=float(obs_std),
-            predictions_mean=float(pred_mean), predictions_std=float(pred_std)
+            objective=objective,
+            n_samples=n,
+            rmse=float(rmse),
+            mae=float(mae),
+            r2=r2,
+            nse=r2,
+            pbias=pbias,
+            correlation=correlation,
+            mape=mape,
+            me=me,
+            observations_mean=float(obs_mean),
+            observations_std=float(obs_std),
+            predictions_mean=float(pred_mean),
+            predictions_std=float(pred_std),
         )
 
     def _standardize_residuals(self, residuals: np.ndarray) -> np.ndarray:
@@ -280,7 +292,8 @@ class CalibrationValidator:
             return {"statistic": 0.0, "p_value": 1.0}
 
     def _calculate_autocorrelation(self, residuals: np.ndarray) -> float:
-        if len(residuals) < 2: return 0.0
+        if len(residuals) < 2:
+            return 0.0
         res_centered = residuals - np.mean(residuals)
         return float(np.corrcoef(res_centered[:-1], res_centered[1:])[0, 1])
 

@@ -5,6 +5,7 @@ from unittest.mock import MagicMock
 from pyadm1ode_calibration.calibration.methods.initial import InitialCalibrator
 from pyadm1ode_calibration.io.loaders.measurement_data import MeasurementData
 
+
 @pytest.fixture
 def mock_plant():
     plant = MagicMock()
@@ -14,30 +15,25 @@ def mock_plant():
     # Mock simulate to return some dummy results
     plant.simulate.return_value = [
         {
-            "time": i/24.0,
+            "time": i / 24.0,
             "components": {
-                "main_dig": {
-                    "Q_ch4": 500.0 + np.random.randn(),
-                    "pH": 7.2 + np.random.randn()*0.1,
-                    "VFA": 2.5,
-                    "TAC": 15.0
-                }
-            }
-        } for i in range(24)
+                "main_dig": {"Q_ch4": 500.0 + np.random.randn(), "pH": 7.2 + np.random.randn() * 0.1, "VFA": 2.5, "TAC": 15.0}
+            },
+        }
+        for i in range(24)
     ]
     return plant
+
 
 @pytest.fixture
 def sample_measurements(tmp_path):
     n_samples = 24
     timestamps = pd.date_range("2024-01-01", periods=n_samples, freq="1h")
-    data = pd.DataFrame({
-        "timestamp": timestamps,
-        "Q_sub_maize": [15.0] * n_samples,
-        "Q_ch4": [500.0] * n_samples,
-        "pH": [7.2] * n_samples
-    })
+    data = pd.DataFrame(
+        {"timestamp": timestamps, "Q_sub_maize": [15.0] * n_samples, "Q_ch4": [500.0] * n_samples, "pH": [7.2] * n_samples}
+    )
     return MeasurementData(data)
+
 
 class TestInitialCalibrationWorkflow:
     def test_mocked_calibration(self, mock_plant, sample_measurements):
@@ -52,8 +48,8 @@ class TestInitialCalibrationWorkflow:
             parameters=["k_dis"],
             objectives=["Q_ch4"],
             method="nelder_mead",
-            max_iterations=2
+            max_iterations=2,
         )
 
-        assert result.success or True # Success depends on optimizer convergence
+        assert result.success or True  # Success depends on optimizer convergence
         assert "k_dis" in result.parameters

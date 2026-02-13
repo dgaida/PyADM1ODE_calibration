@@ -337,7 +337,7 @@ class ParameterBounds:
                 continue
 
             if not bound.is_within_bounds(value):
-                error = f"Parameter '{name}' = {value:.4f} is outside bounds " f"[{bound.lower:.4f}, {bound.upper:.4f}]"
+                error = f"Parameter '{name}' = {value:.4f} is outside bounds [{bound.lower:.4f}, {bound.upper:.4f}]"
                 errors.append(error)
 
         if errors and raise_on_invalid:

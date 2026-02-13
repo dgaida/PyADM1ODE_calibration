@@ -1,12 +1,7 @@
-import pandas as pd
-import numpy as np
-from typing import Dict, List, Optional, Any, Union
-from datetime import datetime
-from sqlalchemy.orm import Session
 from sqlalchemy.exc import SQLAlchemyError
-from .models import Plant, Measurement, Simulation, SimulationTimeSeries, Calibration, Substrate, Base
-from .connection import ConnectionManager
+from .models import Plant
 from ...exceptions import DatabaseError
+
 
 class PlantRepository:
     def __init__(self, session_factory):

@@ -53,9 +53,7 @@ class MeasurementData:
         return instance
 
     def validate(
-        self,
-        required_columns: Optional[List[str]] = None,
-        expected_ranges: Optional[Dict[str, Tuple[float, float]]] = None
+        self, required_columns: Optional[List[str]] = None, expected_ranges: Optional[Dict[str, Tuple[float, float]]] = None
     ) -> ValidationResult:
         """Validate measurement data."""
         if expected_ranges is None:
@@ -122,11 +120,16 @@ class MeasurementData:
     def resample(self, freq: str, aggregation: str = "mean") -> None:
         """Resample time series."""
         resampler = self.data.resample(freq)
-        if aggregation == "mean": self.data = resampler.mean()
-        elif aggregation == "sum": self.data = resampler.sum()
-        elif aggregation == "first": self.data = resampler.first()
-        elif aggregation == "last": self.data = resampler.last()
-        else: raise ValueError(f"Unknown aggregation method: {aggregation}")
+        if aggregation == "mean":
+            self.data = resampler.mean()
+        elif aggregation == "sum":
+            self.data = resampler.sum()
+        elif aggregation == "first":
+            self.data = resampler.first()
+        elif aggregation == "last":
+            self.data = resampler.last()
+        else:
+            raise ValueError(f"Unknown aggregation method: {aggregation}")
 
     def get_measurement(
         self, column: str, start_time: Optional[Union[str, datetime]] = None, end_time: Optional[Union[str, datetime]] = None
@@ -136,7 +139,7 @@ class MeasurementData:
             raise ValueError(f"Column '{column}' not found")
         series = self.data[column]
         if start_time is not None or end_time is not None:
-            series = series.loc[start_time:end_time] # type: ignore
+            series = series.loc[start_time:end_time]  # type: ignore
         return series
 
     def get_substrate_feeds(self, substrate_columns: Optional[List[str]] = None) -> np.ndarray:
@@ -149,7 +152,7 @@ class MeasurementData:
 
     def get_time_window(self, start_time: Union[str, datetime], end_time: Union[str, datetime]) -> "MeasurementData":
         """Get data for specific time window."""
-        windowed_data = self.data.loc[start_time:end_time].copy() # type: ignore
+        windowed_data = self.data.loc[start_time:end_time].copy()  # type: ignore
         return MeasurementData(windowed_data, metadata=self.metadata.copy())
 
     def summary(self) -> pd.DataFrame:

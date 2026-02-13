@@ -5,8 +5,10 @@ from .methods.online import OnlineCalibrator
 from .parameter_bounds import ParameterBounds, ParameterBound, BoundType, create_default_bounds
 from .validation import CalibrationValidator, ValidationMetrics
 
+
 class Calibrator:
     """Orchestration layer for calibration."""
+
     def __init__(self, plant, verbose: bool = True):
         self.plant = plant
         self.verbose = verbose
@@ -21,6 +23,7 @@ class Calibrator:
 
     def apply_calibration(self, result: CalibrationResult):
         self.online_calibrator.apply_calibration(result)
+
 
 __all__ = [
     "BaseCalibrator",

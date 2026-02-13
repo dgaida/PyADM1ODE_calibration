@@ -313,10 +313,7 @@ def main():
         status = "✓ Identifiable" if ident_result.is_identifiable else "✗ Not identifiable"
         print(f"\n{param}: {status}")
         print(f"  Reason: {ident_result.reason}")
-        print(
-            f"  Confidence interval: [{ident_result.confidence_interval[0]:.4f}, "
-            f"{ident_result.confidence_interval[1]:.4f}]"
-        )
+        print(f"  Confidence interval: [{ident_result.confidence_interval[0]:.4f}, {ident_result.confidence_interval[1]:.4f}]")
         print(f"  Objective sensitivity: {ident_result.objective_sensitivity:.4e}")
 
         if ident_result.correlation_with:

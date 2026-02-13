@@ -1,17 +1,20 @@
 import numpy as np
-from typing import Dict, List, Optional, Tuple, Any
+from typing import Dict, List, Optional, Any
 from dataclasses import dataclass
 from ..core.simulator import PlantSimulator
+
 
 @dataclass
 class SensitivityResult:
     """Result from sensitivity analysis."""
+
     parameter: str
     base_value: float
     sensitivity_indices: Dict[str, float]
     local_gradient: Dict[str, float]
     normalized_sensitivity: Dict[str, float]
     variance_contribution: float
+
 
 class SensitivityAnalyzer:
     """Performs local sensitivity analysis on plant parameters."""

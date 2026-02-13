@@ -2,15 +2,18 @@ from typing import Dict, List, Optional, Tuple, Any
 from dataclasses import dataclass
 from .sensitivity import SensitivityAnalyzer
 
+
 @dataclass
 class IdentifiabilityResult:
     """Result from identifiability analysis."""
+
     parameter: str
     is_identifiable: bool
     confidence_interval: Tuple[float, float]
     correlation_with: Dict[str, float]
     objective_sensitivity: float
     reason: str
+
 
 class IdentifiabilityAnalyzer:
     """Assesses parameter identifiability."""
@@ -49,7 +52,7 @@ class IdentifiabilityAnalyzer:
                 parameter=param_name,
                 is_identifiable=is_identifiable,
                 confidence_interval=ci,
-                correlation_with={}, # Placeholder
+                correlation_with={},  # Placeholder
                 objective_sensitivity=max_sensitivity,
                 reason=reason,
             )

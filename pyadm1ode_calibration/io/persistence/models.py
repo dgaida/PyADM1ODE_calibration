@@ -1,12 +1,13 @@
 from datetime import datetime
-from typing import Dict, List, Optional, Any
 from sqlalchemy import Column, Integer, Float, String, DateTime, Text, Boolean, ForeignKey, Index, JSON
 from sqlalchemy.orm import relationship, declarative_base
 
 Base = declarative_base()
 
+
 class Plant(Base):
     """Plant configuration and metadata."""
+
     __tablename__ = "plants"
     id = Column(String, primary_key=True)
     name = Column(String, nullable=False)
@@ -25,8 +26,10 @@ class Plant(Base):
     simulations = relationship("Simulation", back_populates="plant", cascade="all, delete-orphan")
     calibrations = relationship("Calibration", back_populates="plant", cascade="all, delete-orphan")
 
+
 class Measurement(Base):
     """Time series measurement data."""
+
     __tablename__ = "measurements"
     id = Column(Integer, primary_key=True)
     plant_id = Column(String, ForeignKey("plants.id"), nullable=False)
@@ -54,8 +57,10 @@ class Measurement(Base):
     plant = relationship("Plant", back_populates="measurements")
     __table_args__ = (Index("idx_plant_timestamp", "plant_id", "timestamp"),)
 
+
 class Simulation(Base):
     """Simulation run metadata and summary results."""
+
     __tablename__ = "simulations"
     id = Column(String, primary_key=True)
     plant_id = Column(String, ForeignKey("plants.id"), nullable=False)
@@ -80,8 +85,10 @@ class Simulation(Base):
     plant = relationship("Plant", back_populates="simulations")
     time_series = relationship("SimulationTimeSeries", back_populates="simulation", cascade="all, delete-orphan")
 
+
 class SimulationTimeSeries(Base):
     """Time series data from simulation."""
+
     __tablename__ = "simulation_time_series"
     id = Column(Integer, primary_key=True)
     simulation_id = Column(String, ForeignKey("simulations.id"), nullable=False)
@@ -99,8 +106,10 @@ class SimulationTimeSeries(Base):
     simulation = relationship("Simulation", back_populates="time_series")
     __table_args__ = (Index("idx_simulation_time", "simulation_id", "time"),)
 
+
 class Calibration(Base):
     """Calibration history and results."""
+
     __tablename__ = "calibrations"
     id = Column(Integer, primary_key=True)
     plant_id = Column(String, ForeignKey("plants.id"), nullable=False)
@@ -122,8 +131,10 @@ class Calibration(Base):
     created_at = Column(DateTime, default=datetime.utcnow)
     plant = relationship("Plant", back_populates="calibrations")
 
+
 class Substrate(Base):
     """Substrate characterization data."""
+
     __tablename__ = "substrates"
     id = Column(Integer, primary_key=True)
     plant_id = Column(String, ForeignKey("plants.id"), nullable=False)

@@ -6,6 +6,7 @@ from sqlalchemy.pool import QueuePool
 from urllib.parse import quote_plus
 from dataclasses import dataclass
 
+
 @dataclass
 class DatabaseConfig:
     host: str = "localhost"
@@ -17,12 +18,15 @@ class DatabaseConfig:
     max_overflow: int = 10
     echo: bool = False
 
+
 class ConnectionManager:
     def __init__(self, connection_string: Optional[str] = None, config: Optional[DatabaseConfig] = None):
         if connection_string:
             self.connection_string = connection_string
         elif config:
-            self.connection_string = f"postgresql://{config.username}:{config.password}@{config.host}:{config.port}/{config.database}"
+            self.connection_string = (
+                f"postgresql://{config.username}:{config.password}@{config.host}:{config.port}/{config.database}"
+            )
         else:
             # Try to get from environment
             try:
@@ -36,7 +40,7 @@ class ConnectionManager:
             poolclass=QueuePool,
             pool_size=config.pool_size if config else 5,
             max_overflow=config.max_overflow if config else 10,
-            echo=config.echo if config else False
+            echo=config.echo if config else False,
         )
         self.SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=self.engine)
 

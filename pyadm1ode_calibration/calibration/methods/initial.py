@@ -10,6 +10,7 @@ from ..analysis.sensitivity import SensitivityAnalyzer, SensitivityResult
 from ..analysis.identifiability import IdentifiabilityAnalyzer, IdentifiabilityResult
 from pyadm1ode_calibration.io.loaders.measurement_data import MeasurementData
 
+
 class InitialCalibrator(BaseCalibrator):
     """Initial calibrator for ADM1 parameters from historical data."""
 
@@ -91,6 +92,7 @@ class InitialCalibrator(BaseCalibrator):
             def penalized_objective(x: np.ndarray) -> float:
                 params = {name: val for name, val in zip(parameters, x)}
                 return objective_func(x) + constraints.calculate_penalty(params)
+
             obj_func_final = penalized_objective
         else:
             obj_func_final = objective_func
@@ -108,19 +110,21 @@ class InitialCalibrator(BaseCalibrator):
             **optimizer_kwargs,
         )
 
-        initial_guess = np.array([initial_params[p] for p in parameters]) if method in ["nelder_mead", "nm", "lbfgsb", "powell"] else None
+        initial_guess = (
+            np.array([initial_params[p] for p in parameters]) if method in ["nelder_mead", "nm", "lbfgsb", "powell"] else None
+        )
         opt_result = optimizer.optimize(obj_func_final, initial_guess=initial_guess)
 
         # Validation
         validation_metrics: Dict[str, float] = {}
         if len(val_data) > 0:
-            val_result = self.validator.validate(parameters=opt_result.parameter_dict, measurements=val_data, objectives=objectives)
+            val_result = self.validator.validate(
+                parameters=opt_result.parameter_dict, measurements=val_data, objectives=objectives
+            )
             for obj, metrics in val_result.items():
-                validation_metrics.update({
-                    f"{obj}_rmse": float(metrics.rmse),
-                    f"{obj}_r2": float(metrics.r2),
-                    f"{obj}_nse": float(metrics.nse)
-                })
+                validation_metrics.update(
+                    {f"{obj}_rmse": float(metrics.rmse), f"{obj}_r2": float(metrics.r2), f"{obj}_nse": float(metrics.nse)}
+                )
 
         # Sensitivity
         sensitivity_results: Dict[str, float] = {}
@@ -143,17 +147,12 @@ class InitialCalibrator(BaseCalibrator):
         )
 
     def sensitivity_analysis(
-        self,
-        parameters: Dict[str, float],
-        measurements: MeasurementData,
-        objectives: Optional[List[str]] = None
+        self, parameters: Dict[str, float], measurements: MeasurementData, objectives: Optional[List[str]] = None
     ) -> Dict[str, SensitivityResult]:
         return self.sensitivity_analyzer.analyze(parameters, measurements, objectives)
 
     def identifiability_analysis(
-        self,
-        parameters: Dict[str, float],
-        measurements: MeasurementData
+        self, parameters: Dict[str, float], measurements: MeasurementData
     ) -> Dict[str, IdentifiabilityResult]:
         return self.identifiability_analyzer.analyze(parameters, measurements)
 
@@ -161,10 +160,12 @@ class InitialCalibrator(BaseCalibrator):
         n_train = int(len(measurements) * (1 - split_ratio))
         return (
             MeasurementData(measurements.data.iloc[:n_train].copy(), metadata=measurements.metadata.copy()),
-            MeasurementData(measurements.data.iloc[n_train:].copy(), metadata=measurements.metadata.copy())
+            MeasurementData(measurements.data.iloc[n_train:].copy(), metadata=measurements.metadata.copy()),
         )
 
-    def _setup_bounds(self, parameters: List[str], custom_bounds: Optional[Dict[str, Tuple[float, float]]]) -> Dict[str, Tuple[float, float]]:
+    def _setup_bounds(
+        self, parameters: List[str], custom_bounds: Optional[Dict[str, Tuple[float, float]]]
+    ) -> Dict[str, Tuple[float, float]]:
         bounds: Dict[str, Tuple[float, float]] = {}
         for param in parameters:
             if custom_bounds and param in custom_bounds:

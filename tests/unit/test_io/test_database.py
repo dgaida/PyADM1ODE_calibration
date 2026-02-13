@@ -223,7 +223,8 @@ class TestPlantManagement:
 
     def test_get_nonexistent_plant(self, temp_db):
         """Test retrieving nonexistent plant raises ValueError."""
-        with pytest.raises(ValueError, match="not found"): temp_db.get_plant("nonexistent")
+        with pytest.raises(ValueError, match="not found"):
+            temp_db.get_plant("nonexistent")
 
     def test_list_plants(self, temp_db):
         """Test listing all plants."""
@@ -556,7 +557,7 @@ class TestSubstrateData:
                 plant_id=sample_plant_data["plant_id"],
                 substrate_name=f"Sample {i}",
                 substrate_type="maize",
-                sample_date=f"2024-01-{15+i:02d}",
+                sample_date=f"2024-01-{15 + i:02d}",
                 lab_data=sample_substrate_data,
             )
 

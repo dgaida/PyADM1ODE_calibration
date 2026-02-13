@@ -10,6 +10,7 @@ from ..validation import CalibrationValidator
 from ..optimization import create_optimizer, MultiObjectiveFunction, ParameterConstraints
 from pyadm1ode_calibration.io.loaders.measurement_data import MeasurementData
 
+
 @dataclass
 class OnlineCalibrationTrigger:
     """Trigger conditions for online re-calibration.
@@ -21,15 +22,18 @@ class OnlineCalibrationTrigger:
         consecutive_violations: Number of consecutive threshold violations required.
         enabled: Whether automatic triggering is enabled.
     """
+
     variance_threshold: float = 0.15
     time_threshold: float = 24.0
     residual_threshold: Optional[float] = None
     consecutive_violations: int = 3
     enabled: bool = True
 
+
 @dataclass
 class ParameterChangeHistory:
     """History of parameter changes during online operation."""
+
     timestamp: datetime
     parameters: Dict[str, float]
     trigger_reason: str
@@ -37,14 +41,17 @@ class ParameterChangeHistory:
     variance: float
     success: bool
 
+
 @dataclass
 class OnlineState:
     """Online calibrator state tracking."""
+
     last_calibration_time: Optional[datetime] = None
     consecutive_violations: int = 0
     current_variance: float = 0.0
     parameter_history: List[ParameterChangeHistory] = field(default_factory=list)
     total_calibrations: int = 0
+
 
 class OnlineCalibrator(BaseCalibrator):
     """Online calibrator for real-time parameter adjustment.
@@ -124,8 +131,7 @@ class OnlineCalibrator(BaseCalibrator):
             return self.simulator.simulate_with_parameters(params, windowed_data)
 
         measurements_dict: Dict[str, np.ndarray] = {
-            obj: windowed_data.get_measurement(obj).values
-            for obj in objectives if obj in windowed_data.data.columns
+            obj: windowed_data.get_measurement(obj).values for obj in objectives if obj in windowed_data.data.columns
         }
 
         objective_func: Callable[[np.ndarray], float] = MultiObjectiveFunction(
@@ -147,27 +153,25 @@ class OnlineCalibrator(BaseCalibrator):
             def penalized_objective(x: np.ndarray) -> float:
                 params = {name: val for name, val in zip(parameters, x)}
                 return objective_func(x) + constraints.calculate_penalty(params)
+
             obj_func_final = penalized_objective
         else:
             obj_func_final = objective_func
 
         optimizer = create_optimizer(
-            method=method,
-            bounds=param_bounds,
-            max_iterations=max_iterations,
-            verbose=self.verbose,
-            **kwargs
+            method=method, bounds=param_bounds, max_iterations=max_iterations, verbose=self.verbose, **kwargs
         )
 
-        initial_guess = np.array([
-            current_parameters.get(p, self.parameter_bounds.get_default_values([p])[p])
-            for p in parameters
-        ])
+        initial_guess = np.array(
+            [current_parameters.get(p, self.parameter_bounds.get_default_values([p])[p]) for p in parameters]
+        )
         opt_result = optimizer.optimize(obj_func_final, initial_guess=initial_guess)
 
         validation_metrics: Dict[str, float] = {}
         if opt_result.success:
-            val_res = self.validator.validate(parameters=opt_result.parameter_dict, measurements=windowed_data, objectives=objectives)
+            val_res = self.validator.validate(
+                parameters=opt_result.parameter_dict, measurements=windowed_data, objectives=objectives
+            )
             validation_metrics = {f"{obj}_{k}": float(getattr(m, k)) for obj, m in val_res.items() for k in ["rmse", "r2"]}
 
         self.state.total_calibrations += 1
@@ -195,7 +199,9 @@ class OnlineCalibrator(BaseCalibrator):
             validation_metrics=validation_metrics,
         )
 
-    def should_recalibrate(self, recent_measurements: MeasurementData, objectives: Optional[List[str]] = None) -> Tuple[bool, str]:
+    def should_recalibrate(
+        self, recent_measurements: MeasurementData, objectives: Optional[List[str]] = None
+    ) -> Tuple[bool, str]:
         """Check if re-calibration should be triggered.
 
         Returns:
@@ -235,7 +241,9 @@ class OnlineCalibrator(BaseCalibrator):
         last_time = measurements.data.index[-1]
         return measurements.get_time_window(last_time - timedelta(days=window_days), last_time)
 
-    def _calculate_prediction_variance(self, measurements: MeasurementData, parameters: Dict[str, float], objectives: List[str]) -> float:
+    def _calculate_prediction_variance(
+        self, measurements: MeasurementData, parameters: Dict[str, float], objectives: List[str]
+    ) -> float:
         """Calculate prediction variance for current parameters."""
         try:
             outputs = self.simulator.simulate_with_parameters(parameters, measurements)
@@ -256,14 +264,13 @@ class OnlineCalibrator(BaseCalibrator):
         except Exception:
             return 0.0
 
-    def _setup_online_bounds(self, parameters: List[str], current_params: Dict[str, float], max_change: float) -> Dict[str, Tuple[float, float]]:
+    def _setup_online_bounds(
+        self, parameters: List[str], current_params: Dict[str, float], max_change: float
+    ) -> Dict[str, Tuple[float, float]]:
         """Setup bounded parameter ranges for online calibration."""
         bounds: Dict[str, Tuple[float, float]] = {}
         for p in parameters:
             curr = current_params.get(p, 0.0)
             default = self.parameter_bounds.get_bounds_tuple(p) or (curr * 0.5, curr * 1.5)
-            bounds[p] = (
-                max(default[0], curr * (1 - max_change)),
-                min(default[1], curr * (1 + max_change))
-            )
+            bounds[p] = (max(default[0], curr * (1 - max_change)), min(default[1], curr * (1 + max_change)))
         return bounds

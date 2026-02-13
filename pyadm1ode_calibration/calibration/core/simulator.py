@@ -1,8 +1,9 @@
-from typing import Dict, List, Any, Optional, TYPE_CHECKING
+from typing import Dict, List, Any, TYPE_CHECKING
 import numpy as np
 
 if TYPE_CHECKING:
     from pyadm1ode_calibration.io.loaders.measurement_data import MeasurementData
+
 
 class PlantSimulator:
     """Handles plant simulation with parameter variations.
@@ -22,10 +23,7 @@ class PlantSimulator:
         self._original_params: Dict[str, Dict[str, float]] = {}
 
     def simulate_with_parameters(
-        self,
-        parameters: Dict[str, float],
-        measurements: "MeasurementData",
-        restore_params: bool = True
+        self, parameters: Dict[str, float], measurements: "MeasurementData", restore_params: bool = True
     ) -> Dict[str, np.ndarray]:
         """Run simulation with given parameters.
 
@@ -142,9 +140,12 @@ class PlantSimulator:
                 q_ch4_total += component_result.get("Q_ch4", 0.0)
                 q_gas_total += component_result.get("Q_gas", 0.0)
                 q_co2_total += component_result.get("Q_co2", 0.0)
-                if "pH" in component_result: pH_list.append(component_result["pH"])
-                if "VFA" in component_result: vfa_list.append(component_result["VFA"])
-                if "TAC" in component_result: tac_list.append(component_result["TAC"])
+                if "pH" in component_result:
+                    pH_list.append(component_result["pH"])
+                if "VFA" in component_result:
+                    vfa_list.append(component_result["VFA"])
+                if "TAC" in component_result:
+                    tac_list.append(component_result["TAC"])
 
             outputs["Q_ch4"].append(q_ch4_total)
             outputs["Q_gas"].append(q_gas_total)

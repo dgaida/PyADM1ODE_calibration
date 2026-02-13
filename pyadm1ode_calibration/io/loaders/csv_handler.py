@@ -687,7 +687,7 @@ class CSVHandler:
             if param in data:
                 value = data[param]
                 if value < min_val or value > max_val:
-                    warnings.warn(f"Parameter '{param}' = {value} is outside expected " f"range [{min_val}, {max_val}]")
+                    warnings.warn(f"Parameter '{param}' = {value} is outside expected range [{min_val}, {max_val}]")
 
         return data
 
