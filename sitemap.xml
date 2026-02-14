@@ -1,0 +1,129 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:xhtml="http://www.w3.org/1999/xhtml">
+    <url>
+        <loc>None./</loc>
+        <lastmod>2026-02-14</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="de" href="None"/>
+        <xhtml:link rel="alternate" hreflang="en" href="Noneen/"/>
+    </url>
+    <url>
+        <loc>Noneapi/</loc>
+        <lastmod>2026-02-14</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="de" href="Noneapi/"/>
+        <xhtml:link rel="alternate" hreflang="en" href="Noneen/api/"/>
+    </url>
+    <url>
+        <loc>Noneapi/calibration/</loc>
+        <lastmod>2026-02-14</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="de" href="Noneapi/calibration/"/>
+        <xhtml:link rel="alternate" hreflang="en" href="Noneen/api/calibration/"/>
+    </url>
+    <url>
+        <loc>Noneapi/io/</loc>
+        <lastmod>2026-02-14</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="de" href="Noneapi/io/"/>
+        <xhtml:link rel="alternate" hreflang="en" href="Noneen/api/io/"/>
+    </url>
+    <url>
+        <loc>Noneapi/optimization/</loc>
+        <lastmod>2026-02-14</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="de" href="Noneapi/optimization/"/>
+        <xhtml:link rel="alternate" hreflang="en" href="Noneen/api/optimization/"/>
+    </url>
+    <url>
+        <loc>Noneexamples/</loc>
+        <lastmod>2026-02-14</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="de" href="Noneexamples/"/>
+        <xhtml:link rel="alternate" hreflang="en" href="Noneen/examples/"/>
+    </url>
+    <url>
+        <loc>Noneexamples/calibration_workflow/</loc>
+        <lastmod>2026-02-14</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="de" href="Noneexamples/calibration_workflow/"/>
+        <xhtml:link rel="alternate" hreflang="en" href="Noneen/examples/calibration_workflow/"/>
+    </url>
+    <url>
+        <loc>Noneuser_guide/</loc>
+        <lastmod>2026-02-14</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="de" href="Noneuser_guide/"/>
+        <xhtml:link rel="alternate" hreflang="en" href="Noneen/user_guide/"/>
+    </url>
+    <url>
+        <loc>Noneuser_guide/calibration/</loc>
+        <lastmod>2026-02-14</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="de" href="Noneuser_guide/calibration/"/>
+        <xhtml:link rel="alternate" hreflang="en" href="Noneen/user_guide/calibration/"/>
+    </url>
+    <url>
+        <loc>Noneen/</loc>
+        <lastmod>2026-02-14</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="en" href="Noneen/"/>
+        <xhtml:link rel="alternate" hreflang="de" href="None"/>
+    </url>
+    <url>
+        <loc>Noneen/api/</loc>
+        <lastmod>2026-02-14</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="en" href="Noneen/api/"/>
+        <xhtml:link rel="alternate" hreflang="de" href="Noneapi/"/>
+    </url>
+    <url>
+        <loc>Noneen/api/calibration/</loc>
+        <lastmod>2026-02-14</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="en" href="Noneen/api/calibration/"/>
+        <xhtml:link rel="alternate" hreflang="de" href="Noneapi/calibration/"/>
+    </url>
+    <url>
+        <loc>Noneen/api/io/</loc>
+        <lastmod>2026-02-14</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="en" href="Noneen/api/io/"/>
+        <xhtml:link rel="alternate" hreflang="de" href="Noneapi/io/"/>
+    </url>
+    <url>
+        <loc>Noneen/api/optimization/</loc>
+        <lastmod>2026-02-14</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="en" href="Noneen/api/optimization/"/>
+        <xhtml:link rel="alternate" hreflang="de" href="Noneapi/optimization/"/>
+    </url>
+    <url>
+        <loc>Noneen/examples/</loc>
+        <lastmod>2026-02-14</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="en" href="Noneen/examples/"/>
+        <xhtml:link rel="alternate" hreflang="de" href="Noneexamples/"/>
+    </url>
+    <url>
+        <loc>Noneen/examples/calibration_workflow/</loc>
+        <lastmod>2026-02-14</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="en" href="Noneen/examples/calibration_workflow/"/>
+        <xhtml:link rel="alternate" hreflang="de" href="Noneexamples/calibration_workflow/"/>
+    </url>
+    <url>
+        <loc>Noneen/user_guide/</loc>
+        <lastmod>2026-02-14</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="en" href="Noneen/user_guide/"/>
+        <xhtml:link rel="alternate" hreflang="de" href="Noneuser_guide/"/>
+    </url>
+    <url>
+        <loc>Noneen/user_guide/calibration/</loc>
+        <lastmod>2026-02-14</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="en" href="Noneen/user_guide/calibration/"/>
+        <xhtml:link rel="alternate" hreflang="de" href="Noneuser_guide/calibration/"/>
+    </url>
+</urlset>
