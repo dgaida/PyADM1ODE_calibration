@@ -10,12 +10,10 @@ Unit tests
 
 import pandas as pd
 import numpy as np
-
-# import pytest
+import pytest
 from pyadm1ode_calibration import (
     MeasurementData,
     OutlierDetector,
-    # DataValidator,
 )
 
 
@@ -53,13 +51,9 @@ def test_outlier_detection_iqr():
 
 
 def test_outlier_detection_moving_window():
-    # as moving average is calculated around center, the last window-2 elements in the outliers object are NaN.
-    # window of 3 is very small to detect outliers with z-score, because z-score is calculated using mean, so not robust
-    s = pd.Series([1, 2, 3, 4, 80, 2, 4])  # last entry is outlier
+    s = pd.Series([1, 2, 3, 4, 80, 2, 4])  # entry at index 4 is outlier
     outliers = OutlierDetector.detect_moving_window(s, window=5, threshold=1.5)
-
-    # last value is NaN
-    assert outliers.iloc[-3]
+    assert outliers.iloc[4]
 
 
 def test_remove_outliers_zscore():
@@ -116,3 +110,45 @@ def test_get_time_window():
 
     assert len(window.data) == 4
     assert window.data["Q_ch4"].iloc[0] == 3
+
+def test_measurement_data_extra():
+    df = pd.DataFrame({
+        "Q_sub1": [1, 2, 3],
+        "Q_sub2": [4, 5, 6],
+        "other": [7, 8, 9]
+    }, index=pd.date_range("2024-01-01", periods=3, freq="h"))
+    data = MeasurementData(df)
+
+    feeds = data.get_substrate_feeds()
+    assert feeds.shape == (3, 2)
+
+    data.resample("1d", aggregation="sum")
+    assert len(data.data) == 1
+
+    sum_df = data.summary()
+    assert "Q_sub1" in sum_df.columns
+    assert "MeasurementData" in repr(data)
+
+def test_fill_gaps_methods():
+    df = pd.DataFrame({
+        "A": [1, np.nan, 3]
+    }, index=pd.date_range("2024-01-01", periods=3, freq="h"))
+
+    data = MeasurementData(df.copy())
+    data.fill_gaps(method="mean")
+    assert data.data["A"].iloc[1] == 2.0
+
+    data = MeasurementData(df.copy())
+    data.fill_gaps(method="median")
+    assert data.data["A"].iloc[1] == 2.0
+
+    data = MeasurementData(df.copy())
+    data.fill_gaps(method="forward")
+    assert data.data["A"].iloc[1] == 1.0
+
+def test_to_csv(tmp_path):
+    csv = tmp_path / "out.csv"
+    df = pd.DataFrame({"A": [1, 2]}, index=pd.date_range("2024-01-01", periods=2, freq="h"))
+    data = MeasurementData(df)
+    data.to_csv(str(csv))
+    assert csv.exists()

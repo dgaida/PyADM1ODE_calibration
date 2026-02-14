@@ -1,0 +1,76 @@
+site_name: PyADM1ODE Calibration
+site_description: Parameter calibration framework for PyADM1ODE biogas plant models
+site_author: Daniel Gaida
+repo_url: https://github.com/dgaida/PyADM1ODE_calibration
+edit_uri: edit/main/docs/
+
+theme:
+  name: material
+  language: de
+  features:
+    - navigation.tabs
+    - navigation.sections
+    - navigation.expand
+    - navigation.top
+    - search.suggest
+    - search.highlight
+    - content.code.copy
+  palette:
+    - scheme: default
+      primary: indigo
+      accent: indigo
+      toggle:
+        icon: material/brightness-7
+        name: Switch to dark mode
+    - scheme: slate
+      primary: indigo
+      accent: indigo
+      toggle:
+        icon: material/brightness-4
+        name: Switch to light mode
+
+plugins:
+  - search
+  - i18n:
+      default_language: de
+      languages:
+        - locale: de
+          name: Deutsch
+          default: true
+        - locale: en
+          name: English
+  - mkdocstrings:
+      handlers:
+        python:
+          paths: [.]
+          options:
+            show_source: true
+            show_root_heading: true
+            show_category_heading: true
+
+nav:
+  - Home: index.md
+  - User Guide:
+      - Overview: user_guide/index.md
+      - Calibration: user_guide/calibration.md
+  - Examples:
+      - Overview: examples/index.md
+      - Calibration Workflow: examples/calibration_workflow.md
+  - API Reference:
+      - Overview: api/index.md
+      - Calibration: api/calibration.md
+      - IO: api/io.md
+      - Optimization: api/optimization.md
+
+markdown_extensions:
+  - admonition
+  - pymdownx.details
+  - pymdownx.superfences
+  - pymdownx.tabbed:
+      alternate_style: true
+  - pymdownx.highlight:
+      anchor_linenums: true
+  - pymdownx.inlinehilite
+  - pymdownx.snippets
+  - attr_list
+  - md_in_html

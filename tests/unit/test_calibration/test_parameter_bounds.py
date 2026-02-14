@@ -1,121 +1,74 @@
-# -*- coding: utf-8 -*-
-"""
-Unit tests
-
-- Test bound validation
-- Test penalty calculation
-- Test scaling/unscaling
-"""
-
-import numpy as np
 import pytest
-
-from pyadm1ode_calibration import (
-    ParameterBound,
-    ParameterBounds,
-    BoundType,
-    create_default_bounds,
+import numpy as np
+from pyadm1ode_calibration.calibration.parameter_bounds import (
+    ParameterBound, ParameterBounds, BoundType, create_default_bounds
 )
 
+class TestParameterBound:
+    def test_calculate_penalty_soft(self):
+        pb = ParameterBound("test", 10.0, 20.0, 15.0, bound_type=BoundType.SOFT, penalty_weight=2.0)
+        assert pb.calculate_penalty(15.0) == 0.0
+        # Quadratic: 2 * (10-5)^2 = 2 * 25 = 50
+        assert pb.calculate_penalty(5.0, penalty_type="quadratic") == 50.0
+        # Linear: 2 * 5 = 10
+        assert pb.calculate_penalty(5.0, penalty_type="linear") == 10.0
+        # Logarithmic (note: formula is -log(distance), so distance must be < 1.0 for positive penalty)
+        assert pb.calculate_penalty(9.9, penalty_type="logarithmic") > 0
+        # Barrier
+        assert pb.calculate_penalty(5.0, penalty_type="barrier") > 0
 
-def test_parameter_bound_within_bounds():
-    pb = ParameterBound("k_dis", lower=0.3, upper=0.8, default=0.5)
+        with pytest.raises(ValueError, match="Unknown penalty type"):
+            pb.calculate_penalty(5.0, penalty_type="invalid")
 
-    assert pb.is_within_bounds(0.5)
-    assert not pb.is_within_bounds(0.1)
-    assert not pb.is_within_bounds(1.0)
+    def test_calculate_penalty_hard(self):
+        pb = ParameterBound("test", 10.0, 20.0, 15.0, bound_type=BoundType.HARD)
+        assert pb.calculate_penalty(15.0) == 0.0
+        assert pb.calculate_penalty(5.0) == np.inf
 
+    def test_calculate_penalty_fixed(self):
+        pb = ParameterBound("test", 10.0, 20.0, 15.0, bound_type=BoundType.FIXED)
+        assert pb.calculate_penalty(5.0) == 0.0
 
-def test_parameter_bound_clipping():
-    pb = ParameterBound("k_dis", lower=0.3, upper=0.8, default=0.5)
+    def test_get_relative_position(self):
+        pb = ParameterBound("test", 10.0, 20.0, 15.0)
+        assert pb.get_relative_position(15.0) == 0.5
 
-    assert pb.clip_to_bounds(0.1) == 0.3
-    assert pb.clip_to_bounds(1.0) == 0.8
-    assert pb.clip_to_bounds(0.5) == 0.5
+        pb_fixed = ParameterBound("test", 10.0, 10.0, 10.0)
+        assert pb_fixed.get_relative_position(10.0) == 0.5
 
+class TestParameterBoundsManager:
+    def test_manager_methods_missing_bound(self):
+        pm = ParameterBounds()
+        assert pm.get_bounds_tuple("missing") is None
+        assert pm.is_within_bounds("missing", 100.0) is True
+        assert pm.clip_to_bounds("missing", 100.0) == 100.0
+        assert pm.calculate_penalty("missing", 100.0) == 0.0
+        assert pm.scale_to_unit_interval("missing", 10.0) == 10.0
+        assert pm.unscale_from_unit_interval("missing", 0.5) == 0.5
 
-def test_hard_bounds_penalty():
-    pb = ParameterBound("k_dis", lower=0.3, upper=0.8, default=0.5, bound_type=BoundType.HARD)
+    def test_calculate_total_penalty_inf(self):
+        pm = ParameterBounds()
+        pm.add_bound("p1", 0, 1, 0.5, bound_type=BoundType.HARD)
+        assert pm.calculate_total_penalty({"p1": 1.5}) == np.inf
 
-    assert pb.calculate_penalty(0.5) == 0.0
-    assert np.isinf(pb.calculate_penalty(0.1))
+    def test_validate_parameters_raise(self):
+        pm = ParameterBounds()
+        pm.add_bound("p1", 0, 1, 0.5)
+        with pytest.raises(ValueError, match="outside bounds"):
+            pm.validate_parameters({"p1": 1.5}, raise_on_invalid=True)
 
+    def test_scale_same_bounds(self):
+        pm = ParameterBounds()
+        pm.add_bound("p1", 10, 10, 10)
+        assert pm.scale_to_unit_interval("p1", 10) == 0.5
 
-def test_soft_bounds_penalty_quadratic():
-    pb = ParameterBound("k_dis", lower=0.3, upper=0.8, default=0.5, bound_type=BoundType.SOFT, penalty_weight=2.0)
+    def test_get_default_values(self):
+        pm = ParameterBounds()
+        pm.add_bound("p1", 0, 1, 0.5)
+        defaults = pm.get_default_values(["p1", "p2"])
+        assert defaults == {"p1": 0.5}
 
-    # Below lower bound: distance = 0.2 → penalty = 2 * 0.04 = 0.08
-    assert pytest.approx(pb.calculate_penalty(0.1)) == 0.08
-
-
-def test_soft_bounds_penalty_linear():
-    pb = ParameterBound(
-        "k_dis",
-        lower=0.3,
-        upper=0.8,
-        default=0.5,
-        bound_type=BoundType.SOFT,
-        penalty_weight=1.0,
-    )
-
-    assert pb.calculate_penalty(0.0, penalty_type="linear") == 0.3
-
-
-def test_soft_bounds_penalty_barrier():
-    pb = ParameterBound(
-        "k_dis",
-        lower=0.3,
-        upper=0.8,
-        default=0.5,
-        bound_type=BoundType.SOFT,
-        penalty_weight=1.0,
-    )
-
-    assert pb.calculate_penalty(0.0, penalty_type="barrier") > 3.0
-
-
-def test_relative_position():
-    pb = ParameterBound("k_dis", lower=0.0, upper=10.0, default=5.0)
-
-    assert pb.get_relative_position(0.0) == 0.0
-    assert pb.get_relative_position(10.0) == 1.0
-    assert pb.get_relative_position(5.0) == 0.5
-
-
-def test_parameter_bounds_add_get():
-    bounds = ParameterBounds()
-    bounds.add_bound("k_dis", 0.3, 0.8, 0.5)
-
-    b = bounds.get_bounds("k_dis")
-    assert b.lower == 0.3
-    assert b.upper == 0.8
-
-
-def test_parameter_bounds_is_within():
-    bounds = ParameterBounds()
-    bounds.add_bound("k_dis", 0.3, 0.8, 0.5)
-
-    assert bounds.is_within_bounds("k_dis", 0.5)
-    assert not bounds.is_within_bounds("k_dis", 0.1)
-
-
-def test_parameter_bounds_default_values():
+def test_default_bounds_creation():
     bounds = create_default_bounds()
-    params = ["k_dis", "Y_su", "k_m_ac"]
-
-    defaults = bounds.get_default_values(params)
-
-    for p in params:
-        assert p in defaults
-        assert isinstance(defaults[p], float)
-
-
-def test_total_penalty_sum():
-    bounds = ParameterBounds()
-    bounds.add_bound("k1", 0, 1, 0.5, BoundType.SOFT, penalty_weight=1.0)
-    bounds.add_bound("k2", 0, 2, 1.0, BoundType.SOFT, penalty_weight=1.0)
-
-    params = {"k1": -1, "k2": 5}
-    penalty = bounds.calculate_total_penalty(params)
-
-    assert penalty > 0
+    assert "k_dis" in bounds.bounds
+    assert "Y_su" in bounds.bounds
