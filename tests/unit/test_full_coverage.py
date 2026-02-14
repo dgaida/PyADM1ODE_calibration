@@ -2,7 +2,6 @@ import pytest
 import numpy as np
 import pandas as pd
 from unittest.mock import MagicMock
-from datetime import datetime, timedelta
 from pyadm1ode_calibration.calibration.analysis.sensitivity import SensitivityAnalyzer
 from pyadm1ode_calibration.calibration.analysis.identifiability import IdentifiabilityAnalyzer
 from pyadm1ode_calibration.calibration.validation import CalibrationValidator
@@ -12,6 +11,7 @@ from pyadm1ode_calibration.calibration.methods.online import OnlineCalibrator
 from pyadm1ode_calibration.calibration.parameter_bounds import ParameterBounds, BoundType
 from pyadm1ode_calibration.io.loaders.measurement_data import MeasurementData
 from pyadm1ode_calibration.io.validation.validators import DataValidator, OutlierDetector
+
 
 @pytest.fixture
 def mock_plant():
@@ -23,16 +23,21 @@ def mock_plant():
     plant.simulate.return_value = [{"components": {"d1": {"Q_ch4": 1.0, "pH": 7.0, "VFA": 1.0, "TAC": 1.0}}}]
     return plant
 
+
 @pytest.fixture
 def sample_measurements():
-    df = pd.DataFrame({
-        "Q_ch4": np.random.rand(10),
-        "pH": np.random.rand(10) + 6.0,
-        "VFA": np.random.rand(10),
-        "TAC": np.random.rand(10),
-        "Q_sub1": [10]*10
-    }, index=pd.date_range("2024-01-01", periods=10, freq="h"))
+    df = pd.DataFrame(
+        {
+            "Q_ch4": np.random.rand(10),
+            "pH": np.random.rand(10) + 6.0,
+            "VFA": np.random.rand(10),
+            "TAC": np.random.rand(10),
+            "Q_sub1": [10] * 10,
+        },
+        index=pd.date_range("2024-01-01", periods=10, freq="h"),
+    )
     return MeasurementData(df)
+
 
 def test_full_coverage_suite(mock_plant, sample_measurements):
     # Simulator
@@ -57,6 +62,7 @@ def test_full_coverage_suite(mock_plant, sample_measurements):
     online_cal = OnlineCalibrator(mock_plant, verbose=False)
     online_cal.calibrate(sample_measurements, parameters=["k_dis"], current_parameters={"k_dis": 0.5}, max_iterations=1)
 
+
 def test_parameter_bounds_extra():
     pm = ParameterBounds()
     pm.add_bound("p1", 0, 1, 0.5, bound_type=BoundType.SOFT)
@@ -64,10 +70,11 @@ def test_parameter_bounds_extra():
     assert pm.calculate_penalty("p1", 1.5, penalty_type="quadratic") > 0
     assert pm.calculate_penalty("p1", 0.5) == 0.0
 
+
 def test_io_validators():
     df = pd.DataFrame({"pH": [7, 8, 9], "timestamp": pd.date_range("2024-01-01", periods=3, freq="h")})
     res = DataValidator.validate(df, expected_ranges={"pH": (0, 14)})
     assert res.is_valid
 
-    s = pd.Series([1]*10 + [100])
+    s = pd.Series([1] * 10 + [100])
     assert OutlierDetector.detect_zscore(s, threshold=2).any()

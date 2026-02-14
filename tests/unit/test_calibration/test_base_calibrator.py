@@ -2,9 +2,11 @@ import pytest
 from unittest.mock import MagicMock
 from pyadm1ode_calibration.calibration.core.base_calibrator import BaseCalibrator
 
+
 class ConcreteCalibrator(BaseCalibrator):
     def calibrate(self, measurements, parameters, **kwargs):
         pass
+
 
 @pytest.fixture
 def mock_plant():
@@ -14,6 +16,7 @@ def mock_plant():
     comp._calibration_params = {"k": 1.0}
     plant.components = {"c1": comp}
     return plant
+
 
 def test_base_calibrator_methods(mock_plant):
     cal = ConcreteCalibrator(mock_plant, verbose=False)

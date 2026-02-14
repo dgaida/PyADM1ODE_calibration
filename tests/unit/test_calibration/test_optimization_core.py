@@ -2,18 +2,35 @@ import pytest
 import numpy as np
 from unittest.mock import MagicMock
 from pyadm1ode_calibration.calibration.optimization.objective import (
-    ErrorMetrics, SingleObjective, MultiObjectiveFunction, WeightedSumObjective,
-    LikelihoodObjective, CustomObjective, create_objective
+    ErrorMetrics,
+    SingleObjective,
+    MultiObjectiveFunction,
+    WeightedSumObjective,
+    LikelihoodObjective,
+    CustomObjective,
+    create_objective,
 )
 from pyadm1ode_calibration.calibration.optimization.constraints import (
-    BoxConstraint, LinearConstraint, NonlinearConstraint, QuadraticPenalty,
-    LinearPenalty, LogarithmicPenalty, ExponentialPenalty, BarrierPenalty,
-    ParameterConstraints, create_penalty_function
+    BoxConstraint,
+    LinearConstraint,
+    NonlinearConstraint,
+    QuadraticPenalty,
+    LinearPenalty,
+    LogarithmicPenalty,
+    ExponentialPenalty,
+    BarrierPenalty,
+    ParameterConstraints,
+    create_penalty_function,
 )
 from pyadm1ode_calibration.calibration.optimization.optimizer import (
-    OptimizationResult, DifferentialEvolutionOptimizer, NelderMeadOptimizer,
-    PowellOptimizer, LBFGSBOptimizer, SLSQPOptimizer, create_optimizer
+    DifferentialEvolutionOptimizer,
+    NelderMeadOptimizer,
+    PowellOptimizer,
+    LBFGSBOptimizer,
+    SLSQPOptimizer,
+    create_optimizer,
 )
+
 
 class TestErrorMetrics:
     def test_compute(self):
@@ -27,7 +44,7 @@ class TestErrorMetrics:
         obs = np.array([1.0, np.nan, 3.0])
         pred = np.array([1.1, 2.0, np.nan])
         metrics = ErrorMetrics.compute(obs, pred)
-        assert metrics.mse == pytest.approx((1.0-1.1)**2)
+        assert metrics.mse == pytest.approx((1.0 - 1.1) ** 2)
 
     def test_compute_all_nans(self):
         obs = np.array([np.nan, np.nan])
@@ -35,9 +52,12 @@ class TestErrorMetrics:
         metrics = ErrorMetrics.compute(obs, pred)
         assert metrics.mse == float("inf")
 
+
 class TestObjectives:
     def test_single_objective(self):
-        simulator = lambda p: {"Q_ch4": np.array([p["k_dis"] * 2])}
+        def simulator(p):
+            return {"Q_ch4": np.array([p["k_dis"] * 2])}
+
         measurements = np.array([1.0])
         obj = SingleObjective(simulator, measurements, "Q_ch4", ["k_dis"], error_metric="mse")
         assert obj(np.array([0.5])) == 0.0
@@ -53,21 +73,32 @@ class TestObjectives:
         assert obj(np.array([0.6])) is not None
 
     def test_single_objective_errors(self):
-        simulator = lambda p: {} # Missing output
+        def simulator(p):
+            return {}  # Missing output
+
         measurements = np.array([1.0])
         obj = SingleObjective(simulator, measurements, "Q_ch4", ["k_dis"])
         assert obj(np.array([0.5])) == 1e10
 
-        simulator_err = lambda p: 1/0 # Error
+        def simulator_err(p):
+            return 1 / 0  # Error
+
         obj_err = SingleObjective(simulator_err, measurements, "Q_ch4", ["k_dis"])
         assert obj_err(np.array([0.5])) == 1e10
 
     def test_multi_objective(self):
-        simulator = lambda p: {"Q_ch4": np.array([p["k_dis"]]), "pH": np.array([p["Y_su"]])}
+        def simulator(p):
+            return {"Q_ch4": np.array([p["k_dis"]]), "pH": np.array([p["Y_su"]])}
+
         meas_dict = {"Q_ch4": np.array([0.5]), "pH": np.array([0.1])}
         obj = MultiObjectiveFunction(
-            simulator, meas_dict, ["Q_ch4", "pH"], {"Q_ch4": 0.5, "pH": 0.5}, ["k_dis", "Y_su"],
-            error_metric="rmse", normalize=True
+            simulator,
+            meas_dict,
+            ["Q_ch4", "pH"],
+            {"Q_ch4": 0.5, "pH": 0.5},
+            ["k_dis", "Y_su"],
+            error_metric="rmse",
+            normalize=True,
         )
         assert obj(np.array([0.5, 0.1])) == 0.0
 
@@ -76,16 +107,23 @@ class TestObjectives:
         assert obj2(np.array([0.5, 0.1])) == 0.0
 
     def test_likelihood_objective(self):
-        simulator = lambda p: {"Q_ch4": np.array([p["k_dis"]])}
+        def simulator(p):
+            return {"Q_ch4": np.array([p["k_dis"]])}
+
         meas_dict = {"Q_ch4": np.array([0.5, 0.5, 0.5])}
         obj = LikelihoodObjective(simulator, meas_dict, ["Q_ch4"], ["k_dis"])
         val = obj(np.array([0.5]))
         assert val is not None
 
     def test_custom_objective(self):
-        simulator = lambda p: {"Q_ch4": np.array([p["k_dis"]])}
+        def simulator(p):
+            return {"Q_ch4": np.array([p["k_dis"]])}
+
         meas_dict = {"Q_ch4": np.array([0.5])}
-        custom_func = lambda sim, meas: np.sum(np.abs(sim - meas))
+
+        def custom_func(sim, meas):
+            return np.sum(np.abs(sim - meas))
+
         obj = CustomObjective(simulator, meas_dict, ["Q_ch4"], ["k_dis"], custom_func)
         assert obj(np.array([0.6])) == pytest.approx(0.1)
 
@@ -97,6 +135,7 @@ class TestObjectives:
 
         obj = create_objective("multi", simulator, meas_dict, ["Q_ch4"], ["k_dis"])
         assert isinstance(obj, MultiObjectiveFunction)
+
 
 class TestConstraints:
     def test_box_constraint(self):
@@ -113,10 +152,12 @@ class TestConstraints:
         assert c.violation({"p1": 0.6, "p2": 0.6}) == pytest.approx(0.2)
 
     def test_nonlinear_constraint(self):
-        func = lambda p: p["p1"]**2 - 0.25
-        c = NonlinearConstraint("nl", func, constraint_type="inequality") # g(x) <= 0
-        assert c.is_feasible({"p1": 0.4}) # 0.16 - 0.25 = -0.09 <= 0
-        assert not c.is_feasible({"p1": 0.6}) # 0.36 - 0.25 = 0.11 > 0
+        def func(p):
+            return p["p1"] ** 2 - 0.25
+
+        c = NonlinearConstraint("nl", func, constraint_type="inequality")  # g(x) <= 0
+        assert c.is_feasible({"p1": 0.4})  # 0.16 - 0.25 = -0.09 <= 0
+        assert not c.is_feasible({"p1": 0.6})  # 0.36 - 0.25 = 0.11 > 0
         assert c.violation({"p1": 0.6}) == pytest.approx(0.11)
 
         c_eq = NonlinearConstraint("nl_eq", func, constraint_type="equality")
@@ -129,7 +170,11 @@ class TestConstraints:
         pc.add_box_constraint("p2", 0, 1, hard=False, weight=2.0)
         pc.add_linear_inequality({"p1": 1}, upper_bound=0.5)
         pc.add_linear_equality({"p1": 1, "p2": 1}, target=1.0)
-        pc.add_nonlinear_constraint("nl", lambda p: p["p1"] - 0.2)
+
+        def nl_constraint(p):
+            return p["p1"] - 0.2
+
+        pc.add_nonlinear_constraint("nl", nl_constraint)
 
         assert pc.is_feasible({"p1": 0.2, "p2": 0.8})
         # Violate hard box
@@ -177,8 +222,15 @@ class TestConstraints:
         pc = ParameterConstraints()
         pc.add_linear_inequality({"p1": 1}, lower_bound=0.1, upper_bound=0.9)
         pc.add_linear_equality({"p1": 1, "p2": 1}, target=1.0)
-        pc.add_nonlinear_constraint("nl", lambda p: p["p1"]**2, constraint_type="equality")
-        pc.add_nonlinear_constraint("nl2", lambda p: p["p1"] - 0.5, constraint_type="inequality")
+
+        def nl_func(p):
+            return p["p1"] ** 2
+
+        def nl2_func(p):
+            return p["p1"] - 0.5
+
+        pc.add_nonlinear_constraint("nl", nl_func, constraint_type="equality")
+        pc.add_nonlinear_constraint("nl2", nl2_func, constraint_type="inequality")
 
         cons = pc.get_scipy_constraints(["p1", "p2"])
         assert len(cons) == 5
@@ -200,40 +252,58 @@ class TestConstraints:
         assert BarrierPenalty()(0.5, 1.0) == 2.0
         assert LogarithmicPenalty()(0.5, 1.0) == -np.log(0.5)
 
+
 class TestOptimizers:
     def test_differential_evolution(self):
-        obj = lambda x: float(np.sum(x**2))
+        def obj(x):
+            return float(np.sum(x**2))
+
         opt = DifferentialEvolutionOptimizer({"x": (-1, 1), "y": (-1, 1)}, max_iterations=2, verbose=False)
         res = opt.optimize(obj)
         assert len(res.x) == 2
         assert "x" in res.parameter_dict
 
     def test_nelder_mead(self):
-        obj = lambda x: float(np.sum(x**2))
+        def obj(x):
+            return float(np.sum(x**2))
+
         opt = NelderMeadOptimizer({"x": (-1, 1), "y": (-1, 1)}, max_iterations=10, verbose=False)
         res = opt.optimize(obj, initial_guess=np.array([0.5, 0.5]))
         assert len(res.x) == 2
 
     def test_lbfgsb(self):
-        obj = lambda x: float(np.sum(x**2))
+        def obj(x):
+            return float(np.sum(x**2))
+
         opt = LBFGSBOptimizer({"x": (-1, 1)}, verbose=False)
         res = opt.optimize(obj)
         assert len(res.x) == 1
 
     def test_powell(self):
-        obj = lambda x: float(np.sum(x**2))
+        def obj(x):
+            return float(np.sum(x**2))
+
         opt = PowellOptimizer({"x": (-1, 1)}, max_iterations=5, verbose=False)
         res = opt.optimize(obj)
         assert len(res.x) == 1
 
     def test_slsqp(self):
-        obj = lambda x: float(np.sum(x**2))
+        def obj(x):
+            return float(np.sum(x**2))
+
         opt = SLSQPOptimizer({"x": (-1, 1)}, max_iterations=5, verbose=False)
         res = opt.optimize(obj)
         assert len(res.x) == 1
 
     def test_pso(self):
-        obj = lambda x: float(np.sum(x**2))
+        try:
+            import pyswarm  # noqa: F401
+        except ImportError:
+            pytest.skip("pyswarm package not installed")
+
+        def obj(x):
+            return float(np.sum(x**2))
+
         opt = create_optimizer("pso", {"x": (-1, 1)}, max_iterations=2, verbose=False)
         res = opt.optimize(obj)
         assert len(res.x) == 1

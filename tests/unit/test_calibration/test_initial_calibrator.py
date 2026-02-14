@@ -6,6 +6,7 @@ from pyadm1ode_calibration.calibration.methods.initial import InitialCalibrator
 from pyadm1ode_calibration.io.loaders.measurement_data import MeasurementData
 from pyadm1ode_calibration.calibration.core.result import CalibrationResult
 
+
 @pytest.fixture
 def mock_plant():
     plant = MagicMock()
@@ -14,19 +15,20 @@ def mock_plant():
     plant.components = {"d1": comp}
     return plant
 
+
 @pytest.fixture
 def sample_measurements():
-    df = pd.DataFrame({
-        "Q_ch4": np.random.rand(10),
-        "pH": np.random.rand(10) + 6.0
-    }, index=pd.date_range("2024-01-01", periods=10, freq="h"))
+    df = pd.DataFrame(
+        {"Q_ch4": np.random.rand(10), "pH": np.random.rand(10) + 6.0}, index=pd.date_range("2024-01-01", periods=10, freq="h")
+    )
     return MeasurementData(df)
+
 
 class TestInitialCalibrator:
     def test_calibrate_full(self, mock_plant, sample_measurements):
         cal = InitialCalibrator(mock_plant, verbose=False)
         cal.simulator = MagicMock()
-        cal.simulator.simulate_with_parameters.return_value = {"Q_ch4": np.array([1.0]*10)}
+        cal.simulator.simulate_with_parameters.return_value = {"Q_ch4": np.array([1.0] * 10)}
         cal.validator = MagicMock()
         cal.validator.validate.return_value = {}
 
@@ -38,14 +40,14 @@ class TestInitialCalibrator:
             weights={"Q_ch4": 1.0},
             use_constraints=True,
             max_iterations=1,
-            method="nelder_mead"
+            method="nelder_mead",
         )
         assert isinstance(res, CalibrationResult)
 
     def test_analysis_methods(self, mock_plant, sample_measurements):
         cal = InitialCalibrator(mock_plant, verbose=False)
         cal.simulator = MagicMock()
-        cal.simulator.simulate_with_parameters.return_value = {"Q_ch4": np.array([1.0]*10)}
+        cal.simulator.simulate_with_parameters.return_value = {"Q_ch4": np.array([1.0] * 10)}
 
         sens = cal.sensitivity_analysis({"k_dis": 0.5}, sample_measurements)
         assert "k_dis" in sens

@@ -2,10 +2,12 @@ import pytest
 from unittest.mock import MagicMock
 from pyadm1ode_calibration.calibration import Calibrator, CalibrationResult
 
+
 @pytest.fixture
 def mock_plant():
     plant = MagicMock()
     return plant
+
 
 def test_calibrator_orchestrator(mock_plant):
     cal = Calibrator(mock_plant, verbose=False)

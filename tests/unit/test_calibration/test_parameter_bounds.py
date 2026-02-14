@@ -1,8 +1,12 @@
 import pytest
 import numpy as np
 from pyadm1ode_calibration.calibration.parameter_bounds import (
-    ParameterBound, ParameterBounds, BoundType, create_default_bounds
+    ParameterBound,
+    ParameterBounds,
+    BoundType,
+    create_default_bounds,
 )
+
 
 class TestParameterBound:
     def test_calculate_penalty_soft(self):
@@ -36,6 +40,7 @@ class TestParameterBound:
         pb_fixed = ParameterBound("test", 10.0, 10.0, 10.0)
         assert pb_fixed.get_relative_position(10.0) == 0.5
 
+
 class TestParameterBoundsManager:
     def test_manager_methods_missing_bound(self):
         pm = ParameterBounds()
@@ -67,6 +72,7 @@ class TestParameterBoundsManager:
         pm.add_bound("p1", 0, 1, 0.5)
         defaults = pm.get_default_values(["p1", "p2"])
         assert defaults == {"p1": 0.5}
+
 
 def test_default_bounds_creation():
     bounds = create_default_bounds()

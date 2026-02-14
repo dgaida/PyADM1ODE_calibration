@@ -10,7 +10,6 @@ Unit tests
 
 import pandas as pd
 import numpy as np
-import pytest
 from pyadm1ode_calibration import (
     MeasurementData,
     OutlierDetector,
@@ -111,12 +110,11 @@ def test_get_time_window():
     assert len(window.data) == 4
     assert window.data["Q_ch4"].iloc[0] == 3
 
+
 def test_measurement_data_extra():
-    df = pd.DataFrame({
-        "Q_sub1": [1, 2, 3],
-        "Q_sub2": [4, 5, 6],
-        "other": [7, 8, 9]
-    }, index=pd.date_range("2024-01-01", periods=3, freq="h"))
+    df = pd.DataFrame(
+        {"Q_sub1": [1, 2, 3], "Q_sub2": [4, 5, 6], "other": [7, 8, 9]}, index=pd.date_range("2024-01-01", periods=3, freq="h")
+    )
     data = MeasurementData(df)
 
     feeds = data.get_substrate_feeds()
@@ -129,10 +127,9 @@ def test_measurement_data_extra():
     assert "Q_sub1" in sum_df.columns
     assert "MeasurementData" in repr(data)
 
+
 def test_fill_gaps_methods():
-    df = pd.DataFrame({
-        "A": [1, np.nan, 3]
-    }, index=pd.date_range("2024-01-01", periods=3, freq="h"))
+    df = pd.DataFrame({"A": [1, np.nan, 3]}, index=pd.date_range("2024-01-01", periods=3, freq="h"))
 
     data = MeasurementData(df.copy())
     data.fill_gaps(method="mean")
@@ -145,6 +142,7 @@ def test_fill_gaps_methods():
     data = MeasurementData(df.copy())
     data.fill_gaps(method="forward")
     assert data.data["A"].iloc[1] == 1.0
+
 
 def test_to_csv(tmp_path):
     csv = tmp_path / "out.csv"

@@ -2,11 +2,13 @@ import pytest
 import numpy as np
 from unittest.mock import MagicMock
 from pyadm1ode_calibration.calibration.analysis.sensitivity import SensitivityAnalyzer, SensitivityResult
-from pyadm1ode_calibration.calibration.analysis.identifiability import IdentifiabilityAnalyzer, IdentifiabilityResult
+from pyadm1ode_calibration.calibration.analysis.identifiability import IdentifiabilityAnalyzer
+
 
 @pytest.fixture
 def mock_plant():
     return MagicMock()
+
 
 @pytest.fixture
 def mock_simulator():
@@ -15,9 +17,10 @@ def mock_simulator():
     simulator.simulate_with_parameters.return_value = {
         "Q_ch4": np.array([1.0, 1.1, 0.9]),
         "pH": np.array([7.0, 7.1, 6.9]),
-        "VFA": np.array([100, 110, 90])
+        "VFA": np.array([100, 110, 90]),
     }
     return simulator
+
 
 class TestSensitivityAnalyzer:
     def test_init(self, mock_plant):
@@ -64,6 +67,7 @@ class TestSensitivityAnalyzer:
         assert "zero_param" in results
         assert results["zero_param"].base_value == 0.0
 
+
 class TestIdentifiabilityAnalyzer:
     def test_init(self, mock_plant):
         analyzer = IdentifiabilityAnalyzer(mock_plant, verbose=False)
@@ -78,7 +82,7 @@ class TestIdentifiabilityAnalyzer:
                 sensitivity_indices={"Q_ch4": 2.0},
                 local_gradient={"Q_ch4": 1.0},
                 normalized_sensitivity={"Q_ch4": 0.5},
-                variance_contribution=4.0
+                variance_contribution=4.0,
             ),
             "unidentifiable": SensitivityResult(
                 parameter="unidentifiable",
@@ -86,8 +90,8 @@ class TestIdentifiabilityAnalyzer:
                 sensitivity_indices={"Q_ch4": 1e-10},
                 local_gradient={"Q_ch4": 1e-11},
                 normalized_sensitivity={"Q_ch4": 1e-12},
-                variance_contribution=1e-20
-            )
+                variance_contribution=1e-20,
+            ),
         }
 
         analyzer = IdentifiabilityAnalyzer(mock_plant, sensitivity_analyzer=mock_sensitivity_analyzer, verbose=False)
