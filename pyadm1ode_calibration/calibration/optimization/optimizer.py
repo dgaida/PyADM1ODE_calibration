@@ -424,6 +424,43 @@ class NelderMeadOptimizer(GradientFreeOptimizer):
         return OptimizationResult.from_scipy_result(result, self.parameter_names, execution_time, self.history)
 
 
+class PowellOptimizer(GradientFreeOptimizer):
+    """
+    Powell's conjugate direction method.
+    """
+
+    def optimize(
+        self, objective_func: Callable[[np.ndarray], float], initial_guess: Optional[np.ndarray] = None
+    ) -> OptimizationResult:
+        """Run Powell optimization."""
+        if initial_guess is None:
+            initial_guess = np.mean(self.bounds_array, axis=1)
+
+        if self.verbose:
+            print("Starting Powell optimization")
+
+        self._reset_tracking()
+
+        def penalized_objective(x):
+            if not self._check_bounds(x):
+                return 1e10
+            return objective_func(x)
+
+        wrapped_objective = self._wrap_objective(penalized_objective)
+        start_time = time.time()
+
+        result = minimize(
+            fun=wrapped_objective,
+            x0=initial_guess,
+            method="Powell",
+            options={"maxiter": self.max_iterations, "ftol": self.tolerance, "disp": False},
+        )
+
+        execution_time = time.time() - start_time
+
+        return OptimizationResult.from_scipy_result(result, self.parameter_names, execution_time, self.history)
+
+
 class LBFGSBOptimizer(GradientBasedOptimizer):
     """
     L-BFGS-B optimizer.
@@ -488,6 +525,50 @@ class LBFGSBOptimizer(GradientBasedOptimizer):
         return OptimizationResult.from_scipy_result(result, self.parameter_names, execution_time, self.history)
 
 
+class SLSQPOptimizer(GradientBasedOptimizer):
+    """
+    Sequential Least Squares Programming.
+    """
+
+    def __init__(
+        self,
+        bounds: Dict[str, Tuple[float, float]],
+        max_iterations: int = 100,
+        tolerance: float = 1e-6,
+        verbose: bool = True,
+        constraints: Optional[List] = None,
+    ):
+        super().__init__(bounds, max_iterations, tolerance, verbose)
+        self.constraints = constraints or []
+
+    def optimize(
+        self, objective_func: Callable[[np.ndarray], float], initial_guess: Optional[np.ndarray] = None
+    ) -> OptimizationResult:
+        """Run SLSQP optimization."""
+        if initial_guess is None:
+            initial_guess = np.mean(self.bounds_array, axis=1)
+
+        if self.verbose:
+            print("Starting SLSQP optimization")
+
+        self._reset_tracking()
+        wrapped_objective = self._wrap_objective(objective_func)
+        start_time = time.time()
+
+        result = minimize(
+            fun=wrapped_objective,
+            x0=initial_guess,
+            method="SLSQP",
+            bounds=self.bounds_array,
+            constraints=self.constraints,
+            options={"maxiter": self.max_iterations, "ftol": self.tolerance, "disp": False},
+        )
+
+        execution_time = time.time() - start_time
+
+        return OptimizationResult.from_scipy_result(result, self.parameter_names, execution_time, self.history)
+
+
 def create_optimizer(
     method: str, bounds: Dict[str, Tuple[float, float]], max_iterations: int = 100, verbose: bool = True, **kwargs
 ) -> Optimizer:
@@ -516,8 +597,10 @@ def create_optimizer(
         "pso": ParticleSwarmOptimizer,
         "nelder_mead": NelderMeadOptimizer,
         "nm": NelderMeadOptimizer,
+        "powell": PowellOptimizer,
         "lbfgsb": LBFGSBOptimizer,
         "l_bfgs_b": LBFGSBOptimizer,
+        "slsqp": SLSQPOptimizer,
     }
 
     if method not in optimizer_map:

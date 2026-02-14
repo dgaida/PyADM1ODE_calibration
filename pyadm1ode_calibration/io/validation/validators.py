@@ -16,6 +16,7 @@ class ValidationResult:
         quality_score: Score from 0 to 1
         issues: List of issues found
         warnings: List of minor warnings
+        missing_data: Mapping of column names to missing count
         statistics: Summary statistics
     """
 
@@ -23,6 +24,7 @@ class ValidationResult:
     quality_score: float
     issues: List[str] = field(default_factory=list)
     warnings: List[str] = field(default_factory=list)
+    missing_data: Dict[str, int] = field(default_factory=dict)
     statistics: Dict[str, Any] = field(default_factory=dict)
 
     def print_report(self) -> None:
@@ -53,9 +55,7 @@ class DataValidator:
 
     @staticmethod
     def validate(
-        data: pd.DataFrame,
-        required_columns: Optional[List[str]] = None,
-        expected_ranges: Optional[Dict[str, Tuple[float, float]]] = None,
+        data: pd.DataFrame, required_columns: Optional[List[str]] = None, expected_ranges: Optional[Dict[str, Tuple[float, float]]] = None
     ) -> ValidationResult:
         """
         Perform comprehensive data validation.
@@ -70,6 +70,8 @@ class DataValidator:
         """
         issues = []
         warnings = []
+        missing_counts = data.isnull().sum().to_dict()
+        missing_pct = data.isnull().mean()
 
         # 1. Check required columns
         if required_columns:
@@ -80,14 +82,13 @@ class DataValidator:
         # 2. Check for empty data
         if data.empty:
             issues.append("Dataset is empty")
-            return ValidationResult(is_valid=False, quality_score=0.0, issues=issues)
+            return ValidationResult(is_valid=False, quality_score=0.0, issues=issues, missing_data=missing_counts)
 
         # 3. Check for missing values (NaN)
-        missing_pct = data.isnull().mean()
         for col, pct in missing_pct.items():
-            if pct > 0.5:
+            if pct > 0.3:
                 issues.append(f"Column '{col}' has {pct*100:.1f}% missing values")
-            elif pct > 0.1:
+            elif pct > 0:
                 warnings.append(f"Column '{col}' has {pct*100:.1f}% missing values")
 
         # 4. Check expected ranges
@@ -115,6 +116,7 @@ class DataValidator:
             quality_score=quality_score,
             issues=issues,
             warnings=warnings,
+            missing_data=missing_counts,
             statistics={"missing_pct_avg": float(missing_pct.mean())},
         )
 

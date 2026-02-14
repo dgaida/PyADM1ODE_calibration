@@ -1,7 +1,6 @@
 """Constraints module."""
-
 from abc import ABC, abstractmethod
-from typing import Dict, List, Optional, Callable
+from typing import Dict, List, Optional, Tuple, Callable, Any
 import numpy as np
 from dataclasses import dataclass
 
@@ -24,11 +23,11 @@ class BoxConstraint:
     hard: bool = True
 
     def is_feasible(self, value: float) -> bool:
-        """Check feasibility."""
+        """Check if value is within bounds."""
         return self.lower <= value <= self.upper
 
     def project(self, value: float) -> float:
-        """Project to bounds."""
+        """Project value to bounds."""
         return np.clip(value, self.lower, self.upper)
 
     def violation(self, value: float) -> float:
@@ -198,7 +197,7 @@ class ParameterConstraints:
         self.penalty_weights[f"nonlinear_{name}"] = weight
 
     def is_feasible(self, parameters: Dict[str, float]) -> bool:
-        """Check feasibility."""
+        """Check if parameters satisfy all hard constraints."""
         for c in self.box_constraints.values():
             if c.hard and not c.is_feasible(parameters.get(c.parameter_name, 0.0)):
                 return False
@@ -211,7 +210,7 @@ class ParameterConstraints:
         return True
 
     def calculate_penalty(self, parameters: Dict[str, float]) -> float:
-        """Calculate total penalty."""
+        """Calculate total penalty for all violated constraints."""
         p = 0.0
         for name, c in self.box_constraints.items():
             v = c.violation(parameters.get(name, 0.0))
@@ -228,6 +227,73 @@ class ParameterConstraints:
             if v > 0:
                 p += self.penalty_function(v, self.penalty_weights.get(f"nonlinear_{c.name}", 1.0))
         return p
+
+    def project_to_feasible(self, parameters: Dict[str, float]) -> Dict[str, float]:
+        """Project parameters to feasible region (box constraints only)."""
+        projected = parameters.copy()
+        for name, constraint in self.box_constraints.items():
+            if name in projected:
+                projected[name] = constraint.project(projected[name])
+        return projected
+
+    def get_scipy_constraints(self, parameter_names: List[str]) -> List[Dict]:
+        """Convert constraints to scipy format."""
+        scipy_constraints = []
+        for constraint in self.linear_constraints:
+            coef_array = np.array([constraint.coefficients.get(name, 0.0) for name in parameter_names])
+            if constraint.constraint_type == "equality":
+                scipy_constraints.append(
+                    {"type": "eq", "fun": lambda x, c=coef_array, b=constraint.upper_bound: np.dot(c, x) - b}
+                )
+            else:
+                if constraint.lower_bound is not None:
+                    scipy_constraints.append(
+                        {"type": "ineq", "fun": lambda x, c=coef_array, b=constraint.lower_bound: np.dot(c, x) - b}
+                    )
+                if constraint.upper_bound is not None:
+                    scipy_constraints.append(
+                        {"type": "ineq", "fun": lambda x, c=coef_array, b=constraint.upper_bound: b - np.dot(c, x)}
+                    )
+        for constraint in self.nonlinear_constraints:
+
+            def constraint_func(x, names=parameter_names, func=constraint.function):
+                params = {name: val for name, val in zip(names, x)}
+                return func(params)
+
+            if constraint.constraint_type == "equality":
+                scipy_constraints.append({"type": "eq", "fun": constraint_func})
+            else:
+                scipy_constraints.append({"type": "ineq", "fun": lambda x, f=constraint_func: -f(x)})
+        return scipy_constraints
+
+    def validate_parameters(self, parameters: Dict[str, float]) -> Tuple[bool, List[str]]:
+        """Validate parameters and return detailed error messages."""
+        errors = []
+        for name, constraint in self.box_constraints.items():
+            if name in parameters:
+                value = parameters[name]
+                if not constraint.is_feasible(value):
+                    errors.append(
+                        f"Parameter '{name}' = {value:.4f} violates bounds [{constraint.lower:.4f}, {constraint.upper:.4f}]"
+                    )
+        for i, constraint in enumerate(self.linear_constraints, 1):
+            if not constraint.is_feasible(parameters):
+                value = constraint.evaluate(parameters)
+                if constraint.constraint_type == "equality":
+                    errors.append(f"Linear constraint {i}: {value:.4f} != {constraint.upper_bound:.4f}")
+                else:
+                    if constraint.lower_bound and value < constraint.lower_bound:
+                        errors.append(f"Linear constraint {i}: {value:.4f} < {constraint.lower_bound:.4f}")
+                    if constraint.upper_bound and value > constraint.upper_bound:
+                        errors.append(f"Linear constraint {i}: {value:.4f} > {constraint.upper_bound:.4f}")
+        for constraint in self.nonlinear_constraints:
+            if not constraint.is_feasible(parameters):
+                value = constraint.evaluate(parameters)
+                errors.append(
+                    f"Nonlinear constraint '{constraint.name}': g(x) = {value:.4f} violates "
+                    f"{constraint.constraint_type} constraint"
+                )
+        return len(errors) == 0, errors
 
 
 def create_penalty_function(penalty_type: str) -> PenaltyFunction:

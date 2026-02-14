@@ -27,6 +27,8 @@ from .io import (
     DatabaseConfig,
     DataValidator,
     ValidationResult,
+    OutlierDetector,
+    Plant,
 )
 from .exceptions import (
     PyADM1CalibrationError,
@@ -52,6 +54,8 @@ __all__ = [
     "DatabaseConfig",
     "DataValidator",
     "ValidationResult",
+    "OutlierDetector",
+    "Plant",
     "PyADM1CalibrationError",
     "DataValidationError",
     "CalibrationError",
