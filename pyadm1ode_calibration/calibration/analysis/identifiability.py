@@ -1,3 +1,5 @@
+"""Identifiability analysis module."""
+
 from typing import Dict, List, Optional, Tuple, Any
 from dataclasses import dataclass
 from .sensitivity import SensitivityAnalyzer
@@ -5,7 +7,19 @@ from .sensitivity import SensitivityAnalyzer
 
 @dataclass
 class IdentifiabilityResult:
-    """Result from identifiability analysis."""
+    """
+    Result from parameter identifiability analysis.
+
+    Determines if a parameter can be reliably estimated from the available data.
+
+    Attributes:
+        parameter (str): Name of the parameter.
+        is_identifiable (bool): Whether the parameter is considered identifiable.
+        confidence_interval (Tuple[float, float]): Estimated 95% confidence interval.
+        correlation_with (Dict[str, float]): Correlation coefficients with other parameters.
+        objective_sensitivity (float): Maximum sensitivity across all objectives.
+        reason (str): Explanation for the identifiability status.
+    """
 
     parameter: str
     is_identifiable: bool
@@ -16,7 +30,18 @@ class IdentifiabilityResult:
 
 
 class IdentifiabilityAnalyzer:
-    """Assesses parameter identifiability."""
+    """
+    Assesses parameter identifiability for ADM1 calibration.
+
+    Analyzes whether parameters have enough influence on model outputs
+    and whether they are correlated with each other, which can hinder
+    accurate estimation.
+
+    Args:
+        plant: The PyADM1ODE plant model instance.
+        sensitivity_analyzer (Optional[SensitivityAnalyzer]): Analyzer for calculating gradients.
+        verbose (bool): Whether to enable verbose output. Defaults to True.
+    """
 
     def __init__(self, plant, sensitivity_analyzer: Optional[SensitivityAnalyzer] = None, verbose: bool = True):
         self.plant = plant
@@ -31,10 +56,20 @@ class IdentifiabilityAnalyzer:
         confidence_level: float = 0.95,
         correlation_threshold: float = 0.8,
     ) -> Dict[str, IdentifiabilityResult]:
-        """Assess parameter identifiability."""
-        sensitivity = self.sensitivity_analyzer.analyze(parameters, measurements, objectives=["Q_ch4", "pH", "VFA"])
+        """
+        Assess parameter identifiability based on sensitivity and correlation.
 
-        # Simple correlation analysis could be added here if history is provided
+        Args:
+            parameters (Dict[str, float]): Parameter set to analyze.
+            measurements (Any): Measurement data for simulation.
+            optimization_history (Optional[List[Dict[str, Any]]]): History from optimizer.
+            confidence_level (float): Level for confidence intervals. Defaults to 0.95.
+            correlation_threshold (float): Threshold for identifying high correlations.
+
+        Returns:
+            Dict[str, IdentifiabilityResult]: Results for each parameter.
+        """
+        sensitivity = self.sensitivity_analyzer.analyze(parameters, measurements, objectives=["Q_ch4", "pH", "VFA"])
 
         results = {}
         for param_name, param_value in parameters.items():

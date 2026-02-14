@@ -1,13 +1,36 @@
+"""
+Data Repositories.
+
+Implements the Repository pattern to decouple high-level database operations
+from ORM-specific logic for key entities like Plants.
+"""
+
 from sqlalchemy.exc import SQLAlchemyError
 from .models import Plant
 from ...exceptions import DatabaseError
 
 
 class PlantRepository:
+    """
+    Repository for Plant entity operations.
+
+    Args:
+        session_factory: A callable that returns a SQLAlchemy Session.
+    """
+
     def __init__(self, session_factory):
         self.session_factory = session_factory
 
     def get_plant(self, plant_id: str) -> Plant:
+        """
+        Retrieve a plant by ID.
+
+        Args:
+            plant_id (str): The plant identifier.
+
+        Returns:
+            Plant: The plant ORM instance.
+        """
         session = self.session_factory()
         try:
             plant = session.query(Plant).filter(Plant.id == plant_id).first()
@@ -21,6 +44,15 @@ class PlantRepository:
             session.close()
 
     def create_plant(self, **kwargs) -> Plant:
+        """
+        Create and persist a new plant.
+
+        Args:
+            **kwargs: Attributes for the Plant model.
+
+        Returns:
+            Plant: The newly created plant.
+        """
         session = self.session_factory()
         try:
             plant = Plant(**kwargs)

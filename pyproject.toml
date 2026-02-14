@@ -149,3 +149,18 @@ exclude_lines = [
     "class .*\\bProtocol\\):",
     "@(abc\\.)?abstractmethod",
 ]
+
+[tool.interrogate]
+ignore-init-method = true
+ignore-init-module = false
+ignore-magic = true
+ignore-semiprivate = false
+ignore-private = false
+ignore-property-decorators = false
+ignore-module = false
+ignore-nested-functions = true
+fail-under = 95
+exclude = ["setup.py", "docs", "build", "tests"]
+ignore-regex = ["^__repr__$", "^__str__$", "^__len__$"]
+verbose = 2
+color = true

@@ -1,46 +1,60 @@
-# ============================================================================
-# pyadm1ode_calibration/__init__.py
-# ============================================================================
 """
-PyADM1ODE_calibration - Parameter Calibration Framework for Biogas Plant Models
+PyADM1ODE_calibration: Parameter Calibration Framework for Biogas Plant Models.
 
-This package provides comprehensive calibration tools for PyADM1ODE biogas plant models.
+This package provides a comprehensive framework for the automated calibration
+and re-calibration of Anaerobic Digestion Model No. 1 (ADM1) parameters
+using measurement data from biogas plants.
+
+Key modules:
+- calibration: Optimization algorithms and calibration methods.
+- io: Data loaders, persistence, and validation.
+- exceptions: Custom error types.
 """
 
-from .io import CSVHandler, Database, DatabaseConfig, Plant, MeasurementData, DataValidator, OutlierDetector
 from .calibration import (
     Calibrator,
-    CalibrationResult,
     InitialCalibrator,
     OnlineCalibrator,
+    CalibrationResult,
     ParameterBounds,
-    ParameterBound,
-    BoundType,
-    create_default_bounds,
     CalibrationValidator,
     ValidationMetrics,
 )
+from .io import (
+    MeasurementData,
+    CSVHandler,
+    Database,
+    DatabaseConfig,
+    DataValidator,
+    ValidationResult,
+)
+from .exceptions import (
+    PyADM1CalibrationError,
+    DataValidationError,
+    CalibrationError,
+    SimulationError,
+    DatabaseError,
+)
+
+__version__ = "0.1.0"
 
 __all__ = [
+    "Calibrator",
+    "InitialCalibrator",
+    "OnlineCalibrator",
+    "CalibrationResult",
+    "ParameterBounds",
+    "CalibrationValidator",
+    "ValidationMetrics",
+    "MeasurementData",
     "CSVHandler",
     "Database",
     "DatabaseConfig",
-    "Plant",
-    "MeasurementData",
     "DataValidator",
-    "OutlierDetector",
-    "Calibrator",
-    "CalibrationResult",
-    "InitialCalibrator",
-    "OnlineCalibrator",
-    "ParameterBounds",
-    "ParameterBound",
-    "BoundType",
-    "create_default_bounds",
-    "CalibrationValidator",
-    "ValidationMetrics",
+    "ValidationResult",
+    "PyADM1CalibrationError",
+    "DataValidationError",
+    "CalibrationError",
+    "SimulationError",
+    "DatabaseError",
 ]
-
-__version__ = "0.1.0"
-__author__ = "Daniel Gaida"
-__email__ = "daniel.gaida@th-koeln.de"

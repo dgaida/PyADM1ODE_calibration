@@ -1,3 +1,5 @@
+"""Online calibration module."""
+
 import numpy as np
 import time
 from typing import Dict, List, Optional, Tuple, Any, Callable
@@ -13,14 +15,18 @@ from pyadm1ode_calibration.io.loaders.measurement_data import MeasurementData
 
 @dataclass
 class OnlineCalibrationTrigger:
-    """Trigger conditions for online re-calibration.
+    """
+    Trigger conditions for online re-calibration.
+
+    Defines the criteria that must be met for the online calibrator to
+    automatically start a new optimization process.
 
     Attributes:
-        variance_threshold: Trigger when prediction variance exceeds this value (0-1).
-        time_threshold: Minimum time between calibrations [hours].
-        residual_threshold: Trigger when residual exceeds this value.
-        consecutive_violations: Number of consecutive threshold violations required.
-        enabled: Whether automatic triggering is enabled.
+        variance_threshold (float): Trigger when prediction variance exceeds this value (0-1).
+        time_threshold (float): Minimum time between calibrations in hours.
+        residual_threshold (Optional[float]): Trigger when absolute residual exceeds this value.
+        consecutive_violations (int): Number of consecutive threshold violations required.
+        enabled (bool): Whether automatic triggering is enabled.
     """
 
     variance_threshold: float = 0.15
@@ -32,7 +38,19 @@ class OnlineCalibrationTrigger:
 
 @dataclass
 class ParameterChangeHistory:
-    """History of parameter changes during online operation."""
+    """
+    History of parameter changes during online operation.
+
+    Stores a snapshot of a single online calibration event.
+
+    Attributes:
+        timestamp (datetime): When the calibration occurred.
+        parameters (Dict[str, float]): The new calibrated parameter values.
+        trigger_reason (str): Why the calibration was triggered (e.g., 'variance').
+        objective_value (float): The final value of the objective function.
+        variance (float): The prediction variance at the time of trigger.
+        success (bool): Whether the optimization was successful.
+    """
 
     timestamp: datetime
     parameters: Dict[str, float]
@@ -44,7 +62,18 @@ class ParameterChangeHistory:
 
 @dataclass
 class OnlineState:
-    """Online calibrator state tracking."""
+    """
+    Online calibrator state tracking.
+
+    Maintains the current status and history of the online calibration process.
+
+    Attributes:
+        last_calibration_time (Optional[datetime]): Timestamp of the last successful calibration.
+        consecutive_violations (int): Count of current consecutive threshold violations.
+        current_variance (float): Most recently calculated prediction variance.
+        parameter_history (List[ParameterChangeHistory]): Log of past parameter updates.
+        total_calibrations (int): Total number of calibrations performed.
+    """
 
     last_calibration_time: Optional[datetime] = None
     consecutive_violations: int = 0
@@ -54,20 +83,20 @@ class OnlineState:
 
 
 class OnlineCalibrator(BaseCalibrator):
-    """Online calibrator for real-time parameter adjustment.
+    """
+    Online calibrator for real-time parameter adjustment.
 
     Performs fast, bounded re-calibration when model predictions deviate from
-    measurements.
+    measurements. It is optimized for speed and stability, ensuring that
+    parameters do not drift too far from their physical meanings.
+
+    Args:
+        plant (Any): The PyADM1ODE plant model to calibrate.
+        verbose (bool): Whether to enable verbose logging. Defaults to True.
+        parameter_bounds (Optional[ParameterBounds]): Custom parameter bounds manager.
     """
 
     def __init__(self, plant: Any, verbose: bool = True, parameter_bounds: Optional[ParameterBounds] = None):
-        """Initialize online calibrator.
-
-        Args:
-            plant: BiogasPlant instance
-            verbose: Enable progress output
-            parameter_bounds: Custom parameter bounds manager
-        """
         super().__init__(plant, verbose)
         self.parameter_bounds: ParameterBounds = parameter_bounds or create_default_bounds()
         self.validator: CalibrationValidator = CalibrationValidator(plant, verbose=False)
@@ -89,24 +118,28 @@ class OnlineCalibrator(BaseCalibrator):
         use_constraints: bool = True,
         **kwargs: Any,
     ) -> CalibrationResult:
-        """Perform online re-calibration with bounded parameter adjustments.
+        """
+        Perform online re-calibration with bounded parameter adjustments.
 
         Args:
-            measurements: Recent measurement data
-            parameters: Parameters to adjust
-            current_parameters: Current parameter values
-            variance_threshold: Variance threshold for triggering (0-1)
-            max_parameter_change: Maximum relative parameter change (0-1)
-            time_window: Days of recent data to use
-            method: Optimization method name
-            max_iterations: Max optimization iterations
-            objectives: List of outputs to match
-            weights: Objective weights
-            use_constraints: Whether to apply parameter constraints
-            **kwargs: Extra optimizer settings
+            measurements (MeasurementData): Recent measurement data window.
+            parameters (Optional[List[str]]): Parameters to adjust. If None, uses history.
+            current_parameters (Optional[Dict[str, float]]): Current values. If None, gets from plant.
+            variance_threshold (float): Variance threshold for triggering (0-1).
+            max_parameter_change (float): Max relative parameter change (0.0 to 1.0).
+            time_window (int): Number of days of recent data to use for optimization.
+            method (str): Optimization method name. Defaults to 'nelder_mead'.
+            max_iterations (int): Maximum optimization iterations. Defaults to 50.
+            objectives (Optional[List[str]]): List of outputs to match (e.g., ['Q_ch4']).
+            weights (Optional[Dict[str, float]]): Objective weights for multi-objective cost.
+            use_constraints (bool): Whether to apply parameter box constraints.
+            **kwargs (Any): Extra settings passed to the optimizer.
 
         Returns:
-            CalibrationResult instance
+            CalibrationResult: Results of the online calibration step.
+
+        Raises:
+            ValueError: If no parameters are specified and no history is available.
         """
         start_time = time.time()
         if objectives is None:
@@ -202,10 +235,15 @@ class OnlineCalibrator(BaseCalibrator):
     def should_recalibrate(
         self, recent_measurements: MeasurementData, objectives: Optional[List[str]] = None
     ) -> Tuple[bool, str]:
-        """Check if re-calibration should be triggered.
+        """
+        Check if re-calibration should be triggered based on prediction error.
+
+        Args:
+            recent_measurements (MeasurementData): Recent plant data.
+            objectives (Optional[List[str]]): Variables to monitor for error.
 
         Returns:
-            Tuple of (should_recalibrate, reason)
+            Tuple[bool, str]: (should_recalibrate, reason_string).
         """
         if not self.trigger.enabled:
             return False, "Disabled"
@@ -231,20 +269,44 @@ class OnlineCalibrator(BaseCalibrator):
         return False, "Prediction within accuracy threshold"
 
     def apply_calibration(self, result: CalibrationResult) -> None:
-        """Apply calibration parameters to the plant."""
+        """
+        Apply calibrated parameters to the underlying plant model.
+
+        Args:
+            result (CalibrationResult): The result containing new parameter values.
+        """
         for component in self.plant.components.values():
             if component.component_type.value == "digester":
                 component.apply_calibration_parameters(result.parameters)
 
     def _extract_time_window(self, measurements: MeasurementData, window_days: int) -> MeasurementData:
-        """Extract recent time window from measurements."""
+        """
+        Extract a recent time window from the measurement dataset.
+
+        Args:
+            measurements (MeasurementData): Full dataset.
+            window_days (int): Number of days to extract from the end.
+
+        Returns:
+            MeasurementData: The subset of data within the window.
+        """
         last_time = measurements.data.index[-1]
         return measurements.get_time_window(last_time - timedelta(days=window_days), last_time)
 
     def _calculate_prediction_variance(
         self, measurements: MeasurementData, parameters: Dict[str, float], objectives: List[str]
     ) -> float:
-        """Calculate prediction variance for current parameters."""
+        """
+        Calculate relative prediction variance for current parameters.
+
+        Args:
+            measurements (MeasurementData): Reference measurements.
+            parameters (Dict[str, float]): Parameters to test.
+            objectives (List[str]): Variables to compare.
+
+        Returns:
+            float: Normalized mean variance across all objectives.
+        """
         try:
             outputs = self.simulator.simulate_with_parameters(parameters, measurements)
             variances: List[float] = []
@@ -267,7 +329,17 @@ class OnlineCalibrator(BaseCalibrator):
     def _setup_online_bounds(
         self, parameters: List[str], current_params: Dict[str, float], max_change: float
     ) -> Dict[str, Tuple[float, float]]:
-        """Setup bounded parameter ranges for online calibration."""
+        """
+        Setup bounded parameter ranges relative to current values.
+
+        Args:
+            parameters (List[str]): Parameters to bound.
+            current_params (Dict[str, float]): Current parameter values.
+            max_change (float): Maximum allowed relative change.
+
+        Returns:
+            Dict[str, Tuple[float, float]]: Box constraints for the optimizer.
+        """
         bounds: Dict[str, Tuple[float, float]] = {}
         for p in parameters:
             curr = current_params.get(p, 0.0)
