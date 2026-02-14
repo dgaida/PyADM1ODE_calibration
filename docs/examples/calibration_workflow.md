@@ -1,5 +1,10 @@
-# TODO: Generate this file
+# Kalibrierungs-Workflow
 
-- Complete step-by-step guide
-- Real data example
-- Troubleshooting tips
+Dieser Workflow zeigt die schrittweise Kalibrierung eines Biogasanlagenmodells.
+
+## Schritte
+
+1. Daten laden
+2. Vorverarbeitung
+3. Kalibrierung ausführen
+4. Ergebnisse validieren
