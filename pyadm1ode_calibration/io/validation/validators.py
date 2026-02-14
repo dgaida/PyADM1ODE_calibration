@@ -1,3 +1,5 @@
+"""Validators module."""
+
 import pandas as pd
 import numpy as np
 from typing import Dict, List, Optional, Tuple, Any
@@ -7,223 +9,149 @@ from dataclasses import dataclass, field
 @dataclass
 class ValidationResult:
     """
-    Result from data validation.
+    Result of data validation.
 
     Attributes:
         is_valid: Overall validation status
-        quality_score: Overall quality score (0-1)
-        issues: List of identified issues
-        warnings: List of warnings
-        statistics: Dictionary of data statistics
-        missing_data: Dictionary of missing data percentages per column
+        quality_score: Score from 0 to 1
+        issues: List of issues found
+        warnings: List of minor warnings
+        missing_data: Mapping of column names to missing count
+        statistics: Summary statistics
     """
 
     is_valid: bool
     quality_score: float
     issues: List[str] = field(default_factory=list)
     warnings: List[str] = field(default_factory=list)
+    missing_data: Dict[str, int] = field(default_factory=dict)
     statistics: Dict[str, Any] = field(default_factory=dict)
-    missing_data: Dict[str, float] = field(default_factory=dict)
 
     def print_report(self) -> None:
-        """Print validation report."""
-        print("=" * 70)
-        print("Data Validation Report")
-        print("=" * 70)
-        print(f"Status: {'✓ Valid' if self.is_valid else '✗ Invalid'}")
+        """Print formatted validation report."""
+        print("\n" + "=" * 40)
+        print("DATA VALIDATION REPORT")
+        print("=" * 40)
+        print(f"Status: {'VALID' if self.is_valid else 'INVALID'}")
         print(f"Quality Score: {self.quality_score:.2f}")
 
         if self.issues:
-            print(f"\nIssues ({len(self.issues)}):")
+            print("\nIssues:")
             for issue in self.issues:
                 print(f"  - {issue}")
 
         if self.warnings:
-            print(f"\nWarnings ({len(self.warnings)}):")
+            print("\nWarnings:")
             for warning in self.warnings:
                 print(f"  - {warning}")
 
-        if self.missing_data:
-            print("\nMissing Data:")
-            for col, pct in self.missing_data.items():
-                if pct > 0:
-                    print(f"  {col}: {pct:.1f}%")
-
-        print("=" * 70)
+        print("=" * 40)
 
 
 class DataValidator:
     """
-    Validator for biogas plant measurement data.
-
-    Checks data quality, identifies issues, and provides statistics.
+    Validates measurement data quality and consistency.
     """
 
     @staticmethod
     def validate(
-        data: pd.DataFrame,
-        required_columns: Optional[List[str]] = None,
-        expected_ranges: Optional[Dict[str, Tuple[float, float]]] = None,
+        data: pd.DataFrame, required_columns: Optional[List[str]] = None, expected_ranges: Optional[Dict[str, Tuple[float, float]]] = None
     ) -> ValidationResult:
         """
-        Validate measurement data.
+        Perform comprehensive data validation.
 
         Args:
             data: DataFrame to validate
-            required_columns: List of required column names
-            expected_ranges: Dictionary mapping columns to (min, max) tuples
+            required_columns: Columns that must be present
+            expected_ranges: Mapping of column names to (min, max)
 
         Returns:
             ValidationResult object
         """
         issues = []
-        warnings_list = []
+        warnings = []
+        missing_counts = data.isnull().sum().to_dict()
+        missing_pct = data.isnull().mean()
 
-        # Check for required columns
+        # 1. Check required columns
         if required_columns:
-            missing_cols = set(required_columns) - set(data.columns)
-            if missing_cols:
-                issues.append(f"Missing required columns: {missing_cols}")
+            for col in required_columns:
+                if col not in data.columns:
+                    issues.append(f"Required column '{col}' is missing")
 
-        # Calculate missing data percentages
-        missing_data = {}
-        for col in data.columns:
-            pct_missing = (data[col].isna().sum() / len(data)) * 100
-            missing_data[col] = pct_missing
+        # 2. Check for empty data
+        if data.empty:
+            issues.append("Dataset is empty")
+            return ValidationResult(is_valid=False, quality_score=0.0, issues=issues, missing_data=missing_counts)
 
-            if pct_missing > 30:
-                issues.append(f"Column '{col}' has {pct_missing:.1f}% missing data")
-            elif pct_missing > 5:
-                warnings_list.append(f"Column '{col}' has {pct_missing:.1f}% missing data")
+        # 3. Check for missing values (NaN)
+        for col, pct in missing_pct.items():
+            if pct > 0.3:
+                issues.append(f"Column '{col}' has {pct*100:.1f}% missing values")
+            elif pct > 0:
+                warnings.append(f"Column '{col}' has {pct*100:.1f}% missing values")
 
-        # Check for expected ranges
+        # 4. Check expected ranges
         if expected_ranges:
-            for col, (min_val, max_val) in expected_ranges.items():
+            for col, (vmin, vmax) in expected_ranges.items():
                 if col in data.columns:
-                    values = data[col].dropna()
-                    if len(values) > 0:
-                        actual_min = values.min()
-                        actual_max = values.max()
+                    out_of_range = (data[col] < vmin) | (data[col] > vmax)
+                    n_out = out_of_range.sum()
+                    if n_out > 0:
+                        pct = n_out / len(data)
+                        if pct > 0.2:
+                            issues.append(f"Column '{col}' has {n_out} values outside range [{vmin}, {vmax}]")
+                        else:
+                            warnings.append(f"Column '{col}' has {n_out} values outside range [{vmin}, {vmax}]")
 
-                        if actual_min < min_val or actual_max > max_val:
-                            warnings_list.append(
-                                f"Column '{col}' has values outside expected range "
-                                f"[{min_val}, {max_val}]: actual [{actual_min:.2f}, {actual_max:.2f}]"
-                            )
-
-        # Check for duplicate timestamps
-        if "timestamp" in data.columns:
-            duplicates = data["timestamp"].duplicated().sum()
-            if duplicates > 0:
-                warnings_list.append(f"Found {duplicates} duplicate timestamps")
-
-        # Calculate statistics
-        statistics = {
-            "n_rows": len(data),
-            "n_columns": len(data.columns),
-            "total_missing": data.isna().sum().sum(),
-            "pct_missing": (data.isna().sum().sum() / (len(data) * len(data.columns))) * 100,
-        }
+        # 5. Check for duplicates in index (timestamps)
+        if data.index.duplicated().any():
+            issues.append("Dataset has duplicate timestamps")
 
         # Calculate quality score
-        quality_score = DataValidator._calculate_quality_score(data, len(issues), len(warnings_list), statistics)
-
-        is_valid = len(issues) == 0
+        quality_score = DataValidator._calculate_quality_score(len(issues), len(warnings), missing_pct.mean())
 
         return ValidationResult(
-            is_valid=is_valid,
+            is_valid=len(issues) == 0,
             quality_score=quality_score,
             issues=issues,
-            warnings=warnings_list,
-            statistics=statistics,
-            missing_data=missing_data,
+            warnings=warnings,
+            missing_data=missing_counts,
+            statistics={"missing_pct_avg": float(missing_pct.mean())},
         )
 
     @staticmethod
-    def _calculate_quality_score(data: pd.DataFrame, n_issues: int, n_warnings: int, statistics: Dict[str, Any]) -> float:
-        """Calculate overall data quality score (0-1)."""
-        score = 1.0
-
-        # Penalize for issues
-        score -= min(0.5, n_issues * 0.1)
-
-        # Penalize for warnings
-        score -= min(0.3, n_warnings * 0.05)
-
-        # Penalize for missing data
-        pct_missing = statistics["pct_missing"]
-        score -= min(0.2, pct_missing / 100 * 0.5)
-
-        return max(0.0, score)
+    def _calculate_quality_score(n_issues: int, n_warnings: int, avg_missing: float) -> float:
+        """Calculate quality score from 0 to 1."""
+        score = 1.0 - (n_issues * 0.2) - (n_warnings * 0.05) - (avg_missing * 0.5)
+        return float(max(0.0, min(1.0, score)))
 
 
 class OutlierDetector:
     """
-    Outlier detection for time series data.
-
-    Supports multiple detection methods for identifying anomalous values.
+    Detects outliers in measurement data using various methods.
     """
 
     @staticmethod
     def detect_zscore(series: pd.Series, threshold: float = 3.0) -> pd.Series:
-        """
-        Detect outliers using z-score method.
-
-        Args:
-            series: Pandas Series
-            threshold: Z-score threshold
-
-        Returns:
-            Boolean Series indicating outliers
-        """
-        if len(series.dropna()) < 2:
-            return pd.Series([False] * len(series), index=series.index)
-
-        mean = series.mean()
-        std = series.std()
-
-        if std == 0:
-            return pd.Series([False] * len(series), index=series.index)
-
-        z_scores = np.abs((series - mean) / std)
-        return z_scores > threshold
+        """Detect outliers using Z-score."""
+        z = np.abs((series - series.mean()) / (series.std() + 1e-10))
+        return z > threshold
 
     @staticmethod
     def detect_iqr(series: pd.Series, multiplier: float = 1.5) -> pd.Series:
-        """
-        Detect outliers using IQR (Interquartile Range) method.
-
-        Args:
-            series: Pandas Series
-            multiplier: IQR multiplier (1.5 for outliers, 3.0 for extreme)
-
-        Returns:
-            Boolean Series indicating outliers
-        """
-        Q1 = series.quantile(0.25)
-        Q3 = series.quantile(0.75)
-        IQR = Q3 - Q1
-
-        lower_bound = Q1 - multiplier * IQR
-        upper_bound = Q3 + multiplier * IQR
-
-        return (series < lower_bound) | (series > upper_bound)
+        """Detect outliers using Interquartile Range."""
+        q1 = series.quantile(0.25)
+        q3 = series.quantile(0.75)
+        iqr = q3 - q1
+        lower = q1 - multiplier * iqr
+        upper = q3 + multiplier * iqr
+        return (series < lower) | (series > upper)
 
     @staticmethod
     def detect_moving_window(series: pd.Series, window: int = 5, threshold: float = 3.0) -> pd.Series:
-        """
-        Detect outliers using moving window method.
-
-        Args:
-            series: Pandas Series
-            window: Window size for rolling statistics
-            threshold: Number of standard deviations
-
-        Returns:
-            Boolean Series indicating outliers
-        """
-        rolling_mean = series.rolling(window=window, center=True).mean()
-        rolling_std = series.rolling(window=window, center=True).std()
-
-        z_scores = np.abs((series - rolling_mean) / rolling_std)
-        return z_scores > threshold
+        """Detect outliers using a moving window median."""
+        median = series.rolling(window=window, center=True).median()
+        std = series.rolling(window=window, center=True).std()
+        z = np.abs((series - median) / (std + 1e-10))
+        return z > threshold

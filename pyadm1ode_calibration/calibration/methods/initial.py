@@ -1,3 +1,5 @@
+"""Initial calibration module."""
+
 import numpy as np
 import time
 from typing import Dict, List, Optional, Tuple, Any, Callable
@@ -12,7 +14,17 @@ from pyadm1ode_calibration.io.loaders.measurement_data import MeasurementData
 
 
 class InitialCalibrator(BaseCalibrator):
-    """Initial calibrator for ADM1 parameters from historical data."""
+    """
+    Initial calibrator for ADM1 parameters from historical data.
+
+    This calibrator is designed for batch optimization using a window of historical
+    measurement data. It supports multi-objective optimization, sensitivity analysis,
+    and cross-validation.
+
+    Args:
+        plant (Any): The PyADM1ODE plant model to calibrate.
+        verbose (bool): Whether to enable verbose output. Defaults to True.
+    """
 
     def __init__(self, plant: Any, verbose: bool = True):
         super().__init__(plant, verbose)
@@ -40,6 +52,27 @@ class InitialCalibrator(BaseCalibrator):
         use_constraints: bool = False,
         **kwargs: Any,
     ) -> CalibrationResult:
+        """
+        Run the initial calibration workflow.
+
+        Args:
+            measurements (MeasurementData): Historical measurement data for calibration.
+            parameters (List[str]): Names of parameters to optimize.
+            bounds (Optional[Dict[str, Tuple[float, float]]]): Custom search bounds for parameters.
+            method (str): Optimization algorithm name. Defaults to 'differential_evolution'.
+            objectives (Optional[List[str]]): List of objective variables (e.g., ['Q_ch4', 'pH']).
+            weights (Optional[Dict[str, float]]): Weights for different objectives in the cost function.
+            validation_split (float): Fraction of data to use for out-of-sample validation. Defaults to 0.2.
+            max_iterations (int): Maximum number of optimizer iterations. Defaults to 100.
+            population_size (int): Population size for evolutionary algorithms. Defaults to 15.
+            tolerance (float): Convergence tolerance. Defaults to 1e-4.
+            sensitivity_analysis (bool): Whether to perform sensitivity analysis after calibration.
+            use_constraints (bool): Whether to apply parameter constraints. Defaults to False.
+            **kwargs (Any): Additional keyword arguments passed to the optimizer.
+
+        Returns:
+            CalibrationResult: The calibration results including optimized parameters and metrics.
+        """
         start_time = time.time()
         if objectives is None:
             objectives = ["Q_ch4"]
@@ -149,14 +182,47 @@ class InitialCalibrator(BaseCalibrator):
     def sensitivity_analysis(
         self, parameters: Dict[str, float], measurements: MeasurementData, objectives: Optional[List[str]] = None
     ) -> Dict[str, SensitivityResult]:
+        """
+        Perform local sensitivity analysis for given parameters.
+
+        Args:
+            parameters (Dict[str, float]): Parameter set to analyze.
+            measurements (MeasurementData): Data window for simulation.
+            objectives (Optional[List[str]]): List of objective variables.
+
+        Returns:
+            Dict[str, SensitivityResult]: Mapping of parameter names to sensitivity indices.
+        """
         return self.sensitivity_analyzer.analyze(parameters, measurements, objectives)
 
     def identifiability_analysis(
         self, parameters: Dict[str, float], measurements: MeasurementData
     ) -> Dict[str, IdentifiabilityResult]:
+        """
+        Perform parameter identifiability analysis.
+
+        Checks for parameter correlations and information content in the data.
+
+        Args:
+            parameters (Dict[str, float]): Parameter set to analyze.
+            measurements (MeasurementData): Data window for simulation.
+
+        Returns:
+            IdentifiabilityResult: Analysis results including correlation matrix.
+        """
         return self.identifiability_analyzer.analyze(parameters, measurements)
 
     def _split_data(self, measurements: MeasurementData, split_ratio: float) -> Tuple[MeasurementData, MeasurementData]:
+        """
+        Split measurement data into training and validation sets.
+
+        Args:
+            measurements (MeasurementData): Original measurement data.
+            split_ratio (float): Fraction of data to use for validation.
+
+        Returns:
+            Tuple[MeasurementData, MeasurementData]: (train_data, val_data).
+        """
         n_train = int(len(measurements) * (1 - split_ratio))
         return (
             MeasurementData(measurements.data.iloc[:n_train].copy(), metadata=measurements.metadata.copy()),
@@ -166,6 +232,16 @@ class InitialCalibrator(BaseCalibrator):
     def _setup_bounds(
         self, parameters: List[str], custom_bounds: Optional[Dict[str, Tuple[float, float]]]
     ) -> Dict[str, Tuple[float, float]]:
+        """
+        Configure parameter search bounds.
+
+        Args:
+            parameters (List[str]): List of parameters.
+            custom_bounds (Optional[Dict[str, Tuple[float, float]]]): Override default bounds.
+
+        Returns:
+            Dict[str, Tuple[float, float]]: Mapping of parameter names to (min, max) tuples.
+        """
         bounds: Dict[str, Tuple[float, float]] = {}
         for param in parameters:
             if custom_bounds and param in custom_bounds:

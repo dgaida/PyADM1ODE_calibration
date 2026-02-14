@@ -1,3 +1,5 @@
+"""Simulator module."""
+
 from typing import Dict, List, Any, TYPE_CHECKING
 import numpy as np
 
@@ -6,18 +8,19 @@ if TYPE_CHECKING:
 
 
 class PlantSimulator:
-    """Handles plant simulation with parameter variations.
+    """
+    Handles plant simulation with parameter variations.
 
-    Separates simulation logic from calibration algorithms.
+    This class separates the simulation logic from calibration algorithms,
+    providing a consistent interface for running the ADM1 model with
+    modified parameter sets.
+
+    Args:
+        plant (Any): The PyADM1ODE plant model instance.
+        verbose (bool): Whether to enable progress output and logging. Defaults to True.
     """
 
     def __init__(self, plant: Any, verbose: bool = True):
-        """Initialize simulator.
-
-        Args:
-            plant: BiogasPlant instance
-            verbose: Enable progress output
-        """
         self.plant = plant
         self.verbose = verbose
         self._original_params: Dict[str, Dict[str, float]] = {}
@@ -25,15 +28,18 @@ class PlantSimulator:
     def simulate_with_parameters(
         self, parameters: Dict[str, float], measurements: "MeasurementData", restore_params: bool = True
     ) -> Dict[str, np.ndarray]:
-        """Run simulation with given parameters.
+        """
+        Run a plant simulation using a specific set of parameters.
 
         Args:
-            parameters: Parameter values to apply {name: value}
-            measurements: Measurement data for substrate feeds
-            restore_params: Whether to restore original parameters after simulation
+            parameters (Dict[str, float]): Parameter values to apply {name: value}.
+            measurements (MeasurementData): Input data for substrate feeds and timing.
+            restore_params (bool): Whether to restore the original plant parameters
+                after the simulation finishes. Defaults to True.
 
         Returns:
-            Dictionary mapping output names to simulated arrays
+            Dict[str, np.ndarray]: Dictionary mapping output names (e.g., 'Q_ch4')
+                to simulated numpy arrays.
         """
         if restore_params:
             self._backup_parameters()
@@ -59,23 +65,28 @@ class PlantSimulator:
                 self._restore_parameters()
 
     def _backup_parameters(self) -> None:
-        """Store current parameter values from all digesters."""
+        """
+        Store current parameter values from all digester components in the plant.
+        """
         self._original_params = {}
         for component_id, component in self.plant.components.items():
             if component.component_type.value == "digester":
                 self._original_params[component_id] = getattr(component, "_calibration_params", {}).copy()
 
     def _restore_parameters(self) -> None:
-        """Restore previous parameter values to all digesters."""
+        """
+        Restore previously backed-up parameter values to all digesters.
+        """
         for component_id, params in self._original_params.items():
             component = self.plant.components[component_id]
             component._calibration_params = params.copy()
 
     def _apply_parameters(self, parameters: Dict[str, float]) -> None:
-        """Apply parameters to all digesters in the plant.
+        """
+        Apply parameters to all digester components in the plant model.
 
         Args:
-            parameters: Dictionary of parameter names and values
+            parameters (Dict[str, float]): Dictionary of parameter names and values.
         """
         for component in self.plant.components.values():
             if component.component_type.value == "digester":
@@ -85,13 +96,14 @@ class PlantSimulator:
                     component._calibration_params[name] = val
 
     def _extract_substrate_feeds(self, measurements: "MeasurementData") -> List[float]:
-        """Extract mean substrate feed rates from measurements.
+        """
+        Extract mean substrate feed rates from measurement data.
 
         Args:
-            measurements: MeasurementData instance
+            measurements (MeasurementData): Measurement data containing substrate columns.
 
         Returns:
-            List of average feed rates for each substrate
+            List[float]: List of average feed rates for each substrate.
         """
         try:
             Q = measurements.get_substrate_feeds()
@@ -101,10 +113,11 @@ class PlantSimulator:
             return [15.0, 10.0] + [0.0] * 8
 
     def _apply_substrate_feeds(self, Q_substrates: List[float]) -> None:
-        """Apply substrate feeds to all digester components.
+        """
+        Apply substrate feed rates to all digester components.
 
         Args:
-            Q_substrates: List of substrate feed rates
+            Q_substrates (List[float]): List of substrate feed rates.
         """
         for component in self.plant.components.values():
             if component.component_type.value == "digester":
@@ -112,13 +125,14 @@ class PlantSimulator:
                 component.adm1.create_influent(Q_substrates, 0)
 
     def _extract_outputs_from_results(self, results: List[Dict[str, Any]]) -> Dict[str, np.ndarray]:
-        """Extract relevant outputs from simulation results.
+        """
+        Extract and aggregate relevant outputs from raw simulation results.
 
         Args:
-            results: List of result dictionaries from plant.simulate()
+            results (List[Dict[str, Any]]): Raw results from the plant simulation.
 
         Returns:
-            Dictionary mapping output names to numpy arrays
+            Dict[str, np.ndarray]: Aggregated outputs including gas flows and chemical states.
         """
         outputs: Dict[str, List[float]] = {
             "Q_ch4": [],

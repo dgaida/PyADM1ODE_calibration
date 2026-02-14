@@ -12,9 +12,13 @@ theme:
     - navigation.sections
     - navigation.expand
     - navigation.top
+    - navigation.tracking
     - search.suggest
     - search.highlight
+    - search.share
     - content.code.copy
+    - content.code.annotate
+    - content.tooltips
   palette:
     - scheme: default
       primary: indigo
@@ -28,31 +32,75 @@ theme:
       toggle:
         icon: material/brightness-4
         name: Switch to light mode
+  font:
+    text: Roboto
+    code: Roboto Mono
 
 plugins:
   - search
   - i18n:
-      default_language: de
+      docs_structure: folder
+      fallback_to_default: true
       languages:
         - locale: de
           name: Deutsch
           default: true
+          build: true
         - locale: en
           name: English
+          build: true
   - mkdocstrings:
       handlers:
         python:
           paths: [.]
           options:
+            docstring_style: google
             show_source: true
             show_root_heading: true
             show_category_heading: true
+            merge_init_into_class: true
+  - mermaid2:
+      arguments:
+        theme: default
+  - mike:
+      alias_type: symlink
+      canonical_version: latest
+
+extra:
+  version:
+    provider: mike
+
+markdown_extensions:
+  - admonition
+  - pymdownx.details
+  - pymdownx.superfences:
+      custom_fences:
+        - name: mermaid
+          class: mermaid
+          format: !!python/name:mermaid2.fence_mermaid
+  - pymdownx.tabbed:
+      alternate_style: true
+  - pymdownx.highlight:
+      anchor_linenums: true
+      line_spans: __span
+      pygments_lang_class: true
+  - pymdownx.inlinehilite
+  - pymdownx.snippets
+  - pymdownx.tasklist:
+      custom_checkbox: true
+  - attr_list
+  - md_in_html
+  - toc:
+      permalink: true
 
 nav:
   - Home: index.md
-  - User Guide:
-      - Overview: user_guide/index.md
-      - Calibration: user_guide/calibration.md
+  - Getting Started: getting-started.md
+  - Installation: installation.md
+  - Configuration: configuration.md
+  - Usage:
+      - Overview: usage/index.md
+      - Calibration: usage/calibration.md
   - Examples:
       - Overview: examples/index.md
       - Calibration Workflow: examples/calibration_workflow.md
@@ -61,16 +109,8 @@ nav:
       - Calibration: api/calibration.md
       - IO: api/io.md
       - Optimization: api/optimization.md
-
-markdown_extensions:
-  - admonition
-  - pymdownx.details
-  - pymdownx.superfences
-  - pymdownx.tabbed:
-      alternate_style: true
-  - pymdownx.highlight:
-      anchor_linenums: true
-  - pymdownx.inlinehilite
-  - pymdownx.snippets
-  - attr_list
-  - md_in_html
+  - Architecture: architecture/index.md
+  - Development:
+      - Overview: development/index.md
+      - Metrics: development/metrics.md
+  - Troubleshooting: troubleshooting.md

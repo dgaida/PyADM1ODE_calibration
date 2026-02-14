@@ -1,3 +1,5 @@
+"""Result module."""
+
 from dataclasses import dataclass, field
 from typing import Dict, List, Any
 from datetime import datetime
@@ -9,19 +11,22 @@ class CalibrationResult:
     """
     Result from a calibration run.
 
+    Stores the output of an optimization process, including calibrated values,
+    performance metrics, and diagnostic information.
+
     Attributes:
-        success: Whether calibration converged successfully
-        parameters: Calibrated parameter values
-        initial_parameters: Initial parameter values before calibration
-        objective_value: Final objective function value
-        n_iterations: Number of optimization iterations
-        execution_time: Wall clock time [seconds]
-        method: Optimization method used
-        message: Status message
-        validation_metrics: Metrics on validation data
-        sensitivity: Parameter sensitivity analysis results
-        history: Optimization history (if available)
-        timestamp: Calibration timestamp
+        success (bool): Whether calibration converged successfully.
+        parameters (Dict[str, float]): Calibrated parameter values.
+        initial_parameters (Dict[str, float]): Initial parameter values before calibration.
+        objective_value (float): Final objective function value.
+        n_iterations (int): Number of optimization iterations.
+        execution_time (float): Wall clock time in seconds.
+        method (str): Optimization method used (e.g., 'differential_evolution').
+        message (str): Status message from the optimizer.
+        validation_metrics (Dict[str, float]): Metrics on validation data (RMSE, R2, etc.).
+        sensitivity (Dict[str, Any]): Parameter sensitivity analysis results.
+        history (List[Dict[str, Any]]): Optimization history if tracking was enabled.
+        timestamp (str): Calibration timestamp in ISO format.
     """
 
     success: bool
@@ -38,10 +43,11 @@ class CalibrationResult:
     timestamp: str = field(default_factory=lambda: datetime.now().isoformat())
 
     def to_dict(self) -> Dict[str, Any]:
-        """Convert result to dictionary.
+        """
+        Convert the result to a dictionary.
 
         Returns:
-            Dictionary containing all result data
+            Dict[str, Any]: Dictionary containing all result data.
         """
         return {
             "success": self.success,
@@ -59,22 +65,24 @@ class CalibrationResult:
         }
 
     def to_json(self, filepath: str) -> None:
-        """Save result to JSON file.
+        """
+        Save the result to a JSON file.
 
         Args:
-            filepath: Destination file path
+            filepath (str): Destination file path.
         """
         with open(filepath, "w") as f:
             json.dump(self.to_dict(), f, indent=2)
 
     @classmethod
     def from_dict(cls, data: Dict[str, Any]) -> "CalibrationResult":
-        """Create result from dictionary.
+        """
+        Create a CalibrationResult instance from a dictionary.
 
         Args:
-            data: Dictionary with result attributes
+            data (Dict[str, Any]): Dictionary with result attributes.
 
         Returns:
-            CalibrationResult instance
+            CalibrationResult: A new instance populated with the data.
         """
         return cls(**data)

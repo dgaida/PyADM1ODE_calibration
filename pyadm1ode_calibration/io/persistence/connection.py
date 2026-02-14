@@ -1,3 +1,10 @@
+"""
+Database Connection Management.
+
+Handles SQLAlchemy engine creation and session factory configuration
+for PostgreSQL database connections.
+"""
+
 import os
 from typing import Optional
 from sqlalchemy import create_engine
@@ -9,6 +16,20 @@ from dataclasses import dataclass
 
 @dataclass
 class DatabaseConfig:
+    """
+    Configuration parameters for database connection.
+
+    Attributes:
+        host (str): Database host address.
+        port (int): Port number.
+        database (str): Database name.
+        username (str): Username.
+        password (str): Password.
+        pool_size (int): SQLAlchemy pool size.
+        max_overflow (int): SQLAlchemy max overflow.
+        echo (bool): Whether to log SQL queries.
+    """
+
     host: str = "localhost"
     port: int = 5432
     database: str = "biogas"
@@ -20,6 +41,14 @@ class DatabaseConfig:
 
 
 class ConnectionManager:
+    """
+    Manages SQLAlchemy engine and session factory.
+
+    Args:
+        connection_string (Optional[str]): Full SQLAlchemy connection URL.
+        config (Optional[DatabaseConfig]): Structured configuration object.
+    """
+
     def __init__(self, connection_string: Optional[str] = None, config: Optional[DatabaseConfig] = None):
         if connection_string:
             self.connection_string = connection_string
@@ -28,11 +57,9 @@ class ConnectionManager:
                 f"postgresql://{config.username}:{config.password}@{config.host}:{config.port}/{config.database}"
             )
         else:
-            # Try to get from environment
             try:
                 self.connection_string = self._get_from_env()
             except ValueError:
-                # If both are missing and env is missing, raise ValueError as original code did
                 raise ValueError("Either connection_string or config must be provided")
 
         self.engine = create_engine(
@@ -45,6 +72,12 @@ class ConnectionManager:
         self.SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=self.engine)
 
     def _get_from_env(self) -> str:
+        """
+        Build connection string from standard environment variables.
+
+        Returns:
+            str: PostgreSQL connection string.
+        """
         host = os.getenv("DB_HOST", "localhost")
         port = os.getenv("DB_PORT", "5432")
         database = os.getenv("DB_NAME")

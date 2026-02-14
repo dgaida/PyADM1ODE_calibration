@@ -1,39 +1,4 @@
-# pyadm1/calibration/optimization/optimizer.py
-"""
-Optimization Algorithms for Parameter Calibration
-
-This module provides abstract and concrete optimizer classes for ADM1 parameter
-calibration. Supports gradient-free and gradient-based methods with proper
-abstraction for easy extension and testing.
-
-Available optimizers:
-- Gradient-free: Differential Evolution, Particle Swarm, Nelder-Mead, Powell
-- Gradient-based: L-BFGS-B, SLSQP
-- Multi-objective: NSGA-II (evolutionary multi-objective optimization)
-
-Example:
-    >>> from pyadm1ode_calibration.calibration.optimization import DifferentialEvolutionOptimizer
-    >>> from pyadm1ode_calibration.calibration.optimization import WeightedSumObjective
-    >>>
-    >>> # Create objective function
-    >>> objective = WeightedSumObjective(
-    ...     simulator=simulator,
-    ...     measurements=measurements,
-    ...     objectives=["Q_ch4", "pH"],
-    ...     weights={"Q_ch4": 0.8, "pH": 0.2}
-    ... )
-    >>>
-    >>> # Create optimizer
-    >>> optimizer = DifferentialEvolutionOptimizer(
-    ...     bounds={"k_dis": (0.3, 0.8), "Y_su": (0.05, 0.15)},
-    ...     max_iterations=100,
-    ...     population_size=15
-    ... )
-    >>>
-    >>> # Run optimization
-    >>> result = optimizer.optimize(objective, initial_guess=None)
-    >>> print(f"Best parameters: {result.x}")
-"""
+"""Optimization module."""
 
 from abc import ABC, abstractmethod
 from typing import Dict, List, Optional, Tuple, Callable, Any
@@ -48,17 +13,19 @@ class OptimizationResult:
     """
     Result from an optimization run.
 
+    Stores the output of a mathematical optimization process.
+
     Attributes:
-        success: Whether optimization converged
-        x: Optimal parameter values
-        fun: Objective function value at optimum
-        nit: Number of iterations
-        nfev: Number of function evaluations
-        message: Status message
-        parameter_names: Names of optimized parameters
-        parameter_dict: Parameters as dictionary
-        history: Optimization history (if tracked)
-        execution_time: Wall clock time [seconds]
+        success (bool): Whether optimization converged successfully.
+        x (np.ndarray): Optimal parameter values found by the optimizer.
+        fun (float): Objective function value at the optimum point.
+        nit (int): Number of iterations performed.
+        nfev (int): Number of function evaluations performed.
+        message (str): Status message from the optimization algorithm.
+        parameter_names (List[str]): Names of the optimized parameters.
+        parameter_dict (Dict[str, float]): Parameters as a name-to-value mapping.
+        history (List[Dict[str, Any]]): Optimization history log if tracked.
+        execution_time (float): Wall clock time in seconds.
     """
 
     success: bool
@@ -76,7 +43,18 @@ class OptimizationResult:
     def from_scipy_result(
         cls, result: OptimizeResult, parameter_names: List[str], execution_time: float, history: Optional[List] = None
     ) -> "OptimizationResult":
-        """Create from scipy OptimizeResult."""
+        """
+        Create an OptimizationResult from a scipy OptimizeResult.
+
+        Args:
+            result (OptimizeResult): The raw result from scipy.
+            parameter_names (List[str]): Names of parameters in the 'x' array.
+            execution_time (float): Time taken for optimization.
+            history (Optional[List]): Optimization progress history.
+
+        Returns:
+            OptimizationResult: A standardized result object.
+        """
         param_dict = {name: float(val) for name, val in zip(parameter_names, result.x)}
 
         return cls(
@@ -100,11 +78,11 @@ class Optimizer(ABC):
     All optimizers must implement the optimize() method and provide
     a consistent interface for parameter calibration.
 
-    Attributes:
-        bounds: Parameter bounds as {name: (min, max)}
-        max_iterations: Maximum number of iterations
-        tolerance: Convergence tolerance
-        verbose: Enable progress output
+    Args:
+        bounds (Dict[str, Tuple[float, float]]): Parameter bounds as {name: (min, max)}.
+        max_iterations (int): Maximum number of iterations. Defaults to 100.
+        tolerance (float): Convergence tolerance. Defaults to 1e-6.
+        verbose (bool): Whether to enable progress output. Defaults to True.
     """
 
     def __init__(
@@ -114,15 +92,6 @@ class Optimizer(ABC):
         tolerance: float = 1e-6,
         verbose: bool = True,
     ):
-        """
-        Initialize optimizer.
-
-        Args:
-            bounds: Parameter bounds {name: (min, max)}
-            max_iterations: Maximum iterations
-            tolerance: Convergence tolerance
-            verbose: Enable output
-        """
         self.bounds = bounds
         self.max_iterations = max_iterations
         self.tolerance = tolerance
@@ -141,26 +110,26 @@ class Optimizer(ABC):
         self, objective_func: Callable[[np.ndarray], float], initial_guess: Optional[np.ndarray] = None
     ) -> OptimizationResult:
         """
-        Run optimization.
+        Run the optimization process.
 
         Args:
-            objective_func: Function to minimize f(x) -> float
-            initial_guess: Optional initial parameter guess
+            objective_func (Callable): Function to minimize f(x) -> float.
+            initial_guess (Optional[np.ndarray]): Optional starting point for the optimizer.
 
         Returns:
-            OptimizationResult object
+            OptimizationResult: The result of the optimization.
         """
         pass
 
     def _wrap_objective(self, objective_func: Callable[[np.ndarray], float]) -> Callable[[np.ndarray], float]:
         """
-        Wrap objective function to track evaluations and history.
+        Wrap the objective function to track evaluations and history.
 
         Args:
-            objective_func: Original objective function
+            objective_func (Callable): The original objective function.
 
         Returns:
-            Wrapped objective function
+            Callable: The wrapped function with side-effects for tracking.
         """
 
         def wrapped(x: np.ndarray) -> float:
@@ -186,17 +155,35 @@ class Optimizer(ABC):
         return wrapped
 
     def _reset_tracking(self):
-        """Reset history and counters."""
+        """
+        Reset history and counters.
+        """
         self.history = []
         self._best_value = float("inf")
         self._n_evaluations = 0
 
     def _check_bounds(self, x: np.ndarray) -> bool:
-        """Check if parameters are within bounds."""
+        """
+        Check if parameters are within defined bounds.
+
+        Args:
+            x (np.ndarray): Parameter array to check.
+
+        Returns:
+            bool: True if all parameters are within bounds.
+        """
         return np.all(x >= self.bounds_array[:, 0]) and np.all(x <= self.bounds_array[:, 1])
 
     def _project_to_bounds(self, x: np.ndarray) -> np.ndarray:
-        """Project parameters to bounds."""
+        """
+        Project parameters onto the feasible space defined by the bounds.
+
+        Args:
+            x (np.ndarray): Parameter array to project.
+
+        Returns:
+            np.ndarray: Projected parameter array.
+        """
         return np.clip(x, self.bounds_array[:, 0], self.bounds_array[:, 1])
 
 
@@ -217,21 +204,18 @@ class DifferentialEvolutionOptimizer(GradientFreeOptimizer):
     Differential Evolution optimizer.
 
     Global optimization using evolutionary algorithm. Good for multimodal
-    problems with many local minima. Recommended for initial calibration.
+    problems with many local minima.
 
-    Attributes:
-        population_size: Population size (default: 15)
-        strategy: DE strategy (default: 'best1bin')
-        mutation: Mutation constant (default: (0.5, 1.0))
-        recombination: Crossover probability (default: 0.7)
-        seed: Random seed for reproducibility
-
-    Example:
-        >>> optimizer = DifferentialEvolutionOptimizer(
-        ...     bounds={"k_dis": (0.3, 0.8), "Y_su": (0.05, 0.15)},
-        ...     population_size=20,
-        ...     max_iterations=100
-        ... )
+    Args:
+        bounds (Dict[str, Tuple[float, float]]): Parameter bounds.
+        max_iterations (int): Max generations. Defaults to 100.
+        tolerance (float): Convergence tolerance.
+        verbose (bool): Enable output.
+        population_size (int): Population size per parameter. Defaults to 15.
+        strategy (str): DE strategy. Defaults to 'best1bin'.
+        mutation (Tuple[float, float]): Mutation scale. Defaults to (0.5, 1.0).
+        recombination (float): Crossover probability. Defaults to 0.7.
+        seed (Optional[int]): Random seed.
     """
 
     def __init__(
@@ -246,9 +230,7 @@ class DifferentialEvolutionOptimizer(GradientFreeOptimizer):
         recombination: float = 0.7,
         seed: Optional[int] = None,
     ):
-        """Initialize Differential Evolution optimizer."""
         super().__init__(bounds, max_iterations, tolerance, verbose)
-
         self.population_size = population_size
         self.strategy = strategy
         self.mutation = mutation
@@ -262,24 +244,19 @@ class DifferentialEvolutionOptimizer(GradientFreeOptimizer):
         Run differential evolution optimization.
 
         Args:
-            objective_func: Objective function to minimize
-            initial_guess: Not used (DE generates initial population)
+            objective_func (Callable): Objective function to minimize.
+            initial_guess (Optional[np.ndarray]): Not used by DE.
 
         Returns:
-            OptimizationResult
+            OptimizationResult: Results of the optimization.
         """
         if self.verbose:
             print("Starting Differential Evolution optimization")
             print(f"  Population size: {self.population_size}")
             print(f"  Max iterations: {self.max_iterations}")
 
-        # Reset tracking
         self._reset_tracking()
-
-        # Wrap objective for tracking
         wrapped_objective = self._wrap_objective(objective_func)
-
-        # Run optimization
         start_time = time.time()
 
         result = differential_evolution(
@@ -292,18 +269,14 @@ class DifferentialEvolutionOptimizer(GradientFreeOptimizer):
             mutation=self.mutation,
             recombination=self.recombination,
             seed=self.seed,
-            disp=False,  # We handle our own display
-            polish=True,  # Local refinement at end
+            disp=False,
+            polish=True,
         )
 
         execution_time = time.time() - start_time
 
         if self.verbose:
             print(f"\nOptimization complete in {execution_time:.1f}s")
-            print(f"  Success: {result.success}")
-            print(f"  Objective: {result.fun:.6f}")
-            print(f"  Iterations: {result.nit}")
-            print(f"  Function evaluations: {result.nfev}")
 
         return OptimizationResult.from_scipy_result(result, self.parameter_names, execution_time, self.history)
 
@@ -312,10 +285,7 @@ class ParticleSwarmOptimizer(GradientFreeOptimizer):
     """
     Particle Swarm Optimization.
 
-    Swarm intelligence algorithm. Alternative to DE, sometimes faster
-    convergence but may get stuck in local minima.
-
-    Note: Requires pyswarm package (not in base dependencies).
+    Requires 'pyswarm' package.
     """
 
     def __init__(
@@ -325,13 +295,11 @@ class ParticleSwarmOptimizer(GradientFreeOptimizer):
         tolerance: float = 1e-6,
         verbose: bool = True,
         swarm_size: int = 20,
-        omega: float = 0.5,  # Inertia
-        phip: float = 0.5,  # Personal best weight
-        phig: float = 0.5,  # Global best weight
+        omega: float = 0.5,
+        phip: float = 0.5,
+        phig: float = 0.5,
     ):
-        """Initialize Particle Swarm optimizer."""
         super().__init__(bounds, max_iterations, tolerance, verbose)
-
         self.swarm_size = swarm_size
         self.omega = omega
         self.phip = phip
@@ -351,7 +319,6 @@ class ParticleSwarmOptimizer(GradientFreeOptimizer):
 
         self._reset_tracking()
         wrapped_objective = self._wrap_objective(objective_func)
-
         start_time = time.time()
 
         lb = self.bounds_array[:, 0]
@@ -370,8 +337,6 @@ class ParticleSwarmOptimizer(GradientFreeOptimizer):
         )
 
         execution_time = time.time() - start_time
-
-        # Create result in OptimizeResult format
         result = OptimizeResult(
             x=xopt,
             fun=fopt,
@@ -380,7 +345,6 @@ class ParticleSwarmOptimizer(GradientFreeOptimizer):
             nfev=len(self.history),
             message="Optimization terminated successfully",
         )
-
         return OptimizationResult.from_scipy_result(result, self.parameter_names, execution_time, self.history)
 
 
@@ -389,13 +353,14 @@ class NelderMeadOptimizer(GradientFreeOptimizer):
     Nelder-Mead simplex optimizer.
 
     Local optimization method. Fast but may not find global optimum.
-    Good for online calibration and fine-tuning.
+    Good for online calibration.
 
-    Example:
-        >>> optimizer = NelderMeadOptimizer(
-        ...     bounds={"k_dis": (0.45, 0.55)},
-        ...     max_iterations=50
-        ... )
+    Args:
+        bounds (Dict[str, Tuple[float, float]]): Parameter bounds.
+        max_iterations (int): Max iterations.
+        tolerance (float): Convergence tolerance.
+        verbose (bool): Enable output.
+        adaptive (bool): Use adaptive simplex. Defaults to True.
     """
 
     def __init__(
@@ -406,7 +371,6 @@ class NelderMeadOptimizer(GradientFreeOptimizer):
         verbose: bool = True,
         adaptive: bool = True,
     ):
-        """Initialize Nelder-Mead optimizer."""
         super().__init__(bounds, max_iterations, tolerance, verbose)
         self.adaptive = adaptive
 
@@ -417,14 +381,13 @@ class NelderMeadOptimizer(GradientFreeOptimizer):
         Run Nelder-Mead optimization.
 
         Args:
-            objective_func: Objective function
-            initial_guess: Initial parameter guess (required for Nelder-Mead)
+            objective_func (Callable): Objective function to minimize.
+            initial_guess (Optional[np.ndarray]): Starting point. Midpoint of bounds if None.
 
         Returns:
-            OptimizationResult
+            OptimizationResult: Results of the optimization.
         """
         if initial_guess is None:
-            # Use midpoint of bounds
             initial_guess = np.mean(self.bounds_array, axis=1)
 
         if self.verbose:
@@ -432,15 +395,12 @@ class NelderMeadOptimizer(GradientFreeOptimizer):
 
         self._reset_tracking()
 
-        # Nelder-Mead doesn't strictly enforce bounds, so we add penalty
         def penalized_objective(x):
             if not self._check_bounds(x):
-                # Outside bounds - return large penalty
                 return 1e10
             return objective_func(x)
 
         wrapped_objective = self._wrap_objective(penalized_objective)
-
         start_time = time.time()
 
         result = minimize(
@@ -460,8 +420,6 @@ class NelderMeadOptimizer(GradientFreeOptimizer):
 
         if self.verbose:
             print(f"\nOptimization complete in {execution_time:.1f}s")
-            print(f"  Success: {result.success}")
-            print(f"  Objective: {result.fun:.6f}")
 
         return OptimizationResult.from_scipy_result(result, self.parameter_names, execution_time, self.history)
 
@@ -469,8 +427,6 @@ class NelderMeadOptimizer(GradientFreeOptimizer):
 class PowellOptimizer(GradientFreeOptimizer):
     """
     Powell's conjugate direction method.
-
-    Local optimization without gradient. Good alternative to Nelder-Mead.
     """
 
     def optimize(
@@ -491,7 +447,6 @@ class PowellOptimizer(GradientFreeOptimizer):
             return objective_func(x)
 
         wrapped_objective = self._wrap_objective(penalized_objective)
-
         start_time = time.time()
 
         result = minimize(
@@ -508,16 +463,16 @@ class PowellOptimizer(GradientFreeOptimizer):
 
 class LBFGSBOptimizer(GradientBasedOptimizer):
     """
-    L-BFGS-B optimizer (gradient-based with bounds).
+    L-BFGS-B optimizer.
 
-    Fast gradient-based method with box constraints. Requires smooth
-    objective function. Good for well-behaved problems.
+    Fast gradient-based method with box constraints.
 
-    Example:
-        >>> optimizer = LBFGSBOptimizer(
-        ...     bounds={"k_dis": (0.3, 0.8)},
-        ...     max_iterations=100
-        ... )
+    Args:
+        bounds (Dict[str, Tuple[float, float]]): Parameter bounds.
+        max_iterations (int): Max iterations.
+        tolerance (float): Convergence tolerance.
+        verbose (bool): Enable output.
+        gtol (float): Gradient tolerance. Defaults to 1e-5.
     """
 
     def __init__(
@@ -528,14 +483,22 @@ class LBFGSBOptimizer(GradientBasedOptimizer):
         verbose: bool = True,
         gtol: float = 1e-5,
     ):
-        """Initialize L-BFGS-B optimizer."""
         super().__init__(bounds, max_iterations, tolerance, verbose)
         self.gtol = gtol
 
     def optimize(
         self, objective_func: Callable[[np.ndarray], float], initial_guess: Optional[np.ndarray] = None
     ) -> OptimizationResult:
-        """Run L-BFGS-B optimization."""
+        """
+        Run L-BFGS-B optimization.
+
+        Args:
+            objective_func (Callable): Objective function to minimize.
+            initial_guess (Optional[np.ndarray]): Starting point. Midpoint of bounds if None.
+
+        Returns:
+            OptimizationResult: Results of the optimization.
+        """
         if initial_guess is None:
             initial_guess = np.mean(self.bounds_array, axis=1)
 
@@ -544,7 +507,6 @@ class LBFGSBOptimizer(GradientBasedOptimizer):
 
         self._reset_tracking()
         wrapped_objective = self._wrap_objective(objective_func)
-
         start_time = time.time()
 
         result = minimize(
@@ -566,9 +528,6 @@ class LBFGSBOptimizer(GradientBasedOptimizer):
 class SLSQPOptimizer(GradientBasedOptimizer):
     """
     Sequential Least Squares Programming.
-
-    Gradient-based method supporting equality and inequality constraints.
-    More flexible than L-BFGS-B but slower.
     """
 
     def __init__(
@@ -579,7 +538,6 @@ class SLSQPOptimizer(GradientBasedOptimizer):
         verbose: bool = True,
         constraints: Optional[List] = None,
     ):
-        """Initialize SLSQP optimizer."""
         super().__init__(bounds, max_iterations, tolerance, verbose)
         self.constraints = constraints or []
 
@@ -595,7 +553,6 @@ class SLSQPOptimizer(GradientBasedOptimizer):
 
         self._reset_tracking()
         wrapped_objective = self._wrap_objective(objective_func)
-
         start_time = time.time()
 
         result = minimize(
@@ -612,7 +569,6 @@ class SLSQPOptimizer(GradientBasedOptimizer):
         return OptimizationResult.from_scipy_result(result, self.parameter_names, execution_time, self.history)
 
 
-# Factory function for creating optimizers
 def create_optimizer(
     method: str, bounds: Dict[str, Tuple[float, float]], max_iterations: int = 100, verbose: bool = True, **kwargs
 ) -> Optimizer:
@@ -620,21 +576,17 @@ def create_optimizer(
     Factory function to create optimizer instances.
 
     Args:
-        method: Optimization method name
-        bounds: Parameter bounds
-        max_iterations: Maximum iterations
-        verbose: Enable output
-        **kwargs: Additional method-specific arguments
+        method (str): Optimization method name (e.g., 'differential_evolution', 'nelder_mead').
+        bounds (Dict[str, Tuple[float, float]]): Parameter bounds.
+        max_iterations (int): Maximum iterations.
+        verbose (bool): Whether to enable output.
+        **kwargs: Additional method-specific arguments.
 
     Returns:
-        Optimizer instance
+        Optimizer: An instance of a concrete Optimizer class.
 
-    Example:
-        >>> optimizer = create_optimizer(
-        ...     method="differential_evolution",
-        ...     bounds={"k_dis": (0.3, 0.8)},
-        ...     population_size=20
-        ... )
+    Raises:
+        ValueError: If the requested optimization method is unknown.
     """
     method = method.lower().replace("-", "_").replace(" ", "_")
 

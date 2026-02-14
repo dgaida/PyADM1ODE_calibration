@@ -1,3 +1,5 @@
+"""Sensitivity analysis module."""
+
 import numpy as np
 from typing import Dict, List, Optional, Any
 from dataclasses import dataclass
@@ -6,7 +8,20 @@ from ..core.simulator import PlantSimulator
 
 @dataclass
 class SensitivityResult:
-    """Result from sensitivity analysis."""
+    """
+    Result from sensitivity analysis for a single parameter.
+
+    Attributes:
+        parameter (str): Name of the analyzed parameter.
+        base_value (float): Nominal value used during analysis.
+        sensitivity_indices (Dict[str, float]): Dimensionless sensitivity indices
+            for each objective.
+        local_gradient (Dict[str, float]): Partial derivatives of objectives
+            with respect to this parameter.
+        normalized_sensitivity (Dict[str, float]): Sensitivity normalized by
+            output standard deviation.
+        variance_contribution (float): Total variance contribution (sum of squares).
+    """
 
     parameter: str
     base_value: float
@@ -17,7 +32,17 @@ class SensitivityResult:
 
 
 class SensitivityAnalyzer:
-    """Performs local sensitivity analysis on plant parameters."""
+    """
+    Performs local sensitivity analysis on ADM1 plant parameters.
+
+    Calculates how changes in input parameters affect specific model outputs,
+    helping to identify which parameters are most influential.
+
+    Args:
+        plant: The PyADM1ODE plant model instance.
+        simulator (Optional[PlantSimulator]): Simulator instance to use.
+        verbose (bool): Whether to enable progress output. Defaults to True.
+    """
 
     def __init__(self, plant, simulator: Optional[PlantSimulator] = None, verbose: bool = True):
         self.plant = plant
@@ -31,7 +56,19 @@ class SensitivityAnalyzer:
         objectives: Optional[List[str]] = None,
         perturbation: float = 0.01,
     ) -> Dict[str, SensitivityResult]:
-        """Perform local sensitivity analysis."""
+        """
+        Perform local sensitivity analysis using finite differences.
+
+        Args:
+            parameters (Dict[str, float]): Baseline parameter set.
+            measurements (Any): Input data for simulation.
+            objectives (Optional[List[str]]): List of objective variables to analyze.
+            perturbation (float): Relative step size for finite differences. Defaults to 0.01.
+
+        Returns:
+            Dict[str, SensitivityResult]: Mapping of parameter names to their
+                respective sensitivity analysis results.
+        """
         if objectives is None:
             objectives = ["Q_ch4"]
 
