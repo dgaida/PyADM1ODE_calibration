@@ -55,7 +55,9 @@ class DataValidator:
 
     @staticmethod
     def validate(
-        data: pd.DataFrame, required_columns: Optional[List[str]] = None, expected_ranges: Optional[Dict[str, Tuple[float, float]]] = None
+        data: pd.DataFrame,
+        required_columns: Optional[List[str]] = None,
+        expected_ranges: Optional[Dict[str, Tuple[float, float]]] = None,
     ) -> ValidationResult:
         """
         Perform comprehensive data validation.

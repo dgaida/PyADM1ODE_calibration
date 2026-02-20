@@ -1,4 +1,5 @@
 """Constraints module."""
+
 from abc import ABC, abstractmethod
 from typing import Dict, List, Optional, Tuple, Callable
 import numpy as np
