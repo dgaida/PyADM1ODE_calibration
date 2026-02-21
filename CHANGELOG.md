@@ -1,6 +1,11 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+## [0.1.2] - 2026-02-21
+
+### Miscellaneous Tasks
+- Version bump to 0.1.2
+
 ## [0.1.1] - 2026-02-20
 
 ### Miscellaneous Tasks
