@@ -3,6 +3,7 @@
 > **Note**: This is a calibration-focused package that only works together with [PyADM1ODE](https://github.com/dgaida/PyADM1ODE).
 
 [![Python 3.10+](https://img.shields.io/badge/python-3.10+-blue.svg)](https://www.python.org/downloads/)
+[![Version](https://img.shields.io/github/v/tag/dgaida/PyADM1ODE_calibration?label=version)](https://github.com/dgaida/PyADM1ODE_calibration/tags)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![codecov](https://codecov.io/gh/dgaida/PyADM1ODE_calibration/branch/main/graph/badge.svg)](https://codecov.io/gh/dgaida/PyADM1ODE_calibration)
 [![Code Quality](https://github.com/dgaida/PyADM1ODE_calibration/actions/workflows/lint.yml/badge.svg)](https://github.com/dgaida/PyADM1ODE_calibration/actions/workflows/lint.yml)
