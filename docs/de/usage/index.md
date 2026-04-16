@@ -1,16 +1,27 @@
 # Nutzung
 
-Dieser Bereich enthält detaillierte Anleitungen zur Verwendung von PyADM1ODE_calibration.
+Willkommen im Nutzungs-Leitfaden für PyADM1ODE_calibration. Hier erfahren Sie, wie Sie die Kernfunktionalitäten des Pakets in Ihren Workflow integrieren.
 
-## Kern-Workflows
+## Typische Workflows
 
-- [Batch-Kalibrierung](calibration.md): Initialkalibrierung basierend auf historischen Daten.  
-- [Online-Rekalibrierung](calibration.md#online-rekalibrierung): Dynamische Anpassung im laufenden Betrieb.  
+### 1. Initialkalibrierung
+Wird verwendet, um ein neues Anlagenmodell an historische Daten anzupassen.
+[Mehr erfahren](calibration.md#initialkalibrierung)
+
+### 2. Online-Monitoring & Rekalibrierung
+Kontinuierliche Überwachung der Modellgüte und automatische Parameteranpassung.
+[Mehr erfahren](calibration.md#online-rekalibrierung)
+
+### 3. Datenmanagement
+Effizientes Laden, Validieren und Speichern von Messwerten.
+[API Referenz zu IO](../api/io.md)
+
+## Code-Struktur
+
+- **`calibration`**: Enthält die Optimierungslogik und Kalibratoren.
+- **`io`**: Behandelt den Datenimport (CSV, Datenbank) und Validierung.
+- **`optimization`**: Implementiert verschiedene Optimierungsalgorithmen.
 
 ## Beispiele
 
-- [Vollständiger Workflow](../examples/calibration_workflow.md): Ein Schritt-für-Schritt Beispiel von der Datenaufbereitung bis zur Ergebnisanalyse.  
-
-## Datenformate
-
-Das Framework erwartet Messdaten als Zeitreihen. Stellen Sie sicher, dass Ihre CSV-Dateien eine `timestamp`-Spalte und entsprechende Spalten für die Zielgrößen (z.B. `Q_ch4`, `pH`) enthalten.
+Praktische Beispiele finden Sie im [Beispiele-Bereich](../examples/index.md) oder in den interaktiven [Tutorials](../tutorials/index.md).

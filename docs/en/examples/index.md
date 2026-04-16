@@ -1,7 +1,5 @@
 # Examples
 
-Practical examples of using PyADM1ODE Calibration.
+Here you will find practical examples of how to use PyADM1ODE_calibration.
 
-## Workflow Examples
-
-- [Calibration Workflow](calibration_workflow.md): Step-by-step calibration of a biogas plant model.  
+- [Calibration Workflow](calibration_workflow.md): A complete example of how to calibrate a model.

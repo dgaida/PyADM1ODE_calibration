@@ -1,18 +1,36 @@
 # Troubleshooting
 
-Common issues and their solutions.
+Commonly occurring problems and their solutions.
 
-## Simulation does not converge
+## Installation
 
-- **Cause**: Too aggressive parameter changes or unstable initial values.  
-- **Solution**: Narrow the parameter `bounds` or use `max_parameter_change` during online calibration.  
+### Error: `ImportError: libdl.so.2: cannot open shared object file`
+**Cause**: .NET/Mono is not correctly installed on the Linux system.
+**Solution**: Install `mono-complete`:
+```bash
+sudo apt-get install mono-complete
+```
 
-## Database Connection Errors
+## Calibration
 
-- **Cause**: Incorrect environment variables or missing permissions.  
-- **Solution**: Check `DB_HOST`, `DB_NAME` etc. Ensure PostgreSQL is running and accepting connections.  
+### Error: `CalibrationResult.success` is `False`
+**Cause**: The optimizer could not find a minimum or the maximum number of iterations was reached.
+**Solution**:
+- Increase `max_iterations`.
+- Check the `bounds`. Are they too narrow or too wide?
+- Check the quality of the input data.
 
-## Slow Calibration
+### Unrealistic Parameter Values
+**Cause**: Overfitting or poorly chosen starting values/bounds.
+**Solution**:
+- Use `use_constraints=True` in the `calibrate` method.
+- Perform a sensitivity analysis to exclude non-identifiable parameters.
 
-- **Cause**: Too many parameters or too many iterations in Differential Evolution.  
-- **Solution**: Perform a sensitivity analysis first to identify the most important parameters. Use local optimizers (Nelder-Mead) for fine-tuning.  
+## Data Import
+
+### Error: `Column 'Q_ch4' not found`
+**Cause**: The CSV file has incorrect column headers.
+**Solution**: Rename the columns in your CSV according to ADM1 standards or use a mapping script.
+
+## Further Help
+If your problem is not listed here, please create an [issue on GitHub](https://github.com/dgaida/PyADM1ODE_calibration/issues).

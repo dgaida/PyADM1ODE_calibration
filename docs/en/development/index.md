@@ -1,42 +1,41 @@
 # Development
 
-Information for contributors and developers of PyADM1ODE_calibration.
+Welcome to the developer area of PyADM1ODE_calibration. We welcome contributions!
 
 ## Development Setup
 
-1. Clone the repository.  
-2. Install dependencies: `pip install -e ".[dev,docs]"`.  
-3. Install pre-commit hooks: `pre-commit install`.  
+1. Clone the repository:
+   ```bash
+   git clone https://github.com/dgaida/PyADM1ODE_calibration.git
+   cd PyADM1ODE_calibration
+   ```
 
-## Code Style
+2. Create a virtual environment and install dependencies:
+   ```bash
+   pip install -e ".[dev,docs]"
+   ```
 
-We use:  
-- **Black** for formatting.  
-- **Ruff** for linting.  
-- **Google-style docstrings** for documentation.  
+## Guidelines
 
-## Tests
+- **Code Style**: We use `ruff` for linting and `black` for formatting.
+- **Tests**: New features must be covered by tests in `tests/`. We aim for > 90% coverage.
+- **Docstrings**: All public functions must have Google-style docstrings.
 
-Run tests with pytest:
+## Workflow
 
-```bash
-pytest
-```
+1. Create a feature branch.
+2. Implement your changes.
+3. Run tests and linter:
+   ```bash
+   ruff check .
+   black --check .
+   python3 -m pytest tests/
+   ```
+4. Create a pull request.
 
-With coverage report:
+## Documentation
 
-```bash
-pytest --cov=pyadm1ode_calibration
-```
-
-## Building Documentation
-
-```bash
-mkdocs build
-```
-
-To view the documentation locally with live preview:
-
+The documentation is built with MkDocs. To view it locally:
 ```bash
 mkdocs serve
 ```

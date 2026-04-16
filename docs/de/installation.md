@@ -1,50 +1,54 @@
 # Installation
 
-Detaillierte Anweisungen zur Installation von PyADM1ODE_calibration in verschiedenen Umgebungen.
+## Standard-Installation
 
-## Pip Installation
-
-### Standard Installation
+Die stabilste Version von PyADM1ODE_calibration kann direkt über den Python Package Index (PyPI) installiert werden:
 
 ```bash
-pip install git+https://github.com/dgaida/PyADM1ODE_calibration.git
+pip install pyadm1ode-calibration
 ```
 
-### Mit optionalen Abhängigkeiten
+## Installation aus dem Quellcode
+
+Für die neuesten Features oder zur aktiven Entwicklung können Sie das Repository klonen:
 
 ```bash
-# Für Entwicklung (Tests, Linting)
-pip install "pyadm1ode_calibration[dev] @ git+https://github.com/dgaida/PyADM1ODE_calibration.git"
-
-# Für Dokumentation
-pip install "pyadm1ode_calibration[docs] @ git+https://github.com/dgaida/PyADM1ODE_calibration.git"
+git clone https://github.com/dgaida/PyADM1ODE_calibration.git
+cd PyADM1ODE_calibration
+pip install .
 ```
 
-## Conda / Mamba
+### Entwicklungs-Modus
 
-Wir empfehlen die Verwendung einer dedizierten Umgebung:
+Wenn Sie Änderungen am Code vornehmen möchten, installieren Sie das Paket im Editier-Modus mit allen Entwicklungs-Abhängigkeiten:
 
 ```bash
-# Umgebung erstellen
-conda env create -f environment.yml
-conda activate biogas
-
-# Paket im Entwicklungsmodus installieren
-pip install -e .
+pip install -e ".[dev]"
 ```
 
-## Datenbank-Abhängigkeiten
+## System-Voraussetzungen (Linux)
 
-Wenn Sie die PostgreSQL-Integration nutzen möchten, stellen Sie sicher, dass die entsprechenden Client-Bibliotheken auf Ihrem System installiert sind:
+Da PyADM1ODE auf .NET-Komponenten (SIMBA# Kern) basiert, muss unter Linux das Paket `mono-complete` installiert sein:
 
-- **Linux (Debian/Ubuntu)**: `sudo apt-get install libpq-dev`  
-- **macOS**: `brew install postgresql`  
-
-## Verifizierung
-
-Nach der Installation können Sie die korrekte Funktion wie folgt prüfen:
-
-```python
-import pyadm1ode_calibration
-print(pyadm1ode_calibration.__version__)
+```bash
+sudo apt-get update
+sudo apt-get install mono-complete
 ```
+
+## Dokumentations-Tools
+
+Um die Dokumentation lokal zu bauen, installieren Sie die `docs` Extras:
+
+```bash
+pip install -e ".[docs]"
+```
+
+Danach können Sie die Dokumentation mit MkDocs betrachten:
+
+```bash
+mkdocs serve
+```
+
+## Docker (Optional)
+
+Ein Dockerfile ist im Repository verfügbar, um eine konsistente Umgebung bereitzustellen, die bereits alle .NET/Mono Abhängigkeiten enthält.

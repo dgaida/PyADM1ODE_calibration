@@ -1,0 +1,65 @@
+name: Documentation
+
+on:
+  push:
+    branches: [main]
+    tags: ["v*"]
+  pull_request:
+    branches: [main]
+
+permissions:
+  contents: write
+  id-token: write
+
+jobs:
+  docs:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.10"
+          cache: "pip"
+
+      - name: Install dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y mono-complete
+          pip install -e ".[docs,dev]"
+          pip install interrogate git-cliff
+
+      - name: Run Tests
+        run: python3 -m pytest -c /dev/null tests/
+
+      - name: Check API Doc Coverage
+        run: |
+          mkdir -p docs/assets
+          interrogate pyadm1ode_calibration/ --fail-under 95 --generate-badge docs/assets/interrogate.svg
+
+      - name: Collect Metrics
+        run: |
+          DATE=$(date +'%Y-%m-%d %H:%M')
+          echo "{\"coverage\": {\"label\": \"API Abdeckung\", \"value\": \"$(interrogate pyadm1ode_calibration/ | grep -oP '\d+\.\d+(?=%)')%\", \"status\": \"success\"}, \"last_build\": {\"label\": \"Letzter Build\", \"value\": \"$DATE\", \"status\": \"success\"}}" > docs/assets/metrics.json
+
+      - name: Build Documentation
+        run: mkdocs build --strict
+
+      - name: Deploy Documentation (mike)
+        if: github.event_name == 'push' && (github.ref == 'refs/heads/main' || startsWith(github.ref, 'refs/tags/v'))
+        run: |
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+          git fetch origin gh-pages --depth=1 || true
+
+          if [[ $GITHUB_REF == refs/tags/* ]]; then
+            VERSION=${GITHUB_REF#refs/tags/}
+            mike deploy --push --update-aliases $VERSION latest
+          else
+            mike deploy --push --update-aliases dev latest
+          fi
+          mike set-default --push latest
