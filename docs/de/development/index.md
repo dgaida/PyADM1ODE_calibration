@@ -4,16 +4,16 @@ Informationen für Mitwirkende und Entwickler von PyADM1ODE_calibration.
 
 ## Entwicklungs-Setup
 
-1. Repository klonen.
-2. Abhängigkeiten installieren: `pip install -e ".[dev,docs]"`.
-3. Pre-commit Hooks installieren: `pre-commit install`.
+1. Repository klonen.  
+2. Abhängigkeiten installieren: `pip install -e ".[dev,docs]"`.  
+3. Pre-commit Hooks installieren: `pre-commit install`.  
 
 ## Code-Style
 
-Wir verwenden:
-- **Black** für die Formatierung.
-- **Ruff** für das Linting.
-- **Google-Style Docstrings** für die Dokumentation.
+Wir verwenden:  
+- **Black** für die Formatierung.  
+- **Ruff** für das Linting.  
+- **Google-Style Docstrings** für die Dokumentation.  
 
 ## Tests
 

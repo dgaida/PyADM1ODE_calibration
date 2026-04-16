@@ -31,9 +31,9 @@ Die Verbindung zur PostgreSQL-Datenbank erfolgt über Umgebungsvariablen oder ei
 
 Jeder Algorithmus hat spezifische Parameter, die über `kwargs` an die `calibrate`-Methode übergeben werden:
 
-- **Differential Evolution**: `population_size`, `mutation`, `recombination`.
-- **Nelder-Mead**: `adaptive`, `tolerance`.
-- **L-BFGS-B**: `gtol`.
+- **Differential Evolution**: `population_size`, `mutation`, `recombination`.  
+- **Nelder-Mead**: `adaptive`, `tolerance`.  
+- **L-BFGS-B**: `gtol`.  
 
 ## Logging
 

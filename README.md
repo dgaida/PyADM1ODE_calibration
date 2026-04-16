@@ -23,23 +23,23 @@ Automated calibration and re-calibration of Anaerobic Digestion Model No. 1 (ADM
 
 PyADM1ODE_calibration provides a complete calibration framework for [PyADM1ODE](https://github.com/dgaida/PyADM1ODE) biogas plant models:
 
-- **Initial Calibration**: Batch optimization from historical measurement data
-- **Online Re-Calibration**: Real-time parameter adjustment during plant operation
-- **Multiple Optimization Algorithms**: Differential Evolution, Nelder-Mead, L-BFGS-B, Particle Swarm
-- **Multi-Objective Optimization**: Balance multiple outputs (CH₄, pH, VFA) with weighted objectives
-- **Comprehensive Validation**: Goodness-of-fit metrics, residual analysis, cross-validation
-- **Parameter Identifiability**: Sensitivity analysis and correlation detection
-- **Data Management**: CSV/database import, validation, outlier detection, gap filling
+- **Initial Calibration**: Batch optimization from historical measurement data  
+- **Online Re-Calibration**: Real-time parameter adjustment during plant operation  
+- **Multiple Optimization Algorithms**: Differential Evolution, Nelder-Mead, L-BFGS-B, Particle Swarm  
+- **Multi-Objective Optimization**: Balance multiple outputs (CH₄, pH, VFA) with weighted objectives  
+- **Comprehensive Validation**: Goodness-of-fit metrics, residual analysis, cross-validation  
+- **Parameter Identifiability**: Sensitivity analysis and correlation detection  
+- **Data Management**: CSV/database import, validation, outlier detection, gap filling  
 
 ## Key Features
 
 ### 🎯 Calibration Methods
 
-- **Initial calibration** from 7-30 days of stable operation data
-- **Online re-calibration** with variance-based triggering
-- **Bounded parameter updates** to prevent unrealistic drift
-- **Substrate-dependent parameters** (k_dis, k_hyd_*, k_m_*)
-- **Yield coefficients and kinetic parameters** (Y_*, K_S_*)
+- **Initial calibration** from 7-30 days of stable operation data  
+- **Online re-calibration** with variance-based triggering  
+- **Bounded parameter updates** to prevent unrealistic drift  
+- **Substrate-dependent parameters** (k_dis, k_hyd_*, k_m_*)  
+- **Yield coefficients and kinetic parameters** (Y_*, K_S_*)  
 
 ### 🔧 Optimization Algorithms
 
@@ -52,26 +52,26 @@ PyADM1ODE_calibration provides a complete calibration framework for [PyADM1ODE](
 
 ### 📊 Validation & Analysis
 
-- **Goodness-of-fit**: RMSE, MAE, R², Nash-Sutcliffe Efficiency, PBIAS
-- **Residual analysis**: Normality tests, autocorrelation, heteroscedasticity
-- **Sensitivity analysis**: Local gradients, normalized indices, variance contribution
-- **Identifiability**: Correlation matrices, confidence intervals, VIF
-- **Cross-validation**: k-fold validation for generalization assessment
+- **Goodness-of-fit**: RMSE, MAE, R², Nash-Sutcliffe Efficiency, PBIAS  
+- **Residual analysis**: Normality tests, autocorrelation, heteroscedasticity  
+- **Sensitivity analysis**: Local gradients, normalized indices, variance contribution  
+- **Identifiability**: Correlation matrices, confidence intervals, VIF  
+- **Cross-validation**: k-fold validation for generalization assessment  
 
 ### 💾 Data Management
 
-- **Measurement data**: CSV/PostgreSQL import with validation
-- **Outlier detection**: Z-score, IQR, moving window methods
-- **Gap filling**: Interpolation, forward/backward fill, mean/median
-- **Data validation**: Range checks, missing data analysis, quality scoring
-- **Database storage**: Plant configurations, calibration history, simulation results
+- **Measurement data**: CSV/PostgreSQL import with validation  
+- **Outlier detection**: Z-score, IQR, moving window methods  
+- **Gap filling**: Interpolation, forward/backward fill, mean/median  
+- **Data validation**: Range checks, missing data analysis, quality scoring  
+- **Database storage**: Plant configurations, calibration history, simulation results  
 
 ## Installation
 
 ### Prerequisites
 
-- Python 3.10 or higher
-- [PyADM1ODE](https://github.com/dgaida/PyADM1ODE) base package
+- Python 3.10 or higher  
+- [PyADM1ODE](https://github.com/dgaida/PyADM1ODE) base package  
 
 ### From GitHub
 
@@ -278,15 +278,15 @@ PyADM1ODE_calibration/
 
 ### User Guide
 
-- [Calibration Guide](docs/user_guide/calibration.md) - Complete calibration workflow
-- [Example Workflow](docs/examples/calibration_workflow.md) - Step-by-step tutorial
-- [API Reference](docs/api_reference/) - Detailed API documentation
+- [Calibration Guide](docs/user_guide/calibration.md) - Complete calibration workflow  
+- [Example Workflow](docs/examples/calibration_workflow.md) - Step-by-step tutorial  
+- [API Reference](docs/api_reference/) - Detailed API documentation  
 
 ### Example Scripts
 
-- [`scripts/calibration_example.py`](scripts/calibration_example.py) - Complete calibration workflow
-- [`scripts/generate_measurement_data.py`](scripts/generate_measurement_data.py) - Generate synthetic test data
-- [`scripts/test_calibration.py`](scripts/test_calibration.py) - Test parameter bounds and data loading
+- [`scripts/calibration_example.py`](scripts/calibration_example.py) - Complete calibration workflow  
+- [`scripts/generate_measurement_data.py`](scripts/generate_measurement_data.py) - Generate synthetic test data  
+- [`scripts/test_calibration.py`](scripts/test_calibration.py) - Test parameter bounds and data loading  
 
 ## Calibration Parameters
 
@@ -322,9 +322,9 @@ Most commonly calibrated for different substrates:
 
 ### Minimum Requirements
 
-- **Duration**: 7-30 days of stable operation
-- **Frequency**: Hourly measurements (daily for lab analyses)
-- **Quality**: < 10% missing data, validated ranges
+- **Duration**: 7-30 days of stable operation  
+- **Frequency**: Hourly measurements (daily for lab analyses)  
+- **Quality**: < 10% missing data, validated ranges  
 
 ### Required Measurements
 
@@ -340,11 +340,11 @@ Most commonly calibrated for different substrates:
 
 ### Optional Measurements
 
-- CO₂ production (Q_co2)
-- FOS/TAC ratio
-- NH₄-N concentration
-- Electrical power (P_el)
-- Thermal power (P_th)
+- CO₂ production (Q_co2)  
+- FOS/TAC ratio  
+- NH₄-N concentration  
+- Electrical power (P_el)  
+- Thermal power (P_th)  
 
 ## Validation Metrics
 
@@ -358,9 +358,9 @@ Most commonly calibrated for different substrates:
 
 ### Interpretation
 
-- **R² > 0.75**: Good model fit, parameters reliable
-- **PBIAS < 10%**: Low systematic bias
-- **NSE > 0.70**: Model better than mean prediction
+- **R² > 0.75**: Good model fit, parameters reliable  
+- **PBIAS < 10%**: Low systematic bias  
+- **NSE > 0.70**: Model better than mean prediction  
 
 ## Performance
 
@@ -395,12 +395,12 @@ pytest tests/ -v -m "not slow"
 
 We welcome contributions! Areas where we need help:
 
-- Additional optimization algorithms
-- More sophisticated online calibration strategies
-- Bayesian calibration with uncertainty quantification
-- Real plant validation data
-- Performance optimization
-- Documentation improvements
+- Additional optimization algorithms  
+- More sophisticated online calibration strategies  
+- Bayesian calibration with uncertainty quantification  
+- Real plant validation data  
+- Performance optimization  
+- Documentation improvements  
 
 Please see [CONTRIBUTING.md](CONTRIBUTING.md) for guidelines.
 
@@ -426,9 +426,9 @@ If you use PyADM1ODE_calibration in your research, please cite:
 
 ## Related Publications
 
-- **Gaida, D. (2014).** *Dynamic real-time substrate feed optimization of anaerobic co-digestion plants.* PhD thesis, Leiden University.
-- **Batstone, D.J., et al. (2002).** *Anaerobic Digestion Model No. 1 (ADM1).* IWA Publishing, London.
-- **Dochain, D. & Vanrolleghem, P. (2001).** *Dynamical Modelling & Estimation in Wastewater Treatment Processes.* IWA Publishing.
+- **Gaida, D. (2014).** *Dynamic real-time substrate feed optimization of anaerobic co-digestion plants.* PhD thesis, Leiden University.  
+- **Batstone, D.J., et al. (2002).** *Anaerobic Digestion Model No. 1 (ADM1).* IWA Publishing, London.  
+- **Dochain, D. & Vanrolleghem, P. (2001).** *Dynamical Modelling & Estimation in Wastewater Treatment Processes.* IWA Publishing.  
 
 ## License
 
@@ -436,15 +436,15 @@ This project is licensed under the MIT License - see [LICENSE](LICENSE) for deta
 
 ## Acknowledgments
 
-- ADM1 development by IWA Task Group
-- SIMBA# implementation by ifak e.V.
+- ADM1 development by IWA Task Group  
+- SIMBA# implementation by ifak e.V.  
 
 ## Contact
 
-**Daniel Gaida**
+**Daniel Gaida**  
 - Email: daniel.gaida@th-koeln.de  
 - GitHub: [@dgaida](https://github.com/dgaida)  
-- Institution: TH Köln - University of Applied Sciences
+- Institution: TH Köln - University of Applied Sciences  
 
 ---
 

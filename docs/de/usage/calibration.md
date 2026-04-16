@@ -6,11 +6,11 @@ Dieses Handbuch behandelt die Parameterkalibrierung in PyADM1ODE, einschließlic
 
 Die Modellkalibrierung ist für eine genaue Biogasanlagensimulation unerlässlich. PyADM1ODE bietet:
 
-- **Erstkalibrierung**: Batch-Optimierung aus historischen Messdaten
-- **Online-Rekalibrierung**: Adaptive Parameteranpassung während des Betriebs
-- **Sensitivitätsanalyse**: Identifizierung einflussreicher Parameter
-- **Identifizierbarkeitsbewertung**: Erkennung von Überparametrisierung
-- **Validierungswerkzeuge**: Gütekriterien und Residualanalyse
+- **Erstkalibrierung**: Batch-Optimierung aus historischen Messdaten  
+- **Online-Rekalibrierung**: Adaptive Parameteranpassung während des Betriebs  
+- **Sensitivitätsanalyse**: Identifizierung einflussreicher Parameter  
+- **Identifizierbarkeitsbewertung**: Erkennung von Überparametrisierung  
+- **Validierungswerkzeuge**: Gütekriterien und Residualanalyse  
 
 ## Schnelleinstieg
 
@@ -46,11 +46,11 @@ Die Erstkalibrierung wird typischerweise mit 7-30 Tagen stabilen Anlagendaten du
 
 ### Wann die Erstkalibrierung genutzt werden sollte
 
-Nutzen Sie die Erstkalibrierung, wenn Sie:
-- Historische Messdaten haben (≥ 2 Wochen empfohlen)
-- Einen stabilen Anlagenbetrieb während des Zeitraums haben
-- Zuverlässige Messungen der Zielgrößen (Gasproduktion, pH, VFA) haben
-- Bekannte Substratzulaufmengen und -zusammensetzungen haben
+Nutzen Sie die Erstkalibrierung, wenn Sie:  
+- Historische Messdaten haben (≥ 2 Wochen empfohlen)  
+- Einen stabilen Anlagenbetrieb während des Zeitraums haben  
+- Zuverlässige Messungen der Zielgrößen (Gasproduktion, pH, VFA) haben  
+- Bekannte Substratzulaufmengen und -zusammensetzungen haben  
 
 ## Online-Rekalibrierung
 
@@ -86,6 +86,6 @@ Der `CalibrationValidator` bietet umfassende Metriken zur Bewertung der Kalibrie
 
 ## Referenzen
 
-1. **Batstone et al. (2002)**: Anaerobic Digestion Model No. 1 (ADM1). IWA Publishing.
-2. **Gaida (2014)**: Dynamic real-time substrate feed optimization of anaerobic co-digestion plants. PhD thesis.
-3. **Dochain & Vanrolleghem (2001)**: Dynamical Modelling & Estimation in Wastewater Treatment Processes.
+1. **Batstone et al. (2002)**: Anaerobic Digestion Model No. 1 (ADM1). IWA Publishing.  
+2. **Gaida (2014)**: Dynamic real-time substrate feed optimization of anaerobic co-digestion plants. PhD thesis.  
+3. **Dochain & Vanrolleghem (2001)**: Dynamical Modelling & Estimation in Wastewater Treatment Processes.  

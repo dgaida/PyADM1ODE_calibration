@@ -6,22 +6,22 @@ This CSV file contains typical biogas plant measurement data for calibration.
 
 ### Column Descriptions:
 
-1. **timestamp** - Date and time of measurement (ISO 8601 format)
-2. **Q_sub_maize** - Maize silage feed rate [m³/d]
-3. **Q_sub_manure** - Swine manure feed rate [m³/d]
-4. **Q_sub_grass** - Grass silage feed rate [m³/d]
-5. **pH** - pH value in digester [-]
-6. **VFA** - Volatile fatty acids concentration [g HAc eq/L]
-7. **TAC** - Total alkalinity [g CaCO3 eq/L]
-8. **FOS_TAC** - Ratio of VFA to TAC [-]
-9. **T_digester** - Digester temperature [K]
-10. **Q_gas** - Total biogas production [m³/d]
-11. **Q_ch4** - Methane production [m³/d]
-12. **Q_co2** - CO2 production [m³/d]
-13. **CH4_content** - Methane content in biogas [%]
-14. **P_gas** - Gas pressure [bar]
-15. **P_el** - Electrical power output from CHP [kW]
-16. **P_th** - Thermal power output from CHP [kW]
+1. **timestamp** - Date and time of measurement (ISO 8601 format)  
+2. **Q_sub_maize** - Maize silage feed rate [m³/d]  
+3. **Q_sub_manure** - Swine manure feed rate [m³/d]  
+4. **Q_sub_grass** - Grass silage feed rate [m³/d]  
+5. **pH** - pH value in digester [-]  
+6. **VFA** - Volatile fatty acids concentration [g HAc eq/L]  
+7. **TAC** - Total alkalinity [g CaCO3 eq/L]  
+8. **FOS_TAC** - Ratio of VFA to TAC [-]  
+9. **T_digester** - Digester temperature [K]  
+10. **Q_gas** - Total biogas production [m³/d]  
+11. **Q_ch4** - Methane production [m³/d]  
+12. **Q_co2** - CO2 production [m³/d]  
+13. **CH4_content** - Methane content in biogas [%]  
+14. **P_gas** - Gas pressure [bar]  
+15. **P_el** - Electrical power output from CHP [kW]  
+16. **P_th** - Thermal power output from CHP [kW]  
 
 ### Example Data (first 10 rows):
 
@@ -50,43 +50,43 @@ timestamp,Q_sub_maize,Q_sub_manure,Q_sub_grass,pH,VFA,TAC,FOS_TAC,T_digester,Q_g
 
 ### Typical Value Ranges for Agricultural Biogas Plants:
 
-- **Q_sub_maize**: 10-25 m³/d (corn silage)
-- **Q_sub_manure**: 5-15 m³/d (swine manure)
-- **Q_sub_grass**: 0-10 m³/d (grass silage)
-- **pH**: 6.8-7.8 (optimal 7.0-7.5)
-- **VFA**: 0.5-4.0 g/L (stable operation < 3.0)
-- **TAC**: 8-20 g CaCO3/L
-- **FOS_TAC**: 0.1-0.4 (warning > 0.3, critical > 0.4)
-- **T_digester**: 306-310 K (33-37°C for mesophilic)
-- **Q_gas**: 500-1500 m³/d (depends on plant size)
-- **Q_ch4**: 300-900 m³/d (50-60% of biogas)
-- **CH4_content**: 50-65% (optimal 55-60%)
-- **P_gas**: 1.01-1.03 bar (slight overpressure)
-- **P_el**: 300-600 kW (for 500 kW CHP)
-- **P_th**: 340-680 kW (thermal efficiency ~45%)
+- **Q_sub_maize**: 10-25 m³/d (corn silage)  
+- **Q_sub_manure**: 5-15 m³/d (swine manure)  
+- **Q_sub_grass**: 0-10 m³/d (grass silage)  
+- **pH**: 6.8-7.8 (optimal 7.0-7.5)  
+- **VFA**: 0.5-4.0 g/L (stable operation < 3.0)  
+- **TAC**: 8-20 g CaCO3/L  
+- **FOS_TAC**: 0.1-0.4 (warning > 0.3, critical > 0.4)  
+- **T_digester**: 306-310 K (33-37°C for mesophilic)  
+- **Q_gas**: 500-1500 m³/d (depends on plant size)  
+- **Q_ch4**: 300-900 m³/d (50-60% of biogas)  
+- **CH4_content**: 50-65% (optimal 55-60%)  
+- **P_gas**: 1.01-1.03 bar (slight overpressure)  
+- **P_el**: 300-600 kW (for 500 kW CHP)  
+- **P_th**: 340-680 kW (thermal efficiency ~45%)  
 
 ## Data Quality Considerations:
 
-1. **Sampling Frequency**:
-   - Online sensors: 1-15 minute intervals
-   - Lab measurements: Daily to weekly
-   - Recommended for calibration: Hourly aggregated data
+1. **Sampling Frequency**:  
+   - Online sensors: 1-15 minute intervals  
+   - Lab measurements: Daily to weekly  
+   - Recommended for calibration: Hourly aggregated data  
 
-2. **Missing Data**:
-   - Sensor failures and maintenance windows are common
-   - Fill gaps < 2 hours with interpolation
-   - Mark longer gaps for special handling
+2. **Missing Data**:  
+   - Sensor failures and maintenance windows are common  
+   - Fill gaps < 2 hours with interpolation  
+   - Mark longer gaps for special handling  
 
-3. **Outliers**:
-   - Sensor drift and calibration issues
-   - Process upsets (overfeeding, pump failures)
-   - Use robust outlier detection before calibration
+3. **Outliers**:  
+   - Sensor drift and calibration issues  
+   - Process upsets (overfeeding, pump failures)  
+   - Use robust outlier detection before calibration  
 
-4. **Measurement Uncertainty**:
-   - pH: ±0.1 units
-   - VFA: ±10% of reading
-   - Gas flow: ±2-5% of reading
-   - Temperature: ±0.5 K
+4. **Measurement Uncertainty**:  
+   - pH: ±0.1 units  
+   - VFA: ±10% of reading  
+   - Gas flow: ±2-5% of reading  
+   - Temperature: ±0.5 K  
 
 ## Loading Example in Python:
 
@@ -123,8 +123,8 @@ Q = data.get_substrate_feeds(
 
 ## Notes for Calibration:
 
-1. **Initial Calibration** requires at least 7-30 days of stable operation data
-2. **Online Calibration** uses rolling windows of 3-7 days
-3. **Steady-state periods** are most valuable for calibration
-4. **Dynamic periods** (feed changes, disturbances) help identify kinetic parameters
-5. **Multiple operating conditions** improve parameter identifiability
+1. **Initial Calibration** requires at least 7-30 days of stable operation data  
+2. **Online Calibration** uses rolling windows of 3-7 days  
+3. **Steady-state periods** are most valuable for calibration  
+4. **Dynamic periods** (feed changes, disturbances) help identify kinetic parameters  
+5. **Multiple operating conditions** improve parameter identifiability  

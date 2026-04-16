@@ -4,12 +4,12 @@ Dieser Bereich enthält detaillierte Anleitungen zur Verwendung von PyADM1ODE_ca
 
 ## Kern-Workflows
 
-- [Batch-Kalibrierung](calibration.md): Initialkalibrierung basierend auf historischen Daten.
-- [Online-Rekalibrierung](calibration.md#online-rekalibrierung): Dynamische Anpassung im laufenden Betrieb.
+- [Batch-Kalibrierung](calibration.md): Initialkalibrierung basierend auf historischen Daten.  
+- [Online-Rekalibrierung](calibration.md#online-rekalibrierung): Dynamische Anpassung im laufenden Betrieb.  
 
 ## Beispiele
 
-- [Vollständiger Workflow](../examples/calibration_workflow.md): Ein Schritt-für-Schritt Beispiel von der Datenaufbereitung bis zur Ergebnisanalyse.
+- [Vollständiger Workflow](../examples/calibration_workflow.md): Ein Schritt-für-Schritt Beispiel von der Datenaufbereitung bis zur Ergebnisanalyse.  
 
 ## Datenformate
 

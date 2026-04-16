@@ -21,9 +21,9 @@ RESULT: PASSED (minimum: 95.0%, actual: 100.0%)
 
 ## 🧪 Test-Statistiken
 
-- **Gesamt-Tests**: 32
-- **Bestanden**: 32
-- **Abdeckung**: 90.2%
+- **Gesamt-Tests**: 32  
+- **Bestanden**: 32  
+- **Abdeckung**: 90.2%  
 
 ## 📝 Changelog-Status
 

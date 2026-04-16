@@ -6,11 +6,11 @@ This guide covers parameter calibration in PyADM1ODE, including initial calibrat
 
 Model calibration is essential for accurate biogas plant simulation. PyADM1ODE provides:
 
-- **Initial Calibration**: Batch optimization from historical measurement data
-- **Online Re-calibration**: Adaptive parameter adjustment during operation
-- **Sensitivity Analysis**: Identification of influential parameters
-- **Identifiability Assessment**: Detection of over-parameterization
-- **Validation Tools**: Goodness-of-fit metrics and residual analysis
+- **Initial Calibration**: Batch optimization from historical measurement data  
+- **Online Re-calibration**: Adaptive parameter adjustment during operation  
+- **Sensitivity Analysis**: Identification of influential parameters  
+- **Identifiability Assessment**: Detection of over-parameterization  
+- **Validation Tools**: Goodness-of-fit metrics and residual analysis  
 
 ## Quick Start
 
@@ -46,28 +46,28 @@ The initial calibration is typically performed using 7-30 days of stable plant o
 
 ### When to Use Initial Calibration
 
-Use initial calibration when you have:
-- Historical measurement data (≥2 weeks recommended)
-- Stable plant operation during measurement period
-- Reliable measurements of key outputs (gas production, pH, VFA)
-- Known substrate feed rates and composition
+Use initial calibration when you have:  
+- Historical measurement data (≥2 weeks recommended)  
+- Stable plant operation during measurement period  
+- Reliable measurements of key outputs (gas production, pH, VFA)  
+- Known substrate feed rates and composition  
 
 ### Parameter Selection
 
 Choose parameters based on:
 
-**High Priority** (most sensitive to calibration):
-- `k_dis`: Disintegration rate [1/d]
-- `k_hyd_ch`, `k_hyd_pr`, `k_hyd_li`: Hydrolysis rates [1/d]
-- `Y_su`, `Y_aa`: Yield coefficients [kg COD/kg COD]
+**High Priority** (most sensitive to calibration):  
+- `k_dis`: Disintegration rate [1/d]  
+- `k_hyd_ch`, `k_hyd_pr`, `k_hyd_li`: Hydrolysis rates [1/d]  
+- `Y_su`, `Y_aa`: Yield coefficients [kg COD/kg COD]  
 
-**Medium Priority**:
-- `k_m_c4`, `k_m_pro`, `k_m_ac`, `k_m_h2`: Maximum uptake rates [1/d]
-- `K_S_su`, `K_S_aa`: Half-saturation constants [kg COD/m³]
+**Medium Priority**:  
+- `k_m_c4`, `k_m_pro`, `k_m_ac`, `k_m_h2`: Maximum uptake rates [1/d]  
+- `K_S_su`, `K_S_aa`: Half-saturation constants [kg COD/m³]  
 
-**Low Priority** (usually well-defined):
-- Stoichiometric coefficients (C, N content)
-- Physical-chemical constants (K_a, K_H)
+**Low Priority** (usually well-defined):  
+- Stoichiometric coefficients (C, N content)  
+- Physical-chemical constants (K_a, K_H)  
 
 ## Online Re-Calibration
 
@@ -91,11 +91,11 @@ if result.success:
 
 ### When to Use Online Re-Calibration
 
-Appropriate for:
-- Long-term operation (months)
-- Gradual substrate property changes
-- Seasonal variations
-- Equipment drift
+Appropriate for:  
+- Long-term operation (months)  
+- Gradual substrate property changes  
+- Seasonal variations  
+- Equipment drift  
 
 ## Validation and Quality Checks
 
@@ -111,6 +111,6 @@ The `CalibrationValidator` provides comprehensive metrics to assess the quality 
 
 ## References
 
-1. **Batstone et al. (2002)**: Anaerobic Digestion Model No. 1 (ADM1). IWA Publishing.
-2. **Gaida (2014)**: Dynamic real-time substrate feed optimization of anaerobic co-digestion plants. PhD thesis.
-3. **Dochain & Vanrolleghem (2001)**: Dynamical Modelling & Estimation in Wastewater Treatment Processes.
+1. **Batstone et al. (2002)**: Anaerobic Digestion Model No. 1 (ADM1). IWA Publishing.  
+2. **Gaida (2014)**: Dynamic real-time substrate feed optimization of anaerobic co-digestion plants. PhD thesis.  
+3. **Dochain & Vanrolleghem (2001)**: Dynamical Modelling & Estimation in Wastewater Treatment Processes.  

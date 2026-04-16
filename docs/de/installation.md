@@ -37,8 +37,8 @@ pip install -e .
 
 Wenn Sie die PostgreSQL-Integration nutzen möchten, stellen Sie sicher, dass die entsprechenden Client-Bibliotheken auf Ihrem System installiert sind:
 
-- **Linux (Debian/Ubuntu)**: `sudo apt-get install libpq-dev`
-- **macOS**: `brew install postgresql`
+- **Linux (Debian/Ubuntu)**: `sudo apt-get install libpq-dev`  
+- **macOS**: `brew install postgresql`  
 
 ## Verifizierung
 

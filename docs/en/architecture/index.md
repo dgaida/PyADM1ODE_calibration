@@ -21,13 +21,13 @@ graph TD
 
 ## Data Flow
 
-1. **Input**: Measurement data is read via `io.loaders`.
-2. **Validation**: `io.validation` checks data quality.
-3. **Optimization**: The `Calibrator` orchestrates the `Optimizer` to find parameters that minimize the error between simulation and measurement.
-4. **Output**: Results are returned as `CalibrationResult` and optionally stored in the database.
+1. **Input**: Measurement data is read via `io.loaders`.  
+2. **Validation**: `io.validation` checks data quality.  
+3. **Optimization**: The `Calibrator` orchestrates the `Optimizer` to find parameters that minimize the error between simulation and measurement.  
+4. **Output**: Results are returned as `CalibrationResult` and optionally stored in the database.  
 
 ## Class Hierarchy
 
-- **BaseCalibrator**: Abstract base class.
-- **InitialCalibrator**: Implementation for batch processes.
-- **OnlineCalibrator**: Implementation for real-time adjustments.
+- **BaseCalibrator**: Abstract base class.  
+- **InitialCalibrator**: Implementation for batch processes.  
+- **OnlineCalibrator**: Implementation for real-time adjustments.  

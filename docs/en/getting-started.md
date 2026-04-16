@@ -4,9 +4,9 @@ This guide will help you get started with PyADM1ODE_calibration.
 
 ## Prerequisites
 
-- **Python 3.10** or higher.
-- **PyADM1ODE**: The base package must be installed.
-- **Data**: Historical biogas plant measurement data in CSV format (recommended).
+- **Python 3.10** or higher.  
+- **PyADM1ODE**: The base package must be installed.  
+- **Data**: Historical biogas plant measurement data in CSV format (recommended).  
 
 ## Installation
 
@@ -28,9 +28,9 @@ pip install -e .
 
 A typical calibration workflow consists of four steps:
 
-1. **Load Data**: Import and validate your measurement data.
-2. **Prepare Model**: Configuration of your PyADM1ODE plant model.
-3. **Run Calibration**: Choose an algorithm and start the optimization.
-4. **Verify Results**: Validate parameters using goodness-of-fit metrics.
+1. **Load Data**: Import and validate your measurement data.  
+2. **Prepare Model**: Configuration of your PyADM1ODE plant model.  
+3. **Run Calibration**: Choose an algorithm and start the optimization.  
+4. **Verify Results**: Validate parameters using goodness-of-fit metrics.  
 
 Check the [Calibration Example](usage/calibration.md) for a detailed code walkthrough.

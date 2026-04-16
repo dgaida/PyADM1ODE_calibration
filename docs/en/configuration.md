@@ -31,9 +31,9 @@ The connection to the PostgreSQL database is established via environment variabl
 
 Each algorithm has specific parameters that are passed via `kwargs` to the `calibrate` method:
 
-- **Differential Evolution**: `population_size`, `mutation`, `recombination`.
-- **Nelder-Mead**: `adaptive`, `tolerance`.
-- **L-BFGS-B**: `gtol`.
+- **Differential Evolution**: `population_size`, `mutation`, `recombination`.  
+- **Nelder-Mead**: `adaptive`, `tolerance`.  
+- **L-BFGS-B**: `gtol`.  
 
 ## Logging
 

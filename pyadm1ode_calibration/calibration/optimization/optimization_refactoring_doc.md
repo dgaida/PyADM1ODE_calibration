@@ -18,94 +18,94 @@ pyadm1/calibration/optimization/
 
 ### 1. Optimizer Classes (`optimizer.py`)
 
-**Abstract Base Classes:**
-- `Optimizer`: Base class for all optimizers
-- `GradientFreeOptimizer`: Base for gradient-free methods
-- `GradientBasedOptimizer`: Base for gradient-based methods
+**Abstract Base Classes:**  
+- `Optimizer`: Base class for all optimizers  
+- `GradientFreeOptimizer`: Base for gradient-free methods  
+- `GradientBasedOptimizer`: Base for gradient-based methods  
 
-**Concrete Implementations:**
-- `DifferentialEvolutionOptimizer`: Global optimization (recommended for initial calibration)
-- `ParticleSwarmOptimizer`: Swarm intelligence
-- `NelderMeadOptimizer`: Local simplex method (good for online calibration)
-- `PowellOptimizer`: Conjugate direction method
-- `LBFGSBOptimizer`: Gradient-based with bounds
-- `SLSQPOptimizer`: Sequential least squares with constraints
+**Concrete Implementations:**  
+- `DifferentialEvolutionOptimizer`: Global optimization (recommended for initial calibration)  
+- `ParticleSwarmOptimizer`: Swarm intelligence  
+- `NelderMeadOptimizer`: Local simplex method (good for online calibration)  
+- `PowellOptimizer`: Conjugate direction method  
+- `LBFGSBOptimizer`: Gradient-based with bounds  
+- `SLSQPOptimizer`: Sequential least squares with constraints  
 
-**Key Features:**
-- Automatic history tracking
-- Progress monitoring
-- Consistent interface across all methods
-- Easy extension for custom optimizers
+**Key Features:**  
+- Automatic history tracking  
+- Progress monitoring  
+- Consistent interface across all methods  
+- Easy extension for custom optimizers  
 
 ### 2. Objective Functions (`objective.py`)
 
-**Classes:**
-- `SingleObjective`: Single output optimization
-- `MultiObjectiveFunction`: Weighted multi-objective
-- `WeightedSumObjective`: Convenience wrapper
-- `LikelihoodObjective`: Maximum likelihood estimation
-- `CustomObjective`: User-defined functions
+**Classes:**  
+- `SingleObjective`: Single output optimization  
+- `MultiObjectiveFunction`: Weighted multi-objective  
+- `WeightedSumObjective`: Convenience wrapper  
+- `LikelihoodObjective`: Maximum likelihood estimation  
+- `CustomObjective`: User-defined functions  
 
-**Features:**
-- Multiple error metrics (RMSE, MAE, MAPE, NSE, R²)
-- Automatic normalization
-- Flexible weighting schemes
-- Statistical metrics computation
+**Features:**  
+- Multiple error metrics (RMSE, MAE, MAPE, NSE, R²)  
+- Automatic normalization  
+- Flexible weighting schemes  
+- Statistical metrics computation  
 
 ### 3. Constraint Handling (`constraints.py`)
 
-**Constraint Types:**
-- `BoxConstraint`: Simple bounds
-- `LinearConstraint`: Linear equality/inequality
-- `NonlinearConstraint`: Custom nonlinear constraints
+**Constraint Types:**  
+- `BoxConstraint`: Simple bounds  
+- `LinearConstraint`: Linear equality/inequality  
+- `NonlinearConstraint`: Custom nonlinear constraints  
 
-**Penalty Functions:**
-- `QuadraticPenalty`: Smooth quadratic penalty
-- `LinearPenalty`: Linear penalty
-- `LogarithmicPenalty`: Barrier function
-- `ExponentialPenalty`: Exponential growth
-- `BarrierPenalty`: Inverse barrier
+**Penalty Functions:**  
+- `QuadraticPenalty`: Smooth quadratic penalty  
+- `LinearPenalty`: Linear penalty  
+- `LogarithmicPenalty`: Barrier function  
+- `ExponentialPenalty`: Exponential growth  
+- `BarrierPenalty`: Inverse barrier  
 
-**Features:**
-- Hard and soft constraints
-- Penalty-based constraint handling
-- Projection to feasible region
-- Integration with scipy optimizers
+**Features:**  
+- Hard and soft constraints  
+- Penalty-based constraint handling  
+- Projection to feasible region  
+- Integration with scipy optimizers  
 
 ## Refactoring Changes
 
 ### What Was Moved
 
-**From `initial.py` → `optimizer.py`:**
-- `_optimize_differential_evolution()` → `DifferentialEvolutionOptimizer`
-- `_optimize_nelder_mead()` → `NelderMeadOptimizer`
-- `_optimize_lbfgsb()` → `LBFGSBOptimizer`
+**From `initial.py` → `optimizer.py`:**  
+- `_optimize_differential_evolution()` → `DifferentialEvolutionOptimizer`  
+- `_optimize_nelder_mead()` → `NelderMeadOptimizer`  
+- `_optimize_lbfgsb()` → `LBFGSBOptimizer`  
 
-**From `parameter_bounds.py` → `constraints.py`:**
-- Penalty function logic → `PenaltyFunction` classes
-- Bound checking → `BoxConstraint` class
+**From `parameter_bounds.py` → `constraints.py`:**  
+- Penalty function logic → `PenaltyFunction` classes  
+- Bound checking → `BoxConstraint` class  
 
-**New Functionality:**
-- Particle Swarm Optimization
-- Powell's method
-- SLSQP with constraints
-- Multi-objective functions
-- Likelihood objectives
-- Linear and nonlinear constraints
+**New Functionality:**  
+- Particle Swarm Optimization  
+- Powell's method  
+- SLSQP with constraints  
+- Multi-objective functions  
+- Likelihood objectives  
+- Linear and nonlinear constraints  
 
 ### What Stayed
 
-**In `calibrator.py`:**
-- High-level calibration interface
-- Simulation orchestration
-- Result management
-- History tracking
+**In `calibrator.py`:**  
+- High-level calibration interface  
+- Simulation orchestration  
+- Result management  
+- History tracking  
 
-**In `initial.py` and `online.py`:**
-- Calibration-specific logic
-- ADM1 integration
-- Sensitivity analysis
-- Identifiability analysis
+**In `initial.py` and `online.py`:**  
+- Calibration-specific logic  
+- ADM1 integration  
+- Sensitivity analysis  
+- Identifiability analysis  
 
 ## Usage Examples
 
@@ -285,17 +285,17 @@ class OnlineCalibrator:
 
 ## Benefits of Refactoring
 
-1. **Separation of Concerns**: Optimization algorithms, objectives, and constraints are cleanly separated
+1. **Separation of Concerns**: Optimization algorithms, objectives, and constraints are cleanly separated  
 
-2. **Extensibility**: Easy to add new optimizers or objective functions without modifying existing code
+2. **Extensibility**: Easy to add new optimizers or objective functions without modifying existing code  
 
-3. **Reusability**: Optimization components can be used in other parts of the codebase
+3. **Reusability**: Optimization components can be used in other parts of the codebase  
 
-4. **Testability**: Each component can be tested independently
+4. **Testability**: Each component can be tested independently  
 
-5. **Maintainability**: Clear structure makes code easier to understand and modify
+5. **Maintainability**: Clear structure makes code easier to understand and modify  
 
-6. **Flexibility**: Users can easily customize optimization behavior
+6. **Flexibility**: Users can easily customize optimization behavior  
 
 ## Migration Guide
 
@@ -317,16 +317,16 @@ The high-level interface remains the same!
 
 When adding new optimization methods:
 
-1. Create new class inheriting from `Optimizer`
-2. Implement `optimize()` method
-3. Add to factory function
-4. Write tests
+1. Create new class inheriting from `Optimizer`  
+2. Implement `optimize()` method  
+3. Add to factory function  
+4. Write tests  
 
 When adding new objective types:
 
-1. Create new class inheriting from `ObjectiveFunction`
-2. Implement `__call__()` method
-3. Add documentation and examples
+1. Create new class inheriting from `ObjectiveFunction`  
+2. Implement `__call__()` method  
+3. Add documentation and examples  
 
 ## Testing
 
@@ -341,22 +341,22 @@ tests/unit/test_calibration/test_optimization/
 
 ## Future Enhancements
 
-Potential additions:
-- Trust region methods
-- Simulated annealing
-- Genetic algorithms
-- Multi-objective Pareto optimization (NSGA-II)
-- Adaptive penalty methods
-- Surrogate-based optimization
-- Parallel optimization strategies
+Potential additions:  
+- Trust region methods  
+- Simulated annealing  
+- Genetic algorithms  
+- Multi-objective Pareto optimization (NSGA-II)  
+- Adaptive penalty methods  
+- Surrogate-based optimization  
+- Parallel optimization strategies  
 
 ## Summary
 
-This refactoring creates a clean, modular optimization framework that:
-- Maintains backward compatibility
-- Improves code organization
-- Enables easy extension
-- Provides more flexibility
-- Better aligns with software engineering best practices
+This refactoring creates a clean, modular optimization framework that:  
+- Maintains backward compatibility  
+- Improves code organization  
+- Enables easy extension  
+- Provides more flexibility  
+- Better aligns with software engineering best practices  
 
 The separation into optimizer, objective, and constraints modules follows the Single Responsibility Principle and makes the codebase more maintainable and testable.
