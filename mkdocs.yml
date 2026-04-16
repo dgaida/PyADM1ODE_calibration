@@ -120,3 +120,7 @@ nav:
       - Versionierung: development/versioning.md
       - Changelog: development/changelog.md
   - Fehlerbehebung: troubleshooting.md
+
+# Suppress autorefs warnings about multiple primary URLs which occur in multi-language builds
+# This requires mkdocs >= 1.5
+# Validation settings
