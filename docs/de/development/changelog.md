@@ -6,10 +6,10 @@ Alle wichtigen Änderungen an diesem Projekt werden in dieser Datei festgehalten
 
 Wir verwenden [Conventional Commits](https://www.conventionalcommits.org/de/v1.0.0/), um das Changelog automatisch zu generieren. Bitte strukturieren Sie Ihre Commit-Nachrichten wie folgt:
 
-- \`feat: ...\` für neue Features.
-- \`fix: ...\` für Bugfixes.
-- \`docs: ...\` für Dokumentationsänderungen.
-- \`refactor: ...\` für Code-Refactoring ohne Funktionsänderung.
+- \`feat: ...\` für neue Features.  
+- \`fix: ...\` für Bugfixes.  
+- \`docs: ...\` für Dokumentationsänderungen.  
+- \`refactor: ...\` für Code-Refactoring ohne Funktionsänderung.  
 
 ## Automatische Generierung
 

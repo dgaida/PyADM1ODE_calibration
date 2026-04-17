@@ -59,6 +59,6 @@ if calibrator.should_recalibrate(recent_data):
 
 After each calibration, a validation is automatically performed (if a `validation_split` was specified). You can find the results in `result.validation_metrics`:
 
-- **RMSE**: Root Mean Square Error
-- **R²**: Coefficient of Determination
-- **NSE**: Nash-Sutcliffe Efficiency
+- **RMSE**: Root Mean Square Error  
+- **R²**: Coefficient of Determination  
+- **NSE**: Nash-Sutcliffe Efficiency  

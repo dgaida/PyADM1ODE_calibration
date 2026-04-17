@@ -28,10 +28,10 @@ bounds = {
 
 Supported algorithms for the `calibrate` method:
 
-- `differential_evolution` (default): Robust for global search.
-- `nelder-mead`: Efficient for local search (good for online calibration).
-- `l-bfgs-b`: Gradient-based, requires smooth objective functions.
-- `particle_swarm`: Stochastic global search.
+- `differential_evolution` (default): Robust for global search.  
+- `nelder-mead`: Efficient for local search (good for online calibration).  
+- `l-bfgs-b`: Gradient-based, requires smooth objective functions.  
+- `particle_swarm`: Stochastic global search.  
 
 ## Objective Functions
 

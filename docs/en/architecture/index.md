@@ -49,7 +49,7 @@ sequenceDiagram
 
 ## Component Description
 
-- **Calibrator Facade**: Provides a simple interface for the end user.
-- **Plant Simulator**: Encapsulates the logic for executing PyADM1ODE simulations.
-- **Optimizer Engine**: Abstract layer for various algorithms (SciPy, custom implementations).
-- **Data Loader**: Validates and transforms input data into a format usable by the simulator.
+- **Calibrator Facade**: Provides a simple interface for the end user.  
+- **Plant Simulator**: Encapsulates the logic for executing PyADM1ODE simulations.  
+- **Optimizer Engine**: Abstract layer for various algorithms (SciPy, custom implementations).  
+- **Data Loader**: Validates and transforms input data into a format usable by the simulator.  

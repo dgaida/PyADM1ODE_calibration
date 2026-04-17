@@ -12,19 +12,19 @@ PyADM1ODE_calibration provides a complete solution for the calibration of [PyADM
 
 ## Key Features
 
-- 🎯 **Precision**: Highly accurate matching of ADM1 parameters to real plant data.
-- ⚡ **Efficiency**: Fast local optimizers for online use and robust global optimizers for initial calibration.
-- 📊 **Analysis**: Integrated sensitivity and identifiability analysis to identify critical parameters.
-- 💾 **Integration**: Seamless connection to PostgreSQL databases and CSV workflows.
-- 🌍 **Multilingual**: Documentation available in German and English.
+- 🎯 **Precision**: Highly accurate matching of ADM1 parameters to real plant data.  
+- ⚡ **Efficiency**: Fast local optimizers for online use and robust global optimizers for initial calibration.  
+- 📊 **Analysis**: Integrated sensitivity and identifiability analysis to identify critical parameters.  
+- 💾 **Integration**: Seamless connection to PostgreSQL databases and CSV workflows.  
+- 🌍 **Multilingual**: Documentation available in German and English.  
 
 ## Table of Contents
 
-- [Getting Started](getting-started.md) — Quick start with the project.
-- [Installation](installation.md) — Installation guides for various environments.
-- [Configuration](configuration.md) — Overview of configuration options and parameters.
-- [Tutorials](tutorials/index.md) — Step-by-step guides (also for Google Colab).
-- [API Reference](api/index.md) — Detailed documentation of classes and functions.
+- [Getting Started](getting-started.md) — Quick start with the project.  
+- [Installation](installation.md) — Installation guides for various environments.  
+- [Configuration](configuration.md) — Overview of configuration options and parameters.  
+- [Tutorials](tutorials/index.md) — Step-by-step guides (also for Google Colab).  
+- [API Reference](api/index.md) — Detailed documentation of classes and functions.  
 
 ## Quickstart
 

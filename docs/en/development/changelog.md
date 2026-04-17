@@ -6,10 +6,10 @@ All notable changes to this project will be documented in this file.
 
 We use [Conventional Commits](https://www.conventionalcommits.org/en/v1.0.0/) to automatically generate the changelog. Please structure your commit messages as follows:
 
-- \`feat: ...\` for new features.
-- \`fix: ...\` for bug fixes.
-- \`docs: ...\` for documentation changes.
-- \`refactor: ...\` for code refactoring without functional changes.
+- \`feat: ...\` for new features.  
+- \`fix: ...\` for bug fixes.  
+- \`docs: ...\` for documentation changes.  
+- \`refactor: ...\` for code refactoring without functional changes.  
 
 ## Automatic Generation
 

@@ -59,6 +59,6 @@ if calibrator.should_recalibrate(recent_data):
 
 Nach jeder Kalibrierung wird automatisch eine Validierung durchgeführt (falls ein `validation_split` angegeben wurde). Die Ergebnisse finden Sie in `result.validation_metrics`:
 
-- **RMSE**: Root Mean Square Error
-- **R²**: Bestimmtheitsmaß
-- **NSE**: Nash-Sutcliffe Efficiency
+- **RMSE**: Root Mean Square Error  
+- **R²**: Bestimmtheitsmaß  
+- **NSE**: Nash-Sutcliffe Efficiency  

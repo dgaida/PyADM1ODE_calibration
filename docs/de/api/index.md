@@ -4,8 +4,8 @@ Detaillierte Dokumentation der Module, Klassen und Funktionen von PyADM1ODE_cali
 
 ## Module
 
-- [**Kalibrierung**](calibration.md): Kern-Klassen für Initial- und Online-Kalibrierung.
-- [**IO & Daten**](io.md): Laden, Speichern und Validieren von Messdaten.
-- [**Optimierung**](optimization.md): Implementierte Algorithmen und Zielfunktionen.
+- [**Kalibrierung**](calibration.md): Kern-Klassen für Initial- und Online-Kalibrierung.  
+- [**IO & Daten**](io.md): Laden, Speichern und Validieren von Messdaten.  
+- [**Optimierung**](optimization.md): Implementierte Algorithmen und Zielfunktionen.  
 
 ::: pyadm1ode_calibration.calibration.Calibrator

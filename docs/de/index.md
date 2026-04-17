@@ -12,19 +12,19 @@ PyADM1ODE_calibration bietet eine vollständige Lösung für die Kalibrierung vo
 
 ## Hauptmerkmale
 
-- 🎯 **Präzision**: Hochgenaue Abstimmung von ADM1-Parametern auf reale Anlagendaten.
-- ⚡ **Effizienz**: Schnelle lokale Optimierer für den Online-Einsatz und robuste globale Optimierer für die Initialkalibrierung.
-- 📊 **Analyse**: Integrierte Sensitivitäts- und Identifizierbarkeitsanalyse zur Identifizierung kritischer Parameter.
-- 💾 **Integration**: Nahtlose Anbindung an PostgreSQL-Datenbanken und CSV-Workflows.
-- 🌍 **Mehrsprachig**: Dokumentation in Deutsch und Englisch verfügbar.
+- 🎯 **Präzision**: Hochgenaue Abstimmung von ADM1-Parametern auf reale Anlagendaten.  
+- ⚡ **Effizienz**: Schnelle lokale Optimierer für den Online-Einsatz und robuste globale Optimierer für die Initialkalibrierung.  
+- 📊 **Analyse**: Integrierte Sensitivitäts- und Identifizierbarkeitsanalyse zur Identifizierung kritischer Parameter.  
+- 💾 **Integration**: Nahtlose Anbindung an PostgreSQL-Datenbanken und CSV-Workflows.  
+- 🌍 **Mehrsprachig**: Dokumentation in Deutsch und Englisch verfügbar.  
 
 ## Inhaltsverzeichnis
 
-- [Erste Schritte](getting-started.md) — Schneller Einstieg in das Projekt.
-- [Installation](installation.md) — Installationsanleitungen für verschiedene Umgebungen.
-- [Konfiguration](configuration.md) — Überblick über Konfigurationsoptionen und Parameter.
-- [Tutorials](tutorials/index.md) — Schritt-für-Schritt-Anleitungen (auch für Google Colab).
-- [API-Referenz](api/index.md) — Detaillierte Dokumentation der Klassen und Funktionen.
+- [Erste Schritte](getting-started.md) — Schneller Einstieg in das Projekt.  
+- [Installation](installation.md) — Installationsanleitungen für verschiedene Umgebungen.  
+- [Konfiguration](configuration.md) — Überblick über Konfigurationsoptionen und Parameter.  
+- [Tutorials](tutorials/index.md) — Schritt-für-Schritt-Anleitungen (auch für Google Colab).  
+- [API-Referenz](api/index.md) — Detaillierte Dokumentation der Klassen und Funktionen.  
 
 ## Quickstart
 

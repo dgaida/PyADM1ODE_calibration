@@ -18,9 +18,9 @@ Efficient loading, validation, and storage of measurements.
 
 ## Code Structure
 
-- **`calibration`**: Contains the optimization logic and calibrators.
-- **`io`**: Handles data import (CSV, database) and validation.
-- **`optimization`**: Implements various optimization algorithms.
+- **`calibration`**: Contains the optimization logic and calibrators.  
+- **`io`**: Handles data import (CSV, database) and validation.  
+- **`optimization`**: Implements various optimization algorithms.  
 
 ## Examples
 

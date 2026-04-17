@@ -15,16 +15,16 @@ sudo apt-get install mono-complete
 
 ### Error: `CalibrationResult.success` is `False`
 **Cause**: The optimizer could not find a minimum or the maximum number of iterations was reached.
-**Solution**:
-- Increase `max_iterations`.
-- Check the `bounds`. Are they too narrow or too wide?
-- Check the quality of the input data.
+**Solution**:  
+- Increase `max_iterations`.  
+- Check the `bounds`. Are they too narrow or too wide?  
+- Check the quality of the input data.  
 
 ### Unrealistic Parameter Values
 **Cause**: Overfitting or poorly chosen starting values/bounds.
-**Solution**:
-- Use `use_constraints=True` in the `calibrate` method.
-- Perform a sensitivity analysis to exclude non-identifiable parameters.
+**Solution**:  
+- Use `use_constraints=True` in the `calibrate` method.  
+- Perform a sensitivity analysis to exclude non-identifiable parameters.  
 
 ## Data Import
 
