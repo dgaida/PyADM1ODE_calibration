@@ -26,9 +26,24 @@ If you want to make changes to the code, install the package in editable mode wi
 pip install -e ".[dev]"
 ```
 
+## Installation as Anaconda Environment
+
+If you are using Conda, you can create the environment using the provided `environment.yml` file:
+
+```bash
+conda env create -f environment.yml
+conda activate biogas
+```
+
+Then install this package in editable mode:
+
+```bash
+pip install -e .
+```
+
 ## System Requirements (Linux)
 
-Since PyADM1ODE is based on .NET components (SIMBA# core), the `mono-complete` package must be installed on Linux:
+Since PyADM1ODE is based on .NET components (see [biogas_c#](https://github.com/dgaida/matlab_toolboxes/tree/master/biogas_c%23)), the `mono-complete` package must be installed on Linux:
 
 ```bash
 sudo apt-get update
@@ -49,6 +64,11 @@ Then you can view the documentation using MkDocs:
 mkdocs serve
 ```
 
-## Docker (Optional)
+## Docker
 
 A Dockerfile is available in the repository to provide a consistent environment that already includes all .NET/Mono dependencies.
+
+```bash
+docker build -t pyadm1-calibration .
+docker run -it pyadm1-calibration
+```
