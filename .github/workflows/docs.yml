@@ -56,6 +56,9 @@ jobs:
           git config --global user.email "github-actions[bot]@users.noreply.github.com"
           git fetch origin gh-pages --depth=1 || true
 
+          # Delete "latest" if it exists to avoid "alias already specified as a version" error
+          mike delete latest || true
+
           if [[ $GITHUB_REF == refs/tags/* ]]; then
             VERSION=${GITHUB_REF#refs/tags/}
             mike deploy --push --update-aliases $VERSION latest
