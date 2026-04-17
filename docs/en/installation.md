@@ -1,50 +1,74 @@
 # Installation
 
-Detailed instructions for installing PyADM1ODE_calibration in various environments.
+## Standard Installation
 
-## Pip Installation
-
-### Standard Installation
+The most stable version of PyADM1ODE_calibration can be installed directly via the Python Package Index (PyPI):
 
 ```bash
-pip install git+https://github.com/dgaida/PyADM1ODE_calibration.git
+pip install pyadm1ode-calibration
 ```
 
-### With Optional Dependencies
+## Installation from Source
+
+For the latest features or active development, you can clone the repository:
 
 ```bash
-# For development (tests, linting)
-pip install "pyadm1ode_calibration[dev] @ git+https://github.com/dgaida/PyADM1ODE_calibration.git"
-
-# For documentation
-pip install "pyadm1ode_calibration[docs] @ git+https://github.com/dgaida/PyADM1ODE_calibration.git"
+git clone https://github.com/dgaida/PyADM1ODE_calibration.git
+cd PyADM1ODE_calibration
+pip install .
 ```
 
-## Conda / Mamba
+### Development Mode
 
-We recommend using a dedicated environment:
+If you want to make changes to the code, install the package in editable mode with all development dependencies:
 
 ```bash
-# Create environment
+pip install -e ".[dev]"
+```
+
+## Installation as Anaconda Environment
+
+If you are using Conda, you can create the environment using the provided `environment.yml` file:
+
+```bash
 conda env create -f environment.yml
 conda activate biogas
+```
 
-# Install package in development mode
+Then install this package in editable mode:
+
+```bash
 pip install -e .
 ```
 
-## Database Dependencies
+## System Requirements (Linux)
 
-If you plan to use the PostgreSQL integration, ensure that the appropriate client libraries are installed on your system:
+Since PyADM1ODE is based on .NET components (see [biogas_c#](https://github.com/dgaida/matlab_toolboxes/tree/master/biogas_c%23)), the `mono-complete` package must be installed on Linux:
 
-- **Linux (Debian/Ubuntu)**: `sudo apt-get install libpq-dev`  
-- **macOS**: `brew install postgresql`  
+```bash
+sudo apt-get update
+sudo apt-get install mono-complete
+```
 
-## Verification
+## Documentation Tools
 
-After installation, you can verify it is working correctly:
+To build the documentation locally, install the `docs` extras:
 
-```python
-import pyadm1ode_calibration
-print(pyadm1ode_calibration.__version__)
+```bash
+pip install -e ".[docs]"
+```
+
+Then you can view the documentation using MkDocs:
+
+```bash
+mkdocs serve
+```
+
+## Docker
+
+A Dockerfile is available in the repository to provide a consistent environment that already includes all .NET/Mono dependencies.
+
+```bash
+docker build -t pyadm1-calibration .
+docker run -it pyadm1-calibration
 ```

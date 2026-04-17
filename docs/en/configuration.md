@@ -1,45 +1,55 @@
 # Configuration
 
-PyADM1ODE_calibration can be configured in several ways to adapt the calibration process to your plant.
+PyADM1ODE_calibration offers flexible configuration options for parameters, optimizers, and objective functions.
 
-## Parameter Bounds
+## Calibratable Parameters
 
-Default bounds for ADM1 parameters are defined in `ParameterBounds`. You can adjust them globally or per calibration.
+The following ADM1 parameters are most commonly used for calibration:
+
+| Parameter | Description | Unit | Typical Range |
+|-----------|-------------|------|---------------|
+| `k_dis` | Disintegration constant | 1/d | 0.3 - 0.8 |
+| `k_hyd_ch` | Carbohydrate hydrolysis rate | 1/d | 5.0 - 15.0 |
+| `k_m_ac` | Max. uptake rate acetate | 1/d | 4.0 - 12.0 |
+| `Y_su` | Yield coefficient sugar degraders | kg COD/kg COD | 0.05 - 0.15 |
+
+### Parameter Bounds
+
+You can manually define the search ranges for the optimization:
 
 ```python
-from pyadm1ode_calibration.calibration import create_default_bounds
+bounds = {
+    "k_dis": (0.2, 1.0),
+    "k_hyd_ch": (2.0, 20.0)
+}
+```
 
-bounds = create_default_bounds()
-bounds.add_bound("k_dis", lower=0.3, upper=0.8, default=0.5)
+## Optimization Methods
+
+Supported algorithms for the `calibrate` method:
+
+- `differential_evolution` (default): Robust for global search.
+- `nelder-mead`: Efficient for local search (good for online calibration).
+- `l-bfgs-b`: Gradient-based, requires smooth objective functions.
+- `particle_swarm`: Stochastic global search.
+
+## Objective Functions
+
+By default, methane production (`Q_ch4`) is optimized. However, you can weight multiple variables:
+
+```python
+objectives = ["Q_ch4", "pH", "VFA"]
+weights = {
+    "Q_ch4": 0.7,
+    "pH": 0.2,
+    "VFA": 0.1
+}
 ```
 
 ## Database Connection
 
-The connection to the PostgreSQL database is established via environment variables or a configuration object.
-
-### Environment Variables
-
-| Variable | Description | Default |
-|----------|--------------|----------|
-| `DB_HOST` | Database host | `localhost` |
-| `DB_PORT` | Port | `5432` |
-| `DB_NAME` | Database name | - |
-| `DB_USER` | Username | - |
-| `DB_PASSWORD` | Password | - |
-
-## Optimizer Settings
-
-Each algorithm has specific parameters that are passed via `kwargs` to the `calibrate` method:
-
-- **Differential Evolution**: `population_size`, `mutation`, `recombination`.  
-- **Nelder-Mead**: `adaptive`, `tolerance`.  
-- **L-BFGS-B**: `gtol`.  
-
-## Logging
-
-The framework uses the standard Python logging module. You can set the verbosity level as follows:
+The database is configured via a connection URL (SQLAlchemy format):
 
 ```python
-import logging
-logging.getLogger("pyadm1ode_calibration").setLevel(logging.DEBUG)
+db_url = "postgresql://user:password@localhost:5432/biogas_db"
 ```

@@ -1,18 +1,36 @@
 # Fehlerbehebung
 
-Häufige Probleme und deren Lösungen.
+Häufig auftretende Probleme und deren Lösungen.
 
-## Simulation konvergiert nicht
+## Installation
 
-- **Ursache**: Zu aggressive Parameteränderungen oder instabile Anfangswerte.  
-- **Lösung**: Verkleinern Sie die Parameter-Grenzen (`bounds`) oder nutzen Sie `max_parameter_change` bei der Online-Kalibrierung.  
+### Fehler: `ImportError: libdl.so.2: cannot open shared object file`
+**Ursache**: .NET/Mono ist nicht korrekt auf dem Linux-System installiert.
+**Lösung**: Installieren Sie `mono-complete`:
+```bash
+sudo apt-get install mono-complete
+```
 
-## Datenbank-Verbindungsfehler
+## Kalibrierung
 
-- **Ursache**: Falsche Umgebungsvariablen oder fehlende Berechtigungen.  
-- **Lösung**: Prüfen Sie `DB_HOST`, `DB_NAME` etc. Stellen Sie sicher, dass PostgreSQL läuft und Verbindungen akzeptiert.  
+### Fehler: `CalibrationResult.success` ist `False`
+**Ursache**: Der Optimierer konnte kein Minimum finden oder die maximale Iterationszahl wurde erreicht.
+**Lösung**:
+- Erhöhen Sie `max_iterations`.
+- Überprüfen Sie die `bounds`. Sind sie zu eng oder zu weit gefasst?
+- Prüfen Sie die Datenqualität der Eingangsdaten.
 
-## Langsame Kalibrierung
+### Unrealistische Parameterwerte
+**Ursache**: Overfitting oder schlecht gewählte Startwerte/Grenzen.
+**Lösung**:
+- Nutzen Sie `use_constraints=True` in der `calibrate` Methode.
+- Führen Sie eine Sensitivitätsanalyse durch, um nicht-identifizierbare Parameter auszuschließen.
 
-- **Ursache**: Zu viele Parameter oder zu viele Iterationen bei der Differential Evolution.  
-- **Lösung**: Führen Sie zuerst eine Sensitivitätsanalyse durch, um die wichtigsten Parameter zu identifizieren. Nutzen Sie lokale Optimierer (Nelder-Mead) für die Feinabstimmung.  
+## Daten-Import
+
+### Fehler: `Column 'Q_ch4' not found`
+**Ursache**: Die CSV-Datei hat falsche Spaltenüberschriften.
+**Lösung**: Benennen Sie die Spalten in Ihrer CSV entsprechend den ADM1-Standards um oder nutzen Sie ein Mapping-Skript.
+
+## Weitere Hilfe
+Falls Ihr Problem hier nicht gelistet ist, erstellen Sie bitte ein [Issue auf GitHub](https://github.com/dgaida/PyADM1ODE_calibration/issues).

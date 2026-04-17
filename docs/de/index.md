@@ -1,23 +1,64 @@
 # PyADM1ODE Kalibrierung
 
+[![PyPI version](https://img.shields.io/pypi/v/pyadm1ode-calibration.svg)](https://pypi.org/project/pyadm1ode-calibration/)
+[![Python versions](https://img.shields.io/pypi/pyversions/pyadm1ode-calibration.svg)](https://pypi.org/project/pyadm1ode-calibration/)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![Documentation](https://img.shields.io/badge/docs-latest-blue.svg)](https://dgaida.github.io/PyADM1ODE_calibration/)
+[![Interrogate](assets/interrogate.svg)](development/metrics.md)
+
 **Fortschrittliches Parameter-Kalibrierungs-Framework für PyADM1ODE Biogasanlagenmodelle.**
 
-PyADM1ODE_calibration bietet eine vollständige Lösung für die Kalibrierung von [PyADM1ODE](https://github.com/dgaida/PyADM1ODE) Modellen:
-
-- **Initialkalibrierung**: Batch-Optimierung basierend auf historischen Messdaten.  
-- **Online-Rekalibrierung**: Echtzeit-Parameteranpassung während des Anlagenbetriebs.  
-- **Mehrere Optimierungsalgorithmen**: Differential Evolution, Nelder-Mead, L-BFGS-B, Particle Swarm.  
-- **Multikriterielle Optimierung**: Ausgleich mehrerer Zielgrößen (CH₄, pH, VFA) mit gewichteten Zielfunktionen.  
-- **Umfassende Validierung**: Gütekriterien, Residuenanalyse, Kreuzvalidierung.  
-- **Datenmanagement**: CSV/Datenbank-Import, Validierung, Ausreißererkennung, Lückenfüllung.  
+PyADM1ODE_calibration bietet eine vollständige Lösung für die Kalibrierung von [PyADM1ODE](https://github.com/dgaida/PyADM1ODE) Modellen. Es ermöglicht die präzise Abstimmung komplexer ADM1-Parameter auf reale Anlagendaten durch modernste Optimierungsverfahren.
 
 ## Hauptmerkmale
 
-- 🎯 **Präzision**: Hochgenaue Abstimmung von ADM1-Parametern auf reale Anlagendaten.  
-- ⚡ **Effizienz**: Schnelle lokale Optimierer für den Online-Einsatz.  
-- 📊 **Analyse**: Integrierte Sensitivitäts- und Identifizierbarkeitsanalyse.  
-- 💾 **Integration**: Nahtlose Anbindung an PostgreSQL-Datenbanken und CSV-Workflows.  
+- 🎯 **Präzision**: Hochgenaue Abstimmung von ADM1-Parametern auf reale Anlagendaten.
+- ⚡ **Effizienz**: Schnelle lokale Optimierer für den Online-Einsatz und robuste globale Optimierer für die Initialkalibrierung.
+- 📊 **Analyse**: Integrierte Sensitivitäts- und Identifizierbarkeitsanalyse zur Identifizierung kritischer Parameter.
+- 💾 **Integration**: Nahtlose Anbindung an PostgreSQL-Datenbanken und CSV-Workflows.
+- 🌍 **Mehrsprachig**: Dokumentation in Deutsch und Englisch verfügbar.
 
-## Erste Schritte
+## Inhaltsverzeichnis
 
-Beginnen Sie mit der [Installation](getting-started.md) und folgen Sie unserem [Quickstart-Guide](usage/index.md).
+- [Erste Schritte](getting-started.md) — Schneller Einstieg in das Projekt.
+- [Installation](installation.md) — Installationsanleitungen für verschiedene Umgebungen.
+- [Konfiguration](configuration.md) — Überblick über Konfigurationsoptionen und Parameter.
+- [Tutorials](tutorials/index.md) — Schritt-für-Schritt-Anleitungen (auch für Google Colab).
+- [API-Referenz](api/index.md) — Detaillierte Dokumentation der Klassen und Funktionen.
+
+## Quickstart
+
+```python
+from pyadm1ode_calibration.calibration import InitialCalibrator
+from pyadm1ode_calibration.io.loaders import MeasurementData
+
+# 1. Daten laden
+measurements = MeasurementData.from_csv("plant_data.csv")
+
+# 2. Kalibrator erstellen
+calibrator = InitialCalibrator(plant_model)
+
+# 3. Kalibrierung ausführen
+result = calibrator.calibrate(
+    measurements=measurements,
+    parameters=["k_dis", "k_hyd_ch"],
+    objectives=["Q_ch4", "pH"]
+)
+
+# 4. Ergebnisse anwenden
+if result.success:
+    calibrator.apply_calibration(result)
+```
+
+## Zitation
+
+Wenn Sie PyADM1ODE_calibration in Ihrer Forschung verwenden, zitieren Sie bitte:
+
+```bibtex
+@software{pyadm1_calibration,
+  author = {Gaida, Daniel},
+  title = {PyADM1ODE\_calibration: Parameter Calibration Framework for Biogas Plant Models},
+  year = {2026},
+  url = {https://github.com/dgaida/PyADM1ODE_calibration}
+}
+```

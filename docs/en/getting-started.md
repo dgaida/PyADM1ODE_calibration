@@ -1,36 +1,45 @@
 # Getting Started
 
-This guide will help you get started with PyADM1ODE_calibration.
+This guide helps you with the first steps using **PyADM1ODE_calibration**.
 
 ## Prerequisites
 
-- **Python 3.10** or higher.  
-- **PyADM1ODE**: The base package must be installed.  
-- **Data**: Historical biogas plant measurement data in CSV format (recommended).  
+Before you begin, ensure your environment meets the following requirements:
+
+- **Python**: 3.10 or higher.
+- **PyADM1ODE**: The base package for biogas plant simulation.
+- **Data**: Historical plant measurement data (e.g., CH₄ production, pH value) in CSV format or in a PostgreSQL database.
 
 ## Installation
 
-The easiest way is to install via pip directly from the repository:
+Install the package directly via pip:
 
 ```bash
-pip install git+https://github.com/dgaida/PyADM1ODE_calibration.git
+pip install pyadm1ode-calibration
 ```
 
-For developers, we recommend installing in editable mode:
+Or for development:
 
 ```bash
 git clone https://github.com/dgaida/PyADM1ODE_calibration.git
 cd PyADM1ODE_calibration
-pip install -e .
+pip install -e ".[dev]"
 ```
 
-## Quick Overview
+## Core Concepts
 
-A typical calibration workflow consists of four steps:
+### 1. Data Loading (`MeasurementData`)
+All calibrations are based on the `MeasurementData` object. It manages time series of measurements and provides functions for validation and pre-processing.
 
-1. **Load Data**: Import and validate your measurement data.  
-2. **Prepare Model**: Configuration of your PyADM1ODE plant model.  
-3. **Run Calibration**: Choose an algorithm and start the optimization.  
-4. **Verify Results**: Validate parameters using goodness-of-fit metrics.  
+### 2. Calibrators
+- **InitialCalibrator**: Used for the initial tuning of the model to a historical dataset (batch optimization).
+- **OnlineCalibrator**: Enables continuous adjustment of parameters during ongoing operation to respond to changes in substrate quality or biology.
 
-Check the [Calibration Example](usage/calibration.md) for a detailed code walkthrough.
+### 3. Objective Functions
+You can define and weight multiple target variables (objectives), e.g., 80% weight on methane production and 20% on the pH value.
+
+## Next Steps
+
+- Follow the [Tutorial for Initial Calibration](tutorials/calibration.md).
+- Learn more about [Parameter Configuration](configuration.md).
+- Check the [API Reference](api/index.md) for detailed information.

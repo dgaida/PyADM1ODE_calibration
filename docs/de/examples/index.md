@@ -1,7 +1,5 @@
 # Beispiele
 
-Praktische Beispiele zur Verwendung der PyADM1ODE-Kalibrierung.
+Hier finden Sie praktische Beispiele zur Anwendung von PyADM1ODE_calibration.
 
-## Workflow-Beispiele
-
-- [Kalibrierungs-Workflow](calibration_workflow.md): Schritt-für-Schritt-Kalibrierung eines Biogasanlagenmodells.  
+- [Kalibrierungs-Workflow](calibration_workflow.md): Ein vollständiges Beispiel zur Kalibrierung eines Modells.

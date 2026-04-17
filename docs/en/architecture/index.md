@@ -1,33 +1,55 @@
 # Architecture
 
-PyADM1ODE_calibration is built modularly to ensure flexibility in the choice of algorithms and data sources.
+This page describes the system architecture and data flow of PyADM1ODE_calibration.
 
 ## System Overview
 
-The following diagram shows the interaction between the main components:
+The framework is modularly structured to allow flexibility in the choice of optimization algorithms and data sources.
 
 ```mermaid
 graph TD
-    A[Measurement Data] --> B[MeasurementData]
-    B --> C[Calibrator]
-    D[PyADM1ODE Model] --> C
-    C --> E[Optimizer]
-    E --> F[PlantSimulator]
-    F --> D
-    F --> G[Objective Function]
-    G --> E
-    E --> H[CalibrationResult]
+    A[User / Script] --> B[Calibrator Facade]
+    B --> C[InitialCalibrator]
+    B --> D[OnlineCalibrator]
+
+    C --> E[Optimizer Engine]
+    D --> E
+
+    E --> F[Plant Simulator]
+    F --> G[PyADM1ODE Model]
+
+    H[Data Loader] --> B
+    I[Database/CSV] --> H
+
+    C --> J[Validation & Metrics]
+    D --> J
 ```
 
-## Data Flow
+## Calibration Data Flow
 
-1. **Input**: Measurement data is read via `io.loaders`.  
-2. **Validation**: `io.validation` checks data quality.  
-3. **Optimization**: The `Calibrator` orchestrates the `Optimizer` to find parameters that minimize the error between simulation and measurement.  
-4. **Output**: Results are returned as `CalibrationResult` and optionally stored in the database.  
+The typical data flow during a calibration cycle:
 
-## Class Hierarchy
+```mermaid
+sequenceDiagram
+    participant U as User
+    participant C as Calibrator
+    participant S as Simulator
+    participant O as Optimizer
 
-- **BaseCalibrator**: Abstract base class.  
-- **InitialCalibrator**: Implementation for batch processes.  
-- **OnlineCalibrator**: Implementation for real-time adjustments.  
+    U->>C: Start calibration (data, parameters)
+    C->>O: Initialize optimization
+    loop Optimization loop
+        O->>S: Simulate with parameter set X
+        S->>O: Return simulation results
+        O->>O: Calculate error (RMSE)
+    end
+    O->>C: Return optimal parameters
+    C->>U: Calibration result
+```
+
+## Component Description
+
+- **Calibrator Facade**: Provides a simple interface for the end user.
+- **Plant Simulator**: Encapsulates the logic for executing PyADM1ODE simulations.
+- **Optimizer Engine**: Abstract layer for various algorithms (SciPy, custom implementations).
+- **Data Loader**: Validates and transforms input data into a format usable by the simulator.

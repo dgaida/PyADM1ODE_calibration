@@ -1,33 +1,41 @@
 # Documentation Metrics
 
-This dashboard provides an overview of the quality and completeness of the PyADM1ODE_calibration documentation and code.
+This dashboard shows the quality and completeness of the project documentation.
 
-## 📊 Summary
+## API Coverage
+API coverage is measured with `interrogate`. It indicates how many of the public classes and functions have a docstring.
 
-| Metric | Status | Value | Target |
-|--------|--------|------|------|
-| API Documentation | ✅ | 100.0% | >95% |
-| Test Coverage | 🟡 | ~90% | >90% |
-| Broken Links | ✅ | 0 | 0 |
-| Build Warnings | ✅ | 0 | 0 |
+![Interrogate Badge](../assets/interrogate.svg)
 
-## 📈 API Documentation Coverage
+## Detailed Quality Metrics
 
-Coverage is automatically checked on every push using `interrogate`.
+<div id="metrics-dashboard">
+  Loading metrics...
+</div>
 
-```text
-RESULT: PASSED (minimum: 95.0%, actual: 100.0%)
-```
+<script>
+fetch('../assets/metrics.json')
+  .then(response => response.json())
+  .then(data => {
+    const container = document.getElementById('metrics-dashboard');
+    let html = '<table style="width:100%">';
+    html += '<tr><th>Metric</th><th>Value</th><th>Status</th></tr>';
 
-## 🧪 Test Statistics
+    for (const [key, val] of Object.entries(data)) {
+      let status = '✅ OK';
+      if (val.status === 'warning') status = '⚠️ Warning';
+      if (val.status === 'error') status = '❌ Error';
 
-- **Total Tests**: 32  
-- **Passed**: 32  
-- **Coverage**: 90.2%  
+      html += \`<tr><td>\${val.label}</td><td>\${val.value}</td><td>\${status}</td></tr>\`;
+    }
 
-## 📝 Changelog Status
-
-The changelog is automatically generated using `git-cliff` from commit messages following the [Conventional Commits](https://www.conventionalcommits.org/) standard.
+    html += '</table>';
+    container.innerHTML = html;
+  })
+  .catch(err => {
+    document.getElementById('metrics-dashboard').innerHTML = 'Metrics currently unavailable.';
+  });
+</script>
 
 ---
-*Last updated: {{ now }}*
+*Metrics are updated with every CI run.*

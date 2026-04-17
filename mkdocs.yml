@@ -95,22 +95,32 @@ markdown_extensions:
 
 nav:
   - Home: index.md
-  - Getting Started: getting-started.md
+  - Erste Schritte: getting-started.md
   - Installation: installation.md
-  - Configuration: configuration.md
-  - Usage:
-      - Overview: usage/index.md
-      - Calibration: usage/calibration.md
-  - Examples:
-      - Overview: examples/index.md
-      - Calibration Workflow: examples/calibration_workflow.md
-  - API Reference:
-      - Overview: api/index.md
-      - Calibration: api/calibration.md
+  - Konfiguration: configuration.md
+  - Tutorials:
+      - Überblick: tutorials/index.md
+      - Kalibrierungs-Tutorial: tutorials/calibration.md
+  - Beispiele:
+      - Übersicht: examples/index.md
+      - Kalibrierungs-Workflow: examples/calibration_workflow.md
+  - Nutzung:
+      - Übersicht: usage/index.md
+      - Kalibrierung: usage/calibration.md
+  - API-Referenz:
+      - Übersicht: api/index.md
+      - Kalibrierung: api/calibration.md
       - IO: api/io.md
-      - Optimization: api/optimization.md
-  - Architecture: architecture/index.md
-  - Development:
-      - Overview: development/index.md
-      - Metrics: development/metrics.md
-  - Troubleshooting: troubleshooting.md
+      - Optimierung: api/optimization.md
+  - Architektur: architecture/index.md
+  - Entwicklung:
+      - Übersicht: development/index.md
+      - Docstring-Guide: development/docstring-guide.md
+      - Metriken: development/metrics.md
+      - Versionierung: development/versioning.md
+      - Changelog: development/changelog.md
+  - Fehlerbehebung: troubleshooting.md
+
+# Suppress autorefs warnings about multiple primary URLs which occur in multi-language builds
+# This requires mkdocs >= 1.5
+# Validation settings

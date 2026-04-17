@@ -1,11 +1,11 @@
-# API Reference
+# API Reference Overview
+
+Detailed documentation of the modules, classes, and functions of PyADM1ODE_calibration.
+
+## Modules
+
+- [**Calibration**](calibration.md): Core classes for initial and online calibration.
+- [**IO & Data**](io.md): Loading, saving, and validating measurement data.
+- [**Optimization**](optimization.md): Implemented algorithms and objective functions.
 
 ::: pyadm1ode_calibration.calibration.Calibrator
-::: pyadm1ode_calibration.calibration.InitialCalibrator
-::: pyadm1ode_calibration.calibration.OnlineCalibrator
-::: pyadm1ode_calibration.io.MeasurementData
-::: pyadm1ode_calibration.io.CSVHandler
-::: pyadm1ode_calibration.io.Database
-::: pyadm1ode_calibration.io.DataValidator
-::: pyadm1ode_calibration.calibration.CalibrationValidator
-::: pyadm1ode_calibration.calibration.ParameterBounds
