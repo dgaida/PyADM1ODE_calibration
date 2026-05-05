@@ -138,7 +138,8 @@ jobs:
       uses: codecov/codecov-action@v5
       with:
         use_oidc: true
-        file: ./coverage.xml
+        files: ./coverage.xml
         flags: unittests
         name: codecov-pyadm1ode-calibration
+        slug: dgaida/PyADM1ODE_calibration
         fail_ci_if_error: false
