@@ -41,15 +41,6 @@ Anschließend installieren Sie dieses Paket im Editier-Modus:
 pip install -e .
 ```
 
-## System-Voraussetzungen (Linux)
-
-Da PyADM1ODE auf .NET-Komponenten basiert (siehe [biogas_c#](https://github.com/dgaida/matlab_toolboxes/tree/master/biogas_c%23)), muss unter Linux das Paket `mono-complete` installiert sein:
-
-```bash
-sudo apt-get update
-sudo apt-get install mono-complete
-```
-
 ## Dokumentations-Tools
 
 Um die Dokumentation lokal zu bauen, installieren Sie die `docs` Extras:
@@ -66,7 +57,7 @@ mkdocs serve
 
 ## Docker
 
-Ein Dockerfile ist im Repository verfügbar, um eine konsistente Umgebung bereitzustellen, die bereits alle .NET/Mono Abhängigkeiten enthält.
+Ein Dockerfile ist im Repository verfügbar, um eine konsistente Umgebung bereitzustellen, die bereits alle Abhängigkeiten enthält.
 
 ```bash
 docker build -t pyadm1-calibration .

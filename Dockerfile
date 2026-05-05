@@ -1,9 +1,8 @@
 # Use an official Python runtime as a parent image
 FROM python:3.10-slim-bullseye
 
-# Install system dependencies including Mono for .NET components
+# Install system dependencies
 RUN apt-get update && apt-get install -y --no-install-recommends \
-    mono-complete \
     git \
     build-essential \
     libpq-dev \

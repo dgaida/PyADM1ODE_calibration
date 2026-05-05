@@ -4,13 +4,6 @@ Commonly occurring problems and their solutions.
 
 ## Installation
 
-### Error: `ImportError: libdl.so.2: cannot open shared object file`
-**Cause**: .NET/Mono is not correctly installed on the Linux system.
-**Solution**: Install `mono-complete`:
-```bash
-sudo apt-get install mono-complete
-```
-
 ## Calibration
 
 ### Error: `CalibrationResult.success` is `False`
