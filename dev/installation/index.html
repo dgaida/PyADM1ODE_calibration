@@ -692,17 +692,6 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#system-voraussetzungen-linux" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        System-Voraussetzungen (Linux)
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
   <a href="#dokumentations-tools" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -1615,17 +1604,6 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#system-voraussetzungen-linux" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        System-Voraussetzungen (Linux)
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
   <a href="#dokumentations-tools" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -1690,22 +1668,17 @@
 <p>Anschließend installieren Sie dieses Paket im Editier-Modus:</p>
 <div class="language-bash highlight"><pre><span></span><code><span id="__span-4-1"><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a>pip<span class="w"> </span>install<span class="w"> </span>-e<span class="w"> </span>.
 </span></code></pre></div>
-<h2 id="system-voraussetzungen-linux">System-Voraussetzungen (Linux)<a class="headerlink" href="#system-voraussetzungen-linux" title="Permanent link">&para;</a></h2>
-<p>Da PyADM1ODE auf .NET-Komponenten basiert (siehe <a href="https://github.com/dgaida/matlab_toolboxes/tree/master/biogas_c%23">biogas_c#</a>), muss unter Linux das Paket <code>mono-complete</code> installiert sein:</p>
-<div class="language-bash highlight"><pre><span></span><code><span id="__span-5-1"><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a>sudo<span class="w"> </span>apt-get<span class="w"> </span>update
-</span><span id="__span-5-2"><a id="__codelineno-5-2" name="__codelineno-5-2" href="#__codelineno-5-2"></a>sudo<span class="w"> </span>apt-get<span class="w"> </span>install<span class="w"> </span>mono-complete
-</span></code></pre></div>
 <h2 id="dokumentations-tools">Dokumentations-Tools<a class="headerlink" href="#dokumentations-tools" title="Permanent link">&para;</a></h2>
 <p>Um die Dokumentation lokal zu bauen, installieren Sie die <code>docs</code> Extras:</p>
-<div class="language-bash highlight"><pre><span></span><code><span id="__span-6-1"><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a>pip<span class="w"> </span>install<span class="w"> </span>-e<span class="w"> </span><span class="s2">&quot;.[docs]&quot;</span>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-5-1"><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a>pip<span class="w"> </span>install<span class="w"> </span>-e<span class="w"> </span><span class="s2">&quot;.[docs]&quot;</span>
 </span></code></pre></div>
 <p>Danach können Sie die Dokumentation mit MkDocs betrachten:</p>
-<div class="language-bash highlight"><pre><span></span><code><span id="__span-7-1"><a id="__codelineno-7-1" name="__codelineno-7-1" href="#__codelineno-7-1"></a>mkdocs<span class="w"> </span>serve
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-6-1"><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a>mkdocs<span class="w"> </span>serve
 </span></code></pre></div>
 <h2 id="docker">Docker<a class="headerlink" href="#docker" title="Permanent link">&para;</a></h2>
-<p>Ein Dockerfile ist im Repository verfügbar, um eine konsistente Umgebung bereitzustellen, die bereits alle .NET/Mono Abhängigkeiten enthält.</p>
-<div class="language-bash highlight"><pre><span></span><code><span id="__span-8-1"><a id="__codelineno-8-1" name="__codelineno-8-1" href="#__codelineno-8-1"></a>docker<span class="w"> </span>build<span class="w"> </span>-t<span class="w"> </span>pyadm1-calibration<span class="w"> </span>.
-</span><span id="__span-8-2"><a id="__codelineno-8-2" name="__codelineno-8-2" href="#__codelineno-8-2"></a>docker<span class="w"> </span>run<span class="w"> </span>-it<span class="w"> </span>pyadm1-calibration
+<p>Ein Dockerfile ist im Repository verfügbar, um eine konsistente Umgebung bereitzustellen, die bereits alle Abhängigkeiten enthält.</p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-7-1"><a id="__codelineno-7-1" name="__codelineno-7-1" href="#__codelineno-7-1"></a>docker<span class="w"> </span>build<span class="w"> </span>-t<span class="w"> </span>pyadm1-calibration<span class="w"> </span>.
+</span><span id="__span-7-2"><a id="__codelineno-7-2" name="__codelineno-7-2" href="#__codelineno-7-2"></a>docker<span class="w"> </span>run<span class="w"> </span>-it<span class="w"> </span>pyadm1-calibration
 </span></code></pre></div>
 
 
