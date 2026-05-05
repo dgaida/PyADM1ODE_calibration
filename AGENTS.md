@@ -2,7 +2,6 @@
 
 ## Development Environment  
 - To install the project and its development dependencies, use: `pip install -e ".[dev]"`  
-- The project requires `mono-complete` to be installed on Linux systems to support .NET integration used by the underlying `PyADM1` package.  
 
 ## Testing and Verification  
 - Always run tests before submitting. Use: `python3 -m pytest -c /dev/null tests/` if the default `pyproject.toml` configuration causes issues.  
