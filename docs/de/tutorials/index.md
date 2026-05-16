@@ -13,7 +13,7 @@ In diesem Tutorial führen wir Sie durch den kompletten Workflow einer Initialka
 - Konfiguration des Optimierers  
 - Ausführen der Kalibrierung und Analyse der Ergebnisse  
 
-[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/dgaida/PyADM1ODE_calibration/blob/main/notebooks/calibration_tutorial.ipynb)
+[![Open In Colab](../assets/colab-badge.svg)](https://colab.research.google.com/github/dgaida/PyADM1ODE_calibration/blob/main/notebooks/calibration_tutorial.ipynb)
 
 ## Lokale Tutorials
 

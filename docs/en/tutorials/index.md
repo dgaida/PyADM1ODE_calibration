@@ -13,7 +13,7 @@ In this tutorial, we guide you through the complete workflow of an initial calib
 - Configuring the optimizer  
 - Running the calibration and analyzing results  
 
-[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/dgaida/PyADM1ODE_calibration/blob/main/notebooks/calibration_tutorial.ipynb)
+[![Open In Colab](../assets/colab-badge.svg)](https://colab.research.google.com/github/dgaida/PyADM1ODE_calibration/blob/main/notebooks/calibration_tutorial.ipynb)
 
 ## Local Tutorials
 
