@@ -5,6 +5,7 @@
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Documentation](https://img.shields.io/badge/docs-latest-blue.svg)](https://dgaida.github.io/PyADM1ODE_calibration/)
 [![Interrogate](assets/interrogate.svg)](development/metrics.md)
+[![Open In Colab](assets/colab-badge.svg)](https://colab.research.google.com/github/dgaida/PyADM1ODE_calibration/blob/main/notebooks/calibration_tutorial.ipynb)
 
 **Fortschrittliches Parameter-Kalibrierungs-Framework für PyADM1ODE Biogasanlagenmodelle.**
 
