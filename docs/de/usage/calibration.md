@@ -40,10 +40,10 @@ identifiability = calibrator.identifiability_analysis(
 
 `identifiability_analysis` unterscheidet nach Raue et al. 2009 zwei Arten des Scheiterns:
 
-- **strukturell nicht identifizierbar**: Der Parameter bewegt keinen Messkanal, keine Datenmenge
+- **strukturell nicht identifizierbar**: Der Parameter bewegt keinen Messkanal, keine Datenmenge  
   ändert daran etwas. Auf der Beispielanlage trifft das `k_dis`, denn die Substrate treten als
-  hydrolysierbare Fraktionen ein, die Desintegration hat also nie ein Substrat.
-- **praktisch nicht identifizierbar**: Er bewegt die Ausgänge, aber so schwach, dass das
+  hydrolysierbare Fraktionen ein, die Desintegration hat also nie ein Substrat.  
+- **praktisch nicht identifizierbar**: Er bewegt die Ausgänge, aber so schwach, dass das  
   Konfidenzintervall breiter bleibt als der Schätzwert selbst.
 
 Ein Satz kann auch als Satz scheitern. `analyze_subset` wendet die beiden Maße von Brun et al. 2001
@@ -94,10 +94,10 @@ abzufragen ist immer wahr.
 Mit einem `validation_split` landen die Kennzahlen des zurückgehaltenen Teils in
 `result.validation_metrics`:
 
-- **RMSE**, **MAE**: absoluter Fehler
-- **R2**: Bestimmtheitsmaß
-- **NSE**: Nash-Sutcliffe-Effizienz
-- **PBIAS**: systematische Über- oder Unterschätzung
+- **RMSE**, **MAE**: absoluter Fehler  
+- **R2**: Bestimmtheitsmaß  
+- **NSE**: Nash-Sutcliffe-Effizienz  
+- **PBIAS**: systematische Über- oder Unterschätzung  
 
 `CalibrationValidator` ergänzt Residuendiagnostik: Normalität, Autokorrelation und
 Heteroskedastizität.

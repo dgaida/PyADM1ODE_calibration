@@ -21,13 +21,13 @@ Werkzeuge auf den vorgemerkten Dateien aus, Einrichtung mit `pre-commit install`
 
 ## Konventionen
 
-- **Formatierung**: black, Zeilenlänge 127. Ruff nutzt dieselbe Grenze.
-- **Lint**: Das Repository ist unter dem Standardregelsatz von ruff sauber. Wo eine Regel bewusst
+- **Formatierung**: black, Zeilenlänge 127. Ruff nutzt dieselbe Grenze.  
+- **Lint**: Das Repository ist unter dem Standardregelsatz von ruff sauber. Wo eine Regel bewusst  
   nicht befolgt wird, steht die Begründung daneben, entweder als `# noqa: <REGEL> - Begründung` oder
-  als Eintrag unter `[tool.ruff.lint.per-file-ignores]` in `pyproject.toml`.
-- **Tests**: Neues Verhalten braucht einen Test in `tests/`. Die Abdeckung liegt bei rund 90 %.
-- **Docstrings**: Google-Stil, siehe [Docstring-Guide](docstring-guide.md).
-- **Sprache**: Code, Kommentare und Docstrings auf Englisch. Die Dokumentation ist zweisprachig.
+  als Eintrag unter `[tool.ruff.lint.per-file-ignores]` in `pyproject.toml`.  
+- **Tests**: Neues Verhalten braucht einen Test in `tests/`. Die Abdeckung liegt bei rund 90 %.  
+- **Docstrings**: Google-Stil, siehe [Docstring-Guide](docstring-guide.md).  
+- **Sprache**: Code, Kommentare und Docstrings auf Englisch. Die Dokumentation ist zweisprachig.  
 
 ## Dokumentation
 

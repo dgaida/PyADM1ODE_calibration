@@ -2,9 +2,9 @@
 
 ## Voraussetzungen
 
-- **Python** 3.10 oder neuer.
-- **[PyADM1ODE](https://github.com/dgaida/PyADM1ODE)**, das Anlagenmodell, das dieses Paket kalibriert.
-- **Messdaten** als Zeitreihe, aus CSV oder einer Datenbank. Brauchbare Kanäle sind Gasmenge, Methangehalt, pH-Wert und FOS.
+- **Python** 3.10 oder neuer.  
+- **[PyADM1ODE](https://github.com/dgaida/PyADM1ODE)**, das Anlagenmodell, das dieses Paket kalibriert.  
+- **Messdaten** als Zeitreihe, aus CSV oder einer Datenbank. Brauchbare Kanäle sind Gasmenge, Methangehalt, pH-Wert und FOS.  
 
 ## Installation
 
@@ -28,6 +28,6 @@ Für die Entwicklung siehe [Installation](installation.md).
 
 ## Nächste Schritte
 
-- Die Notebooks durcharbeiten, beginnend bei [Tutorials](tutorials/index.md).
-- Parameter und Optimierer in [Konfiguration](configuration.md) nachschlagen.
-- Beide Workflows im Code unter [Nutzung](usage/index.md) ansehen.
+- Die Notebooks durcharbeiten, beginnend bei [Tutorials](tutorials/index.md).  
+- Parameter und Optimierer in [Konfiguration](configuration.md) nachschlagen.  
+- Beide Workflows im Code unter [Nutzung](usage/index.md) ansehen.  

@@ -40,13 +40,13 @@ clean identifiability verdict possible. `test_fastsim.py` guards this.
 
 ## Requirements
 
-* Python ≥ 3.10 with NumPy and SciPy.
-* **`pyadm1`** (PyADM1ODE) — the ADM1 model.
-* **`pyadm1ode_estimation`** (PyADM1ODE_estimate) — the example plant
+* Python ≥ 3.10 with NumPy and SciPy.  
+* **`pyadm1`** (PyADM1ODE) — the ADM1 model.  
+* **`pyadm1ode_estimation`** (PyADM1ODE_estimate) — the example plant  
   (`build_multi_stage_plant`) and the observation plumbing. The study rebuilds
-  the *generating* plant, so this is a hard dependency, not a convenience.
-* **`pyadm1ode_calibration`** (this repository) — the optimisers under test.
-* `torch` — only for the FOS/TAC channels (`--fostac`); everything else runs
+  the *generating* plant, so this is a hard dependency, not a convenience.  
+* **`pyadm1ode_calibration`** (this repository) — the optimisers under test.  
+* `torch` — only for the FOS/TAC channels (`--fostac`); everything else runs  
   without it.
 
 On the development machine all three repositories are installed editable into
@@ -62,12 +62,12 @@ threads only fight the process pool and serialise it.
 The benchmark lives in `PyADM1ODE_estimate` and is **not** copied here. It is
 located automatically, in this order (see `paths.py`):
 
-1. `$PYADM1ODE_BENCHMARK`, if set.
-2. The installed `pyadm1ode_estimation` package — in an editable install its
+1. `$PYADM1ODE_BENCHMARK`, if set.  
+2. The installed `pyadm1ode_estimation` package — in an editable install its  
    `__file__` points into the source checkout, so the dataset is at
    `<repo>/datasets/benchmark`. This is what makes the default case work
-   without any configuration.
-3. A sibling checkout: `../PyADM1ODE_estimate/datasets/benchmark`.
+   without any configuration.  
+3. A sibling checkout: `../PyADM1ODE_estimate/datasets/benchmark`.  
 
 Every entry point also takes `--dataset PATH` to override it. Check what was
 resolved with:
@@ -207,18 +207,18 @@ The package contributes exactly one thing: the optimiser implementations in
 subject of F5. Forward model, objective, screening and scoring are implemented
 here on purpose:
 
-* **`core/simulator.py` — `PlantSimulator`** reduces the substrate feed to
+* **`core/simulator.py` — `PlantSimulator`** reduces the substrate feed to  
   `np.mean(Q, axis=0)` and holds it constant. The benchmark's entire signal is
   the load changes (6 phases, 5 switches), so a constant mean feed would erase
   exactly what makes the kinetics identifiable. Every calibrator in the package
   routes through it, which is why `InitialCalibrator` / `OnlineCalibrator` are
   not used either. `fastsim.ForwardModel.simulate` imposes the schedule step by
-  step instead.
-* **`analysis/sensitivity.py`** collapses each output series to its mean before
+  step instead.  
+* **`analysis/sensitivity.py`** collapses each output series to its mean before  
   differencing, so the post-switch transients that carry the information are
   averaged away, and its indices are not scaled by sensor noise — so they cannot
-  say whether an effect is above the noise floor, which is the whole of F2.
-* **`analysis/identifiability.py`** has `correlation_with={}` as a literal
+  say whether an effect is above the noise floor, which is the whole of F2.  
+* **`analysis/identifiability.py`** has `correlation_with={}` as a literal  
   placeholder — there is no collinearity analysis — and its
   `is_identifiable = max_sensitivity >= 1e-6` classifies essentially everything
   as identifiable.
@@ -246,16 +246,16 @@ index `gamma`, and Fisher-information standard errors.
 
 ## Metrics
 
-* **`log_err`** — `|ln(f_hat / f_true)|`. 0.22 = off by 25 %, 0.69 = off by a
-  factor of 2. Reported only over the parameters a run was allowed to move.
-* **`start_dist`** — the same distance at the start. A final error that does not
-  fall below it means calibration learned nothing, however good the fit got.
-* **`chi2_final` vs `chi2_truth`** — the verdict-maker. `chi2_truth` is the best
+* **`log_err`** — `|ln(f_hat / f_true)|`. 0.22 = off by 25 %, 0.69 = off by a  
+  factor of 2. Reported only over the parameters a run was allowed to move.  
+* **`start_dist`** — the same distance at the start. A final error that does not  
+  fall below it means calibration learned nothing, however good the fit got.  
+* **`chi2_final` vs `chi2_truth`** — the verdict-maker. `chi2_truth` is the best  
   fit reachable with the *active* parameters at their true values and the rest
   frozen at the start. A search that fits as well as that while the parameter
-  error stays high has hit an **identifiability** limit, not an optimiser limit.
-* **`chi2_truth_all`** — all 26 kinetics at the truth: the noise floor,
-  ~1.0 by construction.
-* **`chi2_holdout`** — fit over the days after the calibration window. Note that
+  error stays high has hit an **identifiability** limit, not an optimiser limit.  
+* **`chi2_truth_all`** — all 26 kinetics at the truth: the noise floor,  
+  ~1.0 by construction.  
+* **`chi2_holdout`** — fit over the days after the calibration window. Note that  
   the window differs per run (a 10-day run is scored on days 10–60, a 30-day run
   on 30–60), so this is an overfitting check, not a comparison across windows.

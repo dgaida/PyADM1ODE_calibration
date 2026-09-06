@@ -13,10 +13,10 @@ Fits ADM1 parameters to measured plant data, either once from a historical windo
 
 ## What it does
 
-- **Initial calibration**: global search over a historical window, with a train/test split.
-- **Online recalibration**: bounded parameter updates, triggered by prediction variance.
-- **Analysis**: sensitivity and identifiability, so you can tell which parameters the data actually resolves.
-- **Data**: CSV and database sources behind one schema file, plus validation, outlier removal and gap filling.
+- **Initial calibration**: global search over a historical window, with a train/test split.  
+- **Online recalibration**: bounded parameter updates, triggered by prediction variance.  
+- **Analysis**: sensitivity and identifiability, so you can tell which parameters the data actually resolves.  
+- **Data**: CSV and database sources behind one schema file, plus validation, outlier removal and gap filling.  
 
 ## Contents
 

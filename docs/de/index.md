@@ -13,10 +13,10 @@ Passt ADM1-Parameter an gemessene Anlagendaten an, einmalig aus einem historisch
 
 ## Was das Paket leistet
 
-- **Initialkalibrierung**: globale Suche über ein historisches Zeitfenster, mit Train/Test-Aufteilung.
-- **Online-Rekalibrierung**: begrenzte Parameteranpassungen, ausgelöst über die Prognosevarianz.
-- **Analyse**: Sensitivität und Identifizierbarkeit, damit erkennbar ist, welche Parameter die Daten überhaupt auflösen.
-- **Daten**: CSV- und Datenbankquellen hinter einer Schemadatei, dazu Validierung, Ausreißerentfernung und Lückenfüllung.
+- **Initialkalibrierung**: globale Suche über ein historisches Zeitfenster, mit Train/Test-Aufteilung.  
+- **Online-Rekalibrierung**: begrenzte Parameteranpassungen, ausgelöst über die Prognosevarianz.  
+- **Analyse**: Sensitivität und Identifizierbarkeit, damit erkennbar ist, welche Parameter die Daten überhaupt auflösen.  
+- **Daten**: CSV- und Datenbankquellen hinter einer Schemadatei, dazu Validierung, Ausreißerentfernung und Lückenfüllung.  
 
 ## Inhalt
 

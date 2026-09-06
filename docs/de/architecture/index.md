@@ -54,7 +54,7 @@ einen Lauf also nicht abbrechen.
 
 ## Wissenswerte Entwurfsentscheidungen
 
-- **Parameter sind benannt, nicht positionsbezogen**, die Abbildung auf den Optimierervektor liegt an einer Stelle.
-- **Grenzen sind Daten**: `create_default_bounds()` führt Einheiten, Standardwerte und soft/hard für 41 Parameter.
-- **Anlagentopologien bleiben Python**, denn die PyADM1ODE-Anlagen-API ist ein Komponentengraph.
-- **Gespeicherte Zeitstempel sind naive UTC**, geschrieben über `timeutils.utc_now()`.
+- **Parameter sind benannt, nicht positionsbezogen**, die Abbildung auf den Optimierervektor liegt an einer Stelle.  
+- **Grenzen sind Daten**: `create_default_bounds()` führt Einheiten, Standardwerte und soft/hard für 41 Parameter.  
+- **Anlagentopologien bleiben Python**, denn die PyADM1ODE-Anlagen-API ist ein Komponentengraph.  
+- **Gespeicherte Zeitstempel sind naive UTC**, geschrieben über `timeutils.utc_now()`.  

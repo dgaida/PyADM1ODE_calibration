@@ -40,10 +40,10 @@ identifiability = calibrator.identifiability_analysis(
 
 `identifiability_analysis` reports two distinct failures, after Raue et al. 2009:
 
-- **structurally non-identifiable**: the parameter moves no measured output at all, so no amount of
+- **structurally non-identifiable**: the parameter moves no measured output at all, so no amount of  
   data will pin it down. On the example plant `k_dis` is this case, because the substrates enter as
-  hydrolysable fractions and disintegration never has a substrate.
-- **practically non-identifiable**: it does move the outputs, but so weakly that the confidence
+  hydrolysable fractions and disintegration never has a substrate.  
+- **practically non-identifiable**: it does move the outputs, but so weakly that the confidence  
   interval stays wider than the estimate itself.
 
 A set can also fail as a set. `analyze_subset` applies the two measures of Brun et al. 2001 in their
@@ -92,9 +92,9 @@ always true.
 
 With a `validation_split`, metrics for the held-out part land in `result.validation_metrics`:
 
-- **RMSE**, **MAE**: absolute error
-- **R2**: coefficient of determination
-- **NSE**: Nash-Sutcliffe efficiency
-- **PBIAS**: systematic over- or underprediction
+- **RMSE**, **MAE**: absolute error  
+- **R2**: coefficient of determination  
+- **NSE**: Nash-Sutcliffe efficiency  
+- **PBIAS**: systematic over- or underprediction  
 
 `CalibrationValidator` adds residual diagnostics: normality, autocorrelation and heteroscedasticity.

@@ -2,9 +2,9 @@
 
 Signaturen und Docstrings, aus dem Quellcode erzeugt.
 
-- [**Kalibrierung**](calibration.md): Kalibratoren, Ergebnisse, Grenzen, Analyse, Validierung.
-- [**IO und Daten**](io.md): Messwerte, schemagesteuertes Laden, Datenbank.
-- [**Optimierung**](optimization.md): Optimierer, Zielfunktionen, Nebenbedingungen.
+- [**Kalibrierung**](calibration.md): Kalibratoren, Ergebnisse, Grenzen, Analyse, Validierung.  
+- [**IO und Daten**](io.md): Messwerte, schemagesteuertes Laden, Datenbank.  
+- [**Optimierung**](optimization.md): Optimierer, Zielfunktionen, Nebenbedingungen.  
 
 Diese Namen sind auf oberster Ebene von `pyadm1ode_calibration` erneut exportiert:
 
