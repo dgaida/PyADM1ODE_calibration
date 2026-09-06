@@ -27,7 +27,7 @@
       
       
       <link rel="icon" href="../../assets/images/favicon.png">
-      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.6">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.7">
     
     
       
@@ -35,7 +35,7 @@
       
     
     
-      <link rel="stylesheet" href="../../assets/stylesheets/main.484c7ddc.min.css">
+      <link rel="stylesheet" href="../../assets/stylesheets/main.ec1eaa64.min.css">
       
         
         <link rel="stylesheet" href="../../assets/stylesheets/palette.ab4e12ef.min.css">
@@ -847,24 +847,6 @@
         
       
       
-        <label class="md-nav__link md-nav__link--active" for="__toc">
-          
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    Kalibrierungs-Workflow
-  
-
-    
-  </span>
-  
-  
-
-          <span class="md-nav__icon md-icon"></span>
-        </label>
-      
       <a href="./" class="md-nav__link md-nav__link--active">
         
   
@@ -881,36 +863,6 @@
   
 
       </a>
-      
-        
-
-<nav class="md-nav md-nav--secondary" aria-label="Inhaltsverzeichnis">
-  
-  
-  
-    
-  
-  
-    <label class="md-nav__title" for="__toc">
-      <span class="md-nav__icon md-icon"></span>
-      Inhaltsverzeichnis
-    </label>
-    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
-      
-        <li class="md-nav__item">
-  <a href="#schritte" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Schritte
-      
-    </span>
-  </a>
-  
-</li>
-      
-    </ul>
-  
-</nav>
       
     </li>
   
@@ -1489,25 +1441,6 @@
     
   
   
-    <label class="md-nav__title" for="__toc">
-      <span class="md-nav__icon md-icon"></span>
-      Inhaltsverzeichnis
-    </label>
-    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
-      
-        <li class="md-nav__item">
-  <a href="#schritte" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Schritte
-      
-    </span>
-  </a>
-  
-</li>
-      
-    </ul>
-  
 </nav>
                   </div>
                 </div>
@@ -1527,14 +1460,69 @@
 
 
 <h1 id="kalibrierungs-workflow">Kalibrierungs-Workflow<a class="headerlink" href="#kalibrierungs-workflow" title="Permanent link">&para;</a></h1>
-<p>Dieser Workflow zeigt die schrittweise Kalibrierung eines Biogasanlagenmodells.</p>
-<h2 id="schritte">Schritte<a class="headerlink" href="#schritte" title="Permanent link">&para;</a></h2>
-<ol>
-<li>Daten laden  </li>
-<li>Vorverarbeitung  </li>
-<li>Kalibrierung ausführen  </li>
-<li>Ergebnisse validieren  </li>
-</ol>
+<p>Die acht Schritte, die <code>examples/calibration_workflow_complete.py</code> der Reihe nach durchläuft.</p>
+<table>
+<thead>
+<tr>
+<th>Schritt</th>
+<th>Was passiert</th>
+<th>API</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td>Anlage aufbauen, dann eine Twin-Aufzeichnung daraus erzeugen</td>
+<td><code>create_twin_measurements</code></td>
+</tr>
+<tr>
+<td>2</td>
+<td>Validieren, Ausreißer entfernen, Lücken füllen</td>
+<td><code>measurements.validate</code>, <code>remove_outliers</code>, <code>fill_gaps</code></td>
+</tr>
+<tr>
+<td>3</td>
+<td>Anpassen, mit Train/Test-Aufteilung</td>
+<td><code>InitialCalibrator.calibrate</code></td>
+</tr>
+<tr>
+<td>4</td>
+<td>Kennzahlen beider Teile ablesen</td>
+<td><code>result.validation_metrics</code></td>
+</tr>
+<tr>
+<td>5</td>
+<td>Parameter nach Einfluss ordnen</td>
+<td><code>sensitivity_analysis</code></td>
+</tr>
+<tr>
+<td>6</td>
+<td>Jeden Parameter prüfen, dann den Satz als Ganzes</td>
+<td><code>identifiability_analysis</code>, <code>analyze_subset</code></td>
+</tr>
+<tr>
+<td>7</td>
+<td>Werte in die Anlage schreiben</td>
+<td><code>digester.apply_calibration_parameters</code></td>
+</tr>
+<tr>
+<td>8</td>
+<td>Zusammenfassung ausgeben</td>
+<td>-</td>
+</tr>
+</tbody>
+</table>
+<p>Die Schritte 5 und 6 gehören zusammen. Die Sensitivität sagt, ob ein Parameter die Ausgabe überhaupt
+bewegt, die Identifizierbarkeit sagt, ob sich seine Wirkung von der eines anderen Parameters trennen
+lässt. Ein Parameter, der an einem der beiden scheitert, hätte in Schritt 3 nichts zu suchen, und
+genau deshalb stellt <code>check_identifiability=True</code> dieselbe Frage vor den Optimierer.</p>
+<p>Die Aufzeichnung in Schritt 1 entsteht durch Simulation der Anlage selbst mit bekannten
+Parameterwerten. Schritt 4 kann den Fehler daher gegen die Wahrheit ausweisen statt nur „konvergiert"
+zu melden. Ihr Fütterungsprofil fährt die Raumbelastung hoch und herunter und verschiebt den
+Substratmix, denn ein bei konstanter Last gehaltener Fermenter läuft in einen Zustand, in dem
+mehrere Parametersätze dieselbe Gaskurve erzeugen.</p>
+<p>Das Skript speichert nichts dauerhaft. Wer einen Lauf behalten will, ergänzt nach Schritt 7
+<code>Database.store_calibration</code>, so wie es <code>examples/scheduled_recalibration.py</code> tut.</p>
 
 
 
@@ -1593,7 +1581,7 @@
       <script id="__config" type="application/json">{"annotate": null, "base": "../..", "features": ["navigation.tabs", "navigation.sections", "navigation.expand", "navigation.top", "navigation.tracking", "search.suggest", "search.highlight", "search.share", "content.code.copy", "content.code.annotate", "content.tooltips"], "search": "../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "In Zwischenablage kopiert", "clipboard.copy": "In Zwischenablage kopieren", "search.result.more.one": "1 weiteres Suchergebnis auf dieser Seite", "search.result.more.other": "# weitere Suchergebnisse auf dieser Seite", "search.result.none": "Keine Suchergebnisse", "search.result.one": "1 Suchergebnis", "search.result.other": "# Suchergebnisse", "search.result.placeholder": "Suchbegriff eingeben", "search.result.term.missing": "Es fehlt", "select.version": "Version ausw\u00e4hlen"}, "version": {"provider": "mike"}}</script>
     
     
-      <script src="../../assets/javascripts/bundle.79ae519e.min.js"></script>
+      <script src="../../assets/javascripts/bundle.d7400e89.min.js"></script>
       
     
   </body>

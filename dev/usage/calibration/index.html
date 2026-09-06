@@ -27,7 +27,7 @@
       
       
       <link rel="icon" href="../../assets/images/favicon.png">
-      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.6">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.7">
     
     
       
@@ -35,7 +35,7 @@
       
     
     
-      <link rel="stylesheet" href="../../assets/stylesheets/main.484c7ddc.min.css">
+      <link rel="stylesheet" href="../../assets/stylesheets/main.ec1eaa64.min.css">
       
         
         <link rel="stylesheet" href="../../assets/stylesheets/palette.ab4e12ef.min.css">
@@ -1023,6 +1023,23 @@
     </span>
   </a>
   
+    <nav class="md-nav" aria-label="Initialkalibrierung">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#welche-parameter-sich-lohnen" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Welche Parameter sich lohnen
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
 </li>
       
         <li class="md-nav__item">
@@ -1526,6 +1543,23 @@
     </span>
   </a>
   
+    <nav class="md-nav" aria-label="Initialkalibrierung">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#welche-parameter-sich-lohnen" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Welche Parameter sich lohnen
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
 </li>
       
         <li class="md-nav__item">
@@ -1571,59 +1605,89 @@
 
 
 <h1 id="kalibrierung">Kalibrierung<a class="headerlink" href="#kalibrierung" title="Permanent link">&para;</a></h1>
-<p>Die Kalibrierung ist das Herzstück dieses Frameworks. Sie unterteilt sich in die Initialkalibrierung und die Online-Rekalibrierung.</p>
 <h2 id="initialkalibrierung">Initialkalibrierung<a class="headerlink" href="#initialkalibrierung" title="Permanent link">&para;</a></h2>
-<p>Die Initialkalibrierung wird meist einmalig durchgeführt, wenn historische Daten für einen Zeitraum (z.B. 30 Tage) vorliegen.</p>
-<div class="language-python highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="kn">from</span><span class="w"> </span><span class="nn">pyadm1ode_calibration.calibration</span><span class="w"> </span><span class="kn">import</span> <span class="n">InitialCalibrator</span>
-</span><span id="__span-0-2"><a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a><span class="kn">from</span><span class="w"> </span><span class="nn">pyadm1ode_calibration.io.loaders</span><span class="w"> </span><span class="kn">import</span> <span class="n">MeasurementData</span>
-</span><span id="__span-0-3"><a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a>
-</span><span id="__span-0-4"><a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a><span class="c1"># 1. Messdaten laden</span>
-</span><span id="__span-0-5"><a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a><span class="n">measurements</span> <span class="o">=</span> <span class="n">MeasurementData</span><span class="o">.</span><span class="n">from_csv</span><span class="p">(</span><span class="s2">&quot;hist_data.csv&quot;</span><span class="p">)</span>
+<p>Einmalig auf einem historischen Zeitfenster stabilen Betriebs. Üblich sind sieben bis dreißig Tage.</p>
+<div class="language-python highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="kn">from</span><span class="w"> </span><span class="nn">pyadm1ode_calibration</span><span class="w"> </span><span class="kn">import</span> <span class="n">InitialCalibrator</span><span class="p">,</span> <span class="n">MeasurementData</span>
+</span><span id="__span-0-2"><a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a>
+</span><span id="__span-0-3"><a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a><span class="n">measurements</span> <span class="o">=</span> <span class="n">MeasurementData</span><span class="o">.</span><span class="n">from_csv</span><span class="p">(</span><span class="s2">"hist_data.csv"</span><span class="p">)</span>
+</span><span id="__span-0-4"><a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a><span class="n">measurements</span><span class="o">.</span><span class="n">remove_outliers</span><span class="p">(</span><span class="n">method</span><span class="o">=</span><span class="s2">"zscore"</span><span class="p">,</span> <span class="n">threshold</span><span class="o">=</span><span class="mf">3.0</span><span class="p">)</span>
+</span><span id="__span-0-5"><a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a><span class="n">measurements</span><span class="o">.</span><span class="n">fill_gaps</span><span class="p">(</span><span class="n">method</span><span class="o">=</span><span class="s2">"interpolate"</span><span class="p">,</span> <span class="n">limit</span><span class="o">=</span><span class="mi">3</span><span class="p">)</span>
 </span><span id="__span-0-6"><a id="__codelineno-0-6" name="__codelineno-0-6" href="#__codelineno-0-6"></a>
-</span><span id="__span-0-7"><a id="__codelineno-0-7" name="__codelineno-0-7" href="#__codelineno-0-7"></a><span class="c1"># 2. Calibrator initialisieren</span>
-</span><span id="__span-0-8"><a id="__codelineno-0-8" name="__codelineno-0-8" href="#__codelineno-0-8"></a><span class="c1"># plant ist eine Instanz von pyadm1ode.Plant</span>
-</span><span id="__span-0-9"><a id="__codelineno-0-9" name="__codelineno-0-9" href="#__codelineno-0-9"></a><span class="n">calibrator</span> <span class="o">=</span> <span class="n">InitialCalibrator</span><span class="p">(</span><span class="n">plant</span><span class="p">)</span>
-</span><span id="__span-0-10"><a id="__codelineno-0-10" name="__codelineno-0-10" href="#__codelineno-0-10"></a>
-</span><span id="__span-0-11"><a id="__codelineno-0-11" name="__codelineno-0-11" href="#__codelineno-0-11"></a><span class="c1"># 3. Kalibrierung starten</span>
-</span><span id="__span-0-12"><a id="__codelineno-0-12" name="__codelineno-0-12" href="#__codelineno-0-12"></a><span class="n">result</span> <span class="o">=</span> <span class="n">calibrator</span><span class="o">.</span><span class="n">calibrate</span><span class="p">(</span>
-</span><span id="__span-0-13"><a id="__codelineno-0-13" name="__codelineno-0-13" href="#__codelineno-0-13"></a>    <span class="n">measurements</span><span class="o">=</span><span class="n">measurements</span><span class="p">,</span>
-</span><span id="__span-0-14"><a id="__codelineno-0-14" name="__codelineno-0-14" href="#__codelineno-0-14"></a>    <span class="n">parameters</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;k_dis&quot;</span><span class="p">,</span> <span class="s2">&quot;k_hyd_ch&quot;</span><span class="p">,</span> <span class="s2">&quot;Y_su&quot;</span><span class="p">],</span>
-</span><span id="__span-0-15"><a id="__codelineno-0-15" name="__codelineno-0-15" href="#__codelineno-0-15"></a>    <span class="n">method</span><span class="o">=</span><span class="s2">&quot;differential_evolution&quot;</span><span class="p">,</span>
-</span><span id="__span-0-16"><a id="__codelineno-0-16" name="__codelineno-0-16" href="#__codelineno-0-16"></a>    <span class="n">validation_split</span><span class="o">=</span><span class="mf">0.2</span>
+</span><span id="__span-0-7"><a id="__codelineno-0-7" name="__codelineno-0-7" href="#__codelineno-0-7"></a><span class="n">calibrator</span> <span class="o">=</span> <span class="n">InitialCalibrator</span><span class="p">(</span><span class="n">plant</span><span class="p">)</span>
+</span><span id="__span-0-8"><a id="__codelineno-0-8" name="__codelineno-0-8" href="#__codelineno-0-8"></a><span class="n">result</span> <span class="o">=</span> <span class="n">calibrator</span><span class="o">.</span><span class="n">calibrate</span><span class="p">(</span>
+</span><span id="__span-0-9"><a id="__codelineno-0-9" name="__codelineno-0-9" href="#__codelineno-0-9"></a>    <span class="n">measurements</span><span class="o">=</span><span class="n">measurements</span><span class="p">,</span>
+</span><span id="__span-0-10"><a id="__codelineno-0-10" name="__codelineno-0-10" href="#__codelineno-0-10"></a>    <span class="n">parameters</span><span class="o">=</span><span class="p">[</span><span class="s2">"k_dis"</span><span class="p">,</span> <span class="s2">"k_hyd_ch"</span><span class="p">,</span> <span class="s2">"Y_su"</span><span class="p">],</span>
+</span><span id="__span-0-11"><a id="__codelineno-0-11" name="__codelineno-0-11" href="#__codelineno-0-11"></a>    <span class="n">objectives</span><span class="o">=</span><span class="p">[</span><span class="s2">"Q_ch4"</span><span class="p">,</span> <span class="s2">"pH"</span><span class="p">],</span>
+</span><span id="__span-0-12"><a id="__codelineno-0-12" name="__codelineno-0-12" href="#__codelineno-0-12"></a>    <span class="n">weights</span><span class="o">=</span><span class="p">{</span><span class="s2">"Q_ch4"</span><span class="p">:</span> <span class="mf">0.8</span><span class="p">,</span> <span class="s2">"pH"</span><span class="p">:</span> <span class="mf">0.2</span><span class="p">},</span>
+</span><span id="__span-0-13"><a id="__codelineno-0-13" name="__codelineno-0-13" href="#__codelineno-0-13"></a>    <span class="n">method</span><span class="o">=</span><span class="s2">"differential_evolution"</span><span class="p">,</span>
+</span><span id="__span-0-14"><a id="__codelineno-0-14" name="__codelineno-0-14" href="#__codelineno-0-14"></a>    <span class="n">validation_split</span><span class="o">=</span><span class="mf">0.2</span><span class="p">,</span>
+</span><span id="__span-0-15"><a id="__codelineno-0-15" name="__codelineno-0-15" href="#__codelineno-0-15"></a>    <span class="n">max_iterations</span><span class="o">=</span><span class="mi">50</span><span class="p">,</span>
+</span><span id="__span-0-16"><a id="__codelineno-0-16" name="__codelineno-0-16" href="#__codelineno-0-16"></a>    <span class="n">population_size</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span>
 </span><span id="__span-0-17"><a id="__codelineno-0-17" name="__codelineno-0-17" href="#__codelineno-0-17"></a><span class="p">)</span>
 </span><span id="__span-0-18"><a id="__codelineno-0-18" name="__codelineno-0-18" href="#__codelineno-0-18"></a>
-</span><span id="__span-0-19"><a id="__codelineno-0-19" name="__codelineno-0-19" href="#__codelineno-0-19"></a><span class="c1"># 4. Ergebnisse auswerten</span>
-</span><span id="__span-0-20"><a id="__codelineno-0-20" name="__codelineno-0-20" href="#__codelineno-0-20"></a><span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Bester Fit: </span><span class="si">{</span><span class="n">result</span><span class="o">.</span><span class="n">objective_value</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
-</span><span id="__span-0-21"><a id="__codelineno-0-21" name="__codelineno-0-21" href="#__codelineno-0-21"></a><span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Kalibrierte Parameter: </span><span class="si">{</span><span class="n">result</span><span class="o">.</span><span class="n">parameters</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</span><span id="__span-0-19"><a id="__codelineno-0-19" name="__codelineno-0-19" href="#__codelineno-0-19"></a><span class="nb">print</span><span class="p">(</span><span class="n">result</span><span class="o">.</span><span class="n">success</span><span class="p">,</span> <span class="n">result</span><span class="o">.</span><span class="n">parameters</span><span class="p">,</span> <span class="n">result</span><span class="o">.</span><span class="n">validation_metrics</span><span class="p">)</span>
 </span></code></pre></div>
-<h2 id="online-rekalibrierung">Online-Rekalibrierung<a class="headerlink" href="#online-rekalibrierung" title="Permanent link">&para;</a></h2>
-<p>Die Online-Rekalibrierung dient der Anpassung des Modells im laufenden Betrieb, falls die Vorhersagegüte nachlässt.</p>
-<div class="language-python highlight"><pre><span></span><code><span id="__span-1-1"><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a><span class="kn">from</span><span class="w"> </span><span class="nn">pyadm1ode_calibration.calibration</span><span class="w"> </span><span class="kn">import</span> <span class="n">OnlineCalibrator</span>
-</span><span id="__span-1-2"><a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a>
-</span><span id="__span-1-3"><a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a><span class="n">calibrator</span> <span class="o">=</span> <span class="n">OnlineCalibrator</span><span class="p">(</span><span class="n">plant</span><span class="p">)</span>
-</span><span id="__span-1-4"><a id="__codelineno-1-4" name="__codelineno-1-4" href="#__codelineno-1-4"></a>
-</span><span id="__span-1-5"><a id="__codelineno-1-5" name="__codelineno-1-5" href="#__codelineno-1-5"></a><span class="c1"># Trigger-Bedingungen definieren</span>
-</span><span id="__span-1-6"><a id="__codelineno-1-6" name="__codelineno-1-6" href="#__codelineno-1-6"></a><span class="n">calibrator</span><span class="o">.</span><span class="n">set_trigger</span><span class="p">(</span>
-</span><span id="__span-1-7"><a id="__codelineno-1-7" name="__codelineno-1-7" href="#__codelineno-1-7"></a>    <span class="n">variance_threshold</span><span class="o">=</span><span class="mf">0.15</span><span class="p">,</span>  <span class="c1"># 15% Abweichung</span>
-</span><span id="__span-1-8"><a id="__codelineno-1-8" name="__codelineno-1-8" href="#__codelineno-1-8"></a>    <span class="n">time_threshold</span><span class="o">=</span><span class="mf">24.0</span>       <span class="c1"># Mindestens 24h Abstand</span>
-</span><span id="__span-1-9"><a id="__codelineno-1-9" name="__codelineno-1-9" href="#__codelineno-1-9"></a><span class="p">)</span>
-</span><span id="__span-1-10"><a id="__codelineno-1-10" name="__codelineno-1-10" href="#__codelineno-1-10"></a>
-</span><span id="__span-1-11"><a id="__codelineno-1-11" name="__codelineno-1-11" href="#__codelineno-1-11"></a><span class="c1"># Prüfung, ob Rekalibrierung nötig ist</span>
-</span><span id="__span-1-12"><a id="__codelineno-1-12" name="__codelineno-1-12" href="#__codelineno-1-12"></a><span class="k">if</span> <span class="n">calibrator</span><span class="o">.</span><span class="n">should_recalibrate</span><span class="p">(</span><span class="n">recent_data</span><span class="p">):</span>
-</span><span id="__span-1-13"><a id="__codelineno-1-13" name="__codelineno-1-13" href="#__codelineno-1-13"></a>    <span class="n">result</span> <span class="o">=</span> <span class="n">calibrator</span><span class="o">.</span><span class="n">calibrate</span><span class="p">(</span>
-</span><span id="__span-1-14"><a id="__codelineno-1-14" name="__codelineno-1-14" href="#__codelineno-1-14"></a>        <span class="n">measurements</span><span class="o">=</span><span class="n">recent_data</span><span class="p">,</span>
-</span><span id="__span-1-15"><a id="__codelineno-1-15" name="__codelineno-1-15" href="#__codelineno-1-15"></a>        <span class="n">method</span><span class="o">=</span><span class="s2">&quot;nelder-mead&quot;</span>
-</span><span id="__span-1-16"><a id="__codelineno-1-16" name="__codelineno-1-16" href="#__codelineno-1-16"></a>    <span class="p">)</span>
-</span><span id="__span-1-17"><a id="__codelineno-1-17" name="__codelineno-1-17" href="#__codelineno-1-17"></a>    <span class="k">if</span> <span class="n">result</span><span class="o">.</span><span class="n">success</span><span class="p">:</span>
-</span><span id="__span-1-18"><a id="__codelineno-1-18" name="__codelineno-1-18" href="#__codelineno-1-18"></a>        <span class="n">calibrator</span><span class="o">.</span><span class="n">apply_calibration</span><span class="p">(</span><span class="n">result</span><span class="p">)</span>
+<p><code>InitialCalibrator</code> schreibt nicht in das Anlagenmodell. Dafür die Fassade <code>Calibrator</code> verwenden
+oder die Werte selbst setzen.</p>
+<h3 id="welche-parameter-sich-lohnen">Welche Parameter sich lohnen<a class="headerlink" href="#welche-parameter-sich-lohnen" title="Permanent link">&para;</a></h3>
+<div class="language-python highlight"><pre><span></span><code><span id="__span-1-1"><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a><span class="n">sensitivity</span> <span class="o">=</span> <span class="n">calibrator</span><span class="o">.</span><span class="n">sensitivity_analysis</span><span class="p">(</span><span class="n">result</span><span class="o">.</span><span class="n">parameters</span><span class="p">,</span> <span class="n">measurements</span><span class="p">)</span>
+</span><span id="__span-1-2"><a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a><span class="n">identifiability</span> <span class="o">=</span> <span class="n">calibrator</span><span class="o">.</span><span class="n">identifiability_analysis</span><span class="p">(</span>
+</span><span id="__span-1-3"><a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a>    <span class="n">result</span><span class="o">.</span><span class="n">parameters</span><span class="p">,</span> <span class="n">measurements</span><span class="p">,</span> <span class="n">correlation_threshold</span><span class="o">=</span><span class="mf">0.8</span>
+</span><span id="__span-1-4"><a id="__codelineno-1-4" name="__codelineno-1-4" href="#__codelineno-1-4"></a><span class="p">)</span>
 </span></code></pre></div>
-<h2 id="validierung">Validierung<a class="headerlink" href="#validierung" title="Permanent link">&para;</a></h2>
-<p>Nach jeder Kalibrierung wird automatisch eine Validierung durchgeführt (falls ein <code>validation_split</code> angegeben wurde). Die Ergebnisse finden Sie in <code>result.validation_metrics</code>:</p>
+<p><code>identifiability_analysis</code> unterscheidet nach Raue et al. 2009 zwei Arten des Scheiterns:</p>
 <ul>
-<li><strong>RMSE</strong>: Root Mean Square Error  </li>
-<li><strong>R²</strong>: Bestimmtheitsmaß  </li>
-<li><strong>NSE</strong>: Nash-Sutcliffe Efficiency  </li>
+<li><strong>strukturell nicht identifizierbar</strong>: Der Parameter bewegt keinen Messkanal, keine Datenmenge<br />
+  ändert daran etwas. Auf der Beispielanlage trifft das <code>k_dis</code>, denn die Substrate treten als
+  hydrolysierbare Fraktionen ein, die Desintegration hat also nie ein Substrat.  </li>
+<li><strong>praktisch nicht identifizierbar</strong>: Er bewegt die Ausgänge, aber so schwach, dass das<br />
+  Konfidenzintervall breiter bleibt als der Schätzwert selbst.</li>
 </ul>
+<p>Ein Satz kann auch als Satz scheitern. <code>analyze_subset</code> wendet die beiden Maße von Brun et al. 2001
+in ihrer Reihenfolge an: erst jeden Parameter für sich, dann den <strong>Kollinearitätsindex</strong> über die
+Überlebenden. Er ist 1, wenn die Parameter in unabhängige Richtungen auf die Ausgänge wirken, und
+wächst unbeschränkt, je austauschbarer sie werden. Die übliche Grenze liegt bei 20.</p>
+<div class="language-python highlight"><pre><span></span><code><span id="__span-2-1"><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a><span class="n">verdict</span> <span class="o">=</span> <span class="n">calibrator</span><span class="o">.</span><span class="n">identifiability_analyzer</span><span class="o">.</span><span class="n">analyze_subset</span><span class="p">(</span><span class="n">parameters</span><span class="p">,</span> <span class="n">measurements</span><span class="p">)</span>
+</span><span id="__span-2-2"><a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a><span class="nb">print</span><span class="p">(</span><span class="n">verdict</span><span class="o">.</span><span class="n">collinearity_index</span><span class="p">,</span> <span class="n">verdict</span><span class="o">.</span><span class="n">reason</span><span class="p">)</span>
+</span></code></pre></div>
+<p>Günstiger, als es hinterher zu merken: der Test kostet <code>2 * len(parameters) + 1</code> Simulationen
+gegenüber den mehreren hundert einer globalen Suche. <code>calibrate(..., check_identifiability=True)</code>
+führt ihn deshalb vorab aus und warnt, bevor der Optimierer startet.</p>
+<h2 id="online-rekalibrierung">Online-Rekalibrierung<a class="headerlink" href="#online-rekalibrierung" title="Permanent link">&para;</a></h2>
+<p>Die Auslöseschwellen liegen auf <code>calibrator.trigger</code>, die Schrittbegrenzung ist ein Argument von
+<code>calibrate</code>.</p>
+<div class="language-python highlight"><pre><span></span><code><span id="__span-3-1"><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a><span class="kn">from</span><span class="w"> </span><span class="nn">pyadm1ode_calibration</span><span class="w"> </span><span class="kn">import</span> <span class="n">OnlineCalibrator</span>
+</span><span id="__span-3-2"><a id="__codelineno-3-2" name="__codelineno-3-2" href="#__codelineno-3-2"></a>
+</span><span id="__span-3-3"><a id="__codelineno-3-3" name="__codelineno-3-3" href="#__codelineno-3-3"></a><span class="n">calibrator</span> <span class="o">=</span> <span class="n">OnlineCalibrator</span><span class="p">(</span><span class="n">plant</span><span class="p">)</span>
+</span><span id="__span-3-4"><a id="__codelineno-3-4" name="__codelineno-3-4" href="#__codelineno-3-4"></a><span class="n">calibrator</span><span class="o">.</span><span class="n">trigger</span><span class="o">.</span><span class="n">variance_threshold</span> <span class="o">=</span> <span class="mf">0.15</span>     <span class="c1"># 15 % relative Abweichung</span>
+</span><span id="__span-3-5"><a id="__codelineno-3-5" name="__codelineno-3-5" href="#__codelineno-3-5"></a><span class="n">calibrator</span><span class="o">.</span><span class="n">trigger</span><span class="o">.</span><span class="n">time_threshold</span> <span class="o">=</span> <span class="mf">24.0</span>         <span class="c1"># Stunden seit dem letzten Lauf</span>
+</span><span id="__span-3-6"><a id="__codelineno-3-6" name="__codelineno-3-6" href="#__codelineno-3-6"></a><span class="n">calibrator</span><span class="o">.</span><span class="n">trigger</span><span class="o">.</span><span class="n">consecutive_violations</span> <span class="o">=</span> <span class="mi">2</span>
+</span><span id="__span-3-7"><a id="__codelineno-3-7" name="__codelineno-3-7" href="#__codelineno-3-7"></a>
+</span><span id="__span-3-8"><a id="__codelineno-3-8" name="__codelineno-3-8" href="#__codelineno-3-8"></a><span class="n">needed</span><span class="p">,</span> <span class="n">reason</span> <span class="o">=</span> <span class="n">calibrator</span><span class="o">.</span><span class="n">should_recalibrate</span><span class="p">(</span><span class="n">recent_data</span><span class="p">)</span>
+</span><span id="__span-3-9"><a id="__codelineno-3-9" name="__codelineno-3-9" href="#__codelineno-3-9"></a><span class="k">if</span> <span class="n">needed</span><span class="p">:</span>
+</span><span id="__span-3-10"><a id="__codelineno-3-10" name="__codelineno-3-10" href="#__codelineno-3-10"></a>    <span class="n">result</span> <span class="o">=</span> <span class="n">calibrator</span><span class="o">.</span><span class="n">calibrate</span><span class="p">(</span>
+</span><span id="__span-3-11"><a id="__codelineno-3-11" name="__codelineno-3-11" href="#__codelineno-3-11"></a>        <span class="n">measurements</span><span class="o">=</span><span class="n">recent_data</span><span class="p">,</span>
+</span><span id="__span-3-12"><a id="__codelineno-3-12" name="__codelineno-3-12" href="#__codelineno-3-12"></a>        <span class="n">parameters</span><span class="o">=</span><span class="p">[</span><span class="s2">"k_hyd_ch"</span><span class="p">],</span>
+</span><span id="__span-3-13"><a id="__codelineno-3-13" name="__codelineno-3-13" href="#__codelineno-3-13"></a>        <span class="n">current_parameters</span><span class="o">=</span><span class="p">{</span><span class="s2">"k_hyd_ch"</span><span class="p">:</span> <span class="mf">2.0</span><span class="p">},</span>
+</span><span id="__span-3-14"><a id="__codelineno-3-14" name="__codelineno-3-14" href="#__codelineno-3-14"></a>        <span class="n">max_parameter_change</span><span class="o">=</span><span class="mf">0.20</span><span class="p">,</span>               <span class="c1"># höchstens 20 % je Lauf</span>
+</span><span id="__span-3-15"><a id="__codelineno-3-15" name="__codelineno-3-15" href="#__codelineno-3-15"></a>        <span class="n">method</span><span class="o">=</span><span class="s2">"nelder_mead"</span><span class="p">,</span>
+</span><span id="__span-3-16"><a id="__codelineno-3-16" name="__codelineno-3-16" href="#__codelineno-3-16"></a>    <span class="p">)</span>
+</span><span id="__span-3-17"><a id="__codelineno-3-17" name="__codelineno-3-17" href="#__codelineno-3-17"></a>    <span class="k">if</span> <span class="n">result</span><span class="o">.</span><span class="n">success</span><span class="p">:</span>
+</span><span id="__span-3-18"><a id="__codelineno-3-18" name="__codelineno-3-18" href="#__codelineno-3-18"></a>        <span class="n">calibrator</span><span class="o">.</span><span class="n">apply_calibration</span><span class="p">(</span><span class="n">result</span><span class="p">)</span>
+</span></code></pre></div>
+<p><code>should_recalibrate</code> liefert ein Paar, die Entscheidung und deren Begründung. Das Paar selbst
+abzufragen ist immer wahr.</p>
+<h2 id="validierung">Validierung<a class="headerlink" href="#validierung" title="Permanent link">&para;</a></h2>
+<p>Mit einem <code>validation_split</code> landen die Kennzahlen des zurückgehaltenen Teils in
+<code>result.validation_metrics</code>:</p>
+<ul>
+<li><strong>RMSE</strong>, <strong>MAE</strong>: absoluter Fehler  </li>
+<li><strong>R2</strong>: Bestimmtheitsmaß  </li>
+<li><strong>NSE</strong>: Nash-Sutcliffe-Effizienz  </li>
+<li><strong>PBIAS</strong>: systematische Über- oder Unterschätzung  </li>
+</ul>
+<p><code>CalibrationValidator</code> ergänzt Residuendiagnostik: Normalität, Autokorrelation und
+Heteroskedastizität.</p>
 
 
 
@@ -1682,7 +1746,7 @@
       <script id="__config" type="application/json">{"annotate": null, "base": "../..", "features": ["navigation.tabs", "navigation.sections", "navigation.expand", "navigation.top", "navigation.tracking", "search.suggest", "search.highlight", "search.share", "content.code.copy", "content.code.annotate", "content.tooltips"], "search": "../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "In Zwischenablage kopiert", "clipboard.copy": "In Zwischenablage kopieren", "search.result.more.one": "1 weiteres Suchergebnis auf dieser Seite", "search.result.more.other": "# weitere Suchergebnisse auf dieser Seite", "search.result.none": "Keine Suchergebnisse", "search.result.one": "1 Suchergebnis", "search.result.other": "# Suchergebnisse", "search.result.placeholder": "Suchbegriff eingeben", "search.result.term.missing": "Es fehlt", "select.version": "Version ausw\u00e4hlen"}, "version": {"provider": "mike"}}</script>
     
     
-      <script src="../../assets/javascripts/bundle.79ae519e.min.js"></script>
+      <script src="../../assets/javascripts/bundle.d7400e89.min.js"></script>
       
     
   </body>

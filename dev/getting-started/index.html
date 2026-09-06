@@ -27,7 +27,7 @@
       
       
       <link rel="icon" href="../assets/images/favicon.png">
-      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.6">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.7">
     
     
       
@@ -35,7 +35,7 @@
       
     
     
-      <link rel="stylesheet" href="../assets/stylesheets/main.484c7ddc.min.css">
+      <link rel="stylesheet" href="../assets/stylesheets/main.ec1eaa64.min.css">
       
         
         <link rel="stylesheet" href="../assets/stylesheets/palette.ab4e12ef.min.css">
@@ -637,52 +637,13 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#kernkonzepte" class="md-nav__link">
+  <a href="#grundbegriffe" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Kernkonzepte
+        Grundbegriffe
       
     </span>
   </a>
-  
-    <nav class="md-nav" aria-label="Kernkonzepte">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#1-daten-loading-measurementdata" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        1. Daten-Loading (MeasurementData)
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#2-kalibratoren" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        2. Kalibratoren
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#3-zielfunktionen" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        3. Zielfunktionen
-      
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
   
 </li>
       
@@ -1587,52 +1548,13 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#kernkonzepte" class="md-nav__link">
+  <a href="#grundbegriffe" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Kernkonzepte
+        Grundbegriffe
       
     </span>
   </a>
-  
-    <nav class="md-nav" aria-label="Kernkonzepte">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#1-daten-loading-measurementdata" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        1. Daten-Loading (MeasurementData)
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#2-kalibratoren" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        2. Kalibratoren
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#3-zielfunktionen" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        3. Zielfunktionen
-      
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
   
 </li>
       
@@ -1668,38 +1590,27 @@
 
 
 <h1 id="erste-schritte">Erste Schritte<a class="headerlink" href="#erste-schritte" title="Permanent link">&para;</a></h1>
-<p>Diese Anleitung hilft Ihnen bei den ersten Schritten mit <strong>PyADM1ODE_calibration</strong>.</p>
 <h2 id="voraussetzungen">Voraussetzungen<a class="headerlink" href="#voraussetzungen" title="Permanent link">&para;</a></h2>
-<p>Bevor Sie beginnen, stellen Sie sicher, dass Ihre Umgebung folgende Anforderungen erfüllt:</p>
 <ul>
-<li><strong>Python</strong>: 3.10 oder höher.  </li>
-<li><strong>PyADM1ODE</strong>: Das Basispaket für die Simulation von Biogasanlagen.  </li>
-<li><strong>Daten</strong>: Historische Messdaten der Anlage (z.B. CH₄-Produktion, pH-Wert) im CSV-Format oder in einer PostgreSQL-Datenbank.  </li>
+<li><strong>Python</strong> 3.10 oder neuer.  </li>
+<li><strong><a href="https://github.com/dgaida/PyADM1ODE">PyADM1ODE</a></strong>, das Anlagenmodell, das dieses Paket kalibriert.  </li>
+<li><strong>Messdaten</strong> als Zeitreihe, aus CSV oder einer Datenbank. Brauchbare Kanäle sind Gasmenge, Methangehalt, pH-Wert und FOS.  </li>
 </ul>
 <h2 id="installation">Installation<a class="headerlink" href="#installation" title="Permanent link">&para;</a></h2>
-<p>Installieren Sie das Paket direkt via pip:</p>
 <div class="language-bash highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>pip<span class="w"> </span>install<span class="w"> </span>pyadm1ode-calibration
 </span></code></pre></div>
-<p>Oder für die Entwicklung:</p>
-<div class="language-bash highlight"><pre><span></span><code><span id="__span-1-1"><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a>git<span class="w"> </span>clone<span class="w"> </span>https://github.com/dgaida/PyADM1ODE_calibration.git
-</span><span id="__span-1-2"><a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a><span class="nb">cd</span><span class="w"> </span>PyADM1ODE_calibration
-</span><span id="__span-1-3"><a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a>pip<span class="w"> </span>install<span class="w"> </span>-e<span class="w"> </span><span class="s2">&quot;.[dev]&quot;</span>
-</span></code></pre></div>
-<h2 id="kernkonzepte">Kernkonzepte<a class="headerlink" href="#kernkonzepte" title="Permanent link">&para;</a></h2>
-<h3 id="1-daten-loading-measurementdata">1. Daten-Loading (<code>MeasurementData</code>)<a class="headerlink" href="#1-daten-loading-measurementdata" title="Permanent link">&para;</a></h3>
-<p>Alle Kalibrierungen basieren auf dem <code>MeasurementData</code> Objekt. Es verwaltet Zeitreihen von Messwerten und bietet Funktionen zur Validierung und Vorverarbeitung.</p>
-<h3 id="2-kalibratoren">2. Kalibratoren<a class="headerlink" href="#2-kalibratoren" title="Permanent link">&para;</a></h3>
-<ul>
-<li><strong>InitialCalibrator</strong>: Wird für die erstmalige Abstimmung des Modells auf einen historischen Datensatz verwendet (Batch-Optimierung).  </li>
-<li><strong>OnlineCalibrator</strong>: Ermöglicht die kontinuierliche Anpassung von Parametern während des laufenden Betriebs, um auf Änderungen in der Substratqualität oder Biologie zu reagieren.  </li>
-</ul>
-<h3 id="3-zielfunktionen">3. Zielfunktionen<a class="headerlink" href="#3-zielfunktionen" title="Permanent link">&para;</a></h3>
-<p>Sie können mehrere Zielgrößen (Objectives) definieren und gewichten, z.B. 80% Gewicht auf Methanproduktion und 20% auf den pH-Wert.</p>
+<p>Für die Entwicklung siehe <a href="../installation/">Installation</a>.</p>
+<h2 id="grundbegriffe">Grundbegriffe<a class="headerlink" href="#grundbegriffe" title="Permanent link">&para;</a></h2>
+<p><strong><code>MeasurementData</code></strong> kapselt eine zeitindizierte Tabelle. Jede Kalibrierung liest daraus, und die Vorverarbeitung steckt ebenfalls darin: <code>remove_outliers</code>, <code>fill_gaps</code>, <code>get_time_window</code>.</p>
+<p><strong><code>InitialCalibrator</code></strong> passt ein frisches Modell an ein historisches Zeitfenster an. Er teilt die Daten in Training und Validierung, führt einen globalen Optimierer aus und weist beide Güten aus.</p>
+<p><strong><code>OnlineCalibrator</code></strong> hält ein laufendes Modell nach. <code>should_recalibrate</code> liefert eine Entscheidung samt Begründung, und <code>calibrate</code> begrenzt, wie weit eine einzelne Anpassung einen Parameter verschieben darf.</p>
+<p><strong><code>Calibrator</code></strong> ist eine schmale Fassade über beide. Er und <code>OnlineCalibrator</code> schreiben ein Ergebnis mit <code>apply_calibration</code> in das Anlagenmodell zurück, <code>InitialCalibrator</code> nicht.</p>
+<p><strong>Zielgrößen</strong> sind die Messkanäle, gegen die die Anpassung bewertet wird. Mehrere lassen sich gewichtet kombinieren, etwa 80 % auf die Gasmenge und 20 % auf den pH-Wert.</p>
 <h2 id="nachste-schritte">Nächste Schritte<a class="headerlink" href="#nachste-schritte" title="Permanent link">&para;</a></h2>
 <ul>
-<li>Folgen Sie dem <a href="../tutorials/calibration/">Tutorial für die Initialkalibrierung</a>.  </li>
-<li>Erfahren Sie mehr über die <a href="../configuration/">Konfiguration von Parametern</a>.  </li>
-<li>Prüfen Sie die <a href="../api/">API-Referenz</a> für detaillierte Informationen.  </li>
+<li>Die Notebooks durcharbeiten, beginnend bei <a href="../tutorials/">Tutorials</a>.  </li>
+<li>Parameter und Optimierer in <a href="../configuration/">Konfiguration</a> nachschlagen.  </li>
+<li>Beide Workflows im Code unter <a href="../usage/">Nutzung</a> ansehen.  </li>
 </ul>
 
 
@@ -1759,7 +1670,7 @@
       <script id="__config" type="application/json">{"annotate": null, "base": "..", "features": ["navigation.tabs", "navigation.sections", "navigation.expand", "navigation.top", "navigation.tracking", "search.suggest", "search.highlight", "search.share", "content.code.copy", "content.code.annotate", "content.tooltips"], "search": "../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "In Zwischenablage kopiert", "clipboard.copy": "In Zwischenablage kopieren", "search.result.more.one": "1 weiteres Suchergebnis auf dieser Seite", "search.result.more.other": "# weitere Suchergebnisse auf dieser Seite", "search.result.none": "Keine Suchergebnisse", "search.result.one": "1 Suchergebnis", "search.result.other": "# Suchergebnisse", "search.result.placeholder": "Suchbegriff eingeben", "search.result.term.missing": "Es fehlt", "select.version": "Version ausw\u00e4hlen"}, "version": {"provider": "mike"}}</script>
     
     
-      <script src="../assets/javascripts/bundle.79ae519e.min.js"></script>
+      <script src="../assets/javascripts/bundle.d7400e89.min.js"></script>
       
     
   </body>

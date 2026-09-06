@@ -27,7 +27,7 @@
       
       
       <link rel="icon" href="../assets/images/favicon.png">
-      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.6">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.7">
     
     
       
@@ -35,7 +35,7 @@
       
     
     
-      <link rel="stylesheet" href="../assets/stylesheets/main.484c7ddc.min.css">
+      <link rel="stylesheet" href="../assets/stylesheets/main.ec1eaa64.min.css">
       
         
         <link rel="stylesheet" href="../assets/stylesheets/palette.ab4e12ef.min.css">
@@ -1304,10 +1304,10 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#entwicklungs-setup" class="md-nav__link">
+  <a href="#einrichtung" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Entwicklungs-Setup
+        Einrichtung
       
     </span>
   </a>
@@ -1315,10 +1315,10 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#richtlinien" class="md-nav__link">
+  <a href="#vor-jedem-commit" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Richtlinien
+        Vor jedem Commit
       
     </span>
   </a>
@@ -1326,10 +1326,10 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#workflow" class="md-nav__link">
+  <a href="#konventionen" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Workflow
+        Konventionen
       
     </span>
   </a>
@@ -1529,10 +1529,10 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#entwicklungs-setup" class="md-nav__link">
+  <a href="#einrichtung" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Entwicklungs-Setup
+        Einrichtung
       
     </span>
   </a>
@@ -1540,10 +1540,10 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#richtlinien" class="md-nav__link">
+  <a href="#vor-jedem-commit" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Richtlinien
+        Vor jedem Commit
       
     </span>
   </a>
@@ -1551,10 +1551,10 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#workflow" class="md-nav__link">
+  <a href="#konventionen" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Workflow
+        Konventionen
       
     </span>
   </a>
@@ -1593,42 +1593,33 @@
 
 
 <h1 id="entwicklung">Entwicklung<a class="headerlink" href="#entwicklung" title="Permanent link">&para;</a></h1>
-<p>Willkommen im Entwicklerbereich von PyADM1ODE_calibration. Wir freuen uns über Beiträge!</p>
-<h2 id="entwicklungs-setup">Entwicklungs-Setup<a class="headerlink" href="#entwicklungs-setup" title="Permanent link">&para;</a></h2>
-<ol>
-<li>
-<p>Repository klonen:<br />
-   <div class="language-bash highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>git<span class="w"> </span>clone<span class="w"> </span>https://github.com/dgaida/PyADM1ODE_calibration.git
+<h2 id="einrichtung">Einrichtung<a class="headerlink" href="#einrichtung" title="Permanent link">&para;</a></h2>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>git<span class="w"> </span>clone<span class="w"> </span>https://github.com/dgaida/PyADM1ODE_calibration.git
 </span><span id="__span-0-2"><a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a><span class="nb">cd</span><span class="w"> </span>PyADM1ODE_calibration
-</span></code></pre></div></p>
-</li>
-<li>
-<p>Virtuelle Umgebung erstellen und Abhängigkeiten installieren:<br />
-   <div class="language-bash highlight"><pre><span></span><code><span id="__span-1-1"><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a>pip<span class="w"> </span>install<span class="w"> </span>-e<span class="w"> </span><span class="s2">&quot;.[dev,docs]&quot;</span>
-</span></code></pre></div></p>
-</li>
-</ol>
-<h2 id="richtlinien">Richtlinien<a class="headerlink" href="#richtlinien" title="Permanent link">&para;</a></h2>
+</span><span id="__span-0-3"><a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a>pip<span class="w"> </span>install<span class="w"> </span>-e<span class="w"> </span><span class="s2">".[dev,docs]"</span>
+</span></code></pre></div>
+<h2 id="vor-jedem-commit">Vor jedem Commit<a class="headerlink" href="#vor-jedem-commit" title="Permanent link">&para;</a></h2>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-1-1"><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a>ruff<span class="w"> </span>check<span class="w"> </span>.
+</span><span id="__span-1-2"><a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a>black<span class="w"> </span>--check<span class="w"> </span>.
+</span><span id="__span-1-3"><a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a>python<span class="w"> </span>-m<span class="w"> </span>pytest
+</span></code></pre></div>
+<p>CI führt alle drei aus und schlägt bei jedem davon fehl. <code>.pre-commit-config.yaml</code> führt dieselben
+Werkzeuge auf den vorgemerkten Dateien aus, Einrichtung mit <code>pre-commit install</code>.</p>
+<h2 id="konventionen">Konventionen<a class="headerlink" href="#konventionen" title="Permanent link">&para;</a></h2>
 <ul>
-<li><strong>Code-Stil</strong>: Wir verwenden <code>ruff</code> für das Linting und <code>black</code> für die Formatierung.  </li>
-<li><strong>Tests</strong>: Neue Features müssen durch Tests in <code>tests/</code> abgedeckt werden. Wir streben eine Abdeckung von &gt; 90% an.  </li>
-<li><strong>Docstrings</strong>: Alle öffentlichen Funktionen müssen Google-Style Docstrings haben.  </li>
+<li><strong>Formatierung</strong>: black, Zeilenlänge 127. Ruff nutzt dieselbe Grenze.  </li>
+<li><strong>Lint</strong>: Das Repository ist unter dem Standardregelsatz von ruff sauber. Wo eine Regel bewusst<br />
+  nicht befolgt wird, steht die Begründung daneben, entweder als <code># noqa: &lt;REGEL&gt; - Begründung</code> oder
+  als Eintrag unter <code>[tool.ruff.lint.per-file-ignores]</code> in <code>pyproject.toml</code>.  </li>
+<li><strong>Tests</strong>: Neues Verhalten braucht einen Test in <code>tests/</code>. Die Abdeckung liegt bei rund 90 %.  </li>
+<li><strong>Docstrings</strong>: Google-Stil, siehe <a href="docstring-guide/">Docstring-Guide</a>.  </li>
+<li><strong>Sprache</strong>: Code, Kommentare und Docstrings auf Englisch. Die Dokumentation ist zweisprachig.  </li>
 </ul>
-<h2 id="workflow">Workflow<a class="headerlink" href="#workflow" title="Permanent link">&para;</a></h2>
-<ol>
-<li>Erstellen Sie einen Feature-Branch.  </li>
-<li>Implementieren Sie Ihre Änderungen.  </li>
-<li>Führen Sie Tests und Linter aus:<br />
-   <div class="language-bash highlight"><pre><span></span><code><span id="__span-2-1"><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a>ruff<span class="w"> </span>check<span class="w"> </span>.
-</span><span id="__span-2-2"><a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a>black<span class="w"> </span>--check<span class="w"> </span>.
-</span><span id="__span-2-3"><a id="__codelineno-2-3" name="__codelineno-2-3" href="#__codelineno-2-3"></a>python3<span class="w"> </span>-m<span class="w"> </span>pytest<span class="w"> </span>tests/
-</span></code></pre></div></li>
-<li>Erstellen Sie einen Pull Request.  </li>
-</ol>
 <h2 id="dokumentation">Dokumentation<a class="headerlink" href="#dokumentation" title="Permanent link">&para;</a></h2>
-<p>Die Dokumentation wird mit MkDocs erstellt. Um sie lokal zu betrachten:
-<div class="language-bash highlight"><pre><span></span><code><span id="__span-3-1"><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a>mkdocs<span class="w"> </span>serve
-</span></code></pre></div></p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-2-1"><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a>mkdocs<span class="w"> </span>serve
+</span></code></pre></div>
+<p><code>docs/de/</code> und <code>docs/en/</code> spiegeln einander Datei für Datei. Beide im selben Commit ändern, sonst
+landet der Sprachumschalter auf einer veralteten Seite.</p>
 
 
 
@@ -1687,7 +1678,7 @@
       <script id="__config" type="application/json">{"annotate": null, "base": "..", "features": ["navigation.tabs", "navigation.sections", "navigation.expand", "navigation.top", "navigation.tracking", "search.suggest", "search.highlight", "search.share", "content.code.copy", "content.code.annotate", "content.tooltips"], "search": "../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "In Zwischenablage kopiert", "clipboard.copy": "In Zwischenablage kopieren", "search.result.more.one": "1 weiteres Suchergebnis auf dieser Seite", "search.result.more.other": "# weitere Suchergebnisse auf dieser Seite", "search.result.none": "Keine Suchergebnisse", "search.result.one": "1 Suchergebnis", "search.result.other": "# Suchergebnisse", "search.result.placeholder": "Suchbegriff eingeben", "search.result.term.missing": "Es fehlt", "select.version": "Version ausw\u00e4hlen"}, "version": {"provider": "mike"}}</script>
     
     
-      <script src="../assets/javascripts/bundle.79ae519e.min.js"></script>
+      <script src="../assets/javascripts/bundle.d7400e89.min.js"></script>
       
     
   </body>

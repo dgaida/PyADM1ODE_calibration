@@ -25,7 +25,7 @@
       
       
       <link rel="icon" href="assets/images/favicon.png">
-      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.6">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.7">
     
     
       
@@ -33,7 +33,7 @@
       
     
     
-      <link rel="stylesheet" href="assets/stylesheets/main.484c7ddc.min.css">
+      <link rel="stylesheet" href="assets/stylesheets/main.ec1eaa64.min.css">
       
         
         <link rel="stylesheet" href="assets/stylesheets/palette.ab4e12ef.min.css">
@@ -586,10 +586,10 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#hauptmerkmale" class="md-nav__link">
+  <a href="#was-das-paket-leistet" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Hauptmerkmale
+        Was das Paket leistet
       
     </span>
   </a>
@@ -597,10 +597,10 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#inhaltsverzeichnis" class="md-nav__link">
+  <a href="#inhalt" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Inhaltsverzeichnis
+        Inhalt
       
     </span>
   </a>
@@ -1524,10 +1524,10 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#hauptmerkmale" class="md-nav__link">
+  <a href="#was-das-paket-leistet" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Hauptmerkmale
+        Was das Paket leistet
       
     </span>
   </a>
@@ -1535,10 +1535,10 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#inhaltsverzeichnis" class="md-nav__link">
+  <a href="#inhalt" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Inhaltsverzeichnis
+        Inhalt
       
     </span>
   </a>
@@ -1593,45 +1593,73 @@
 <a href="https://opensource.org/licenses/MIT"><img alt="License: MIT" src="https://img.shields.io/badge/License-MIT-yellow.svg" /></a>
 <a href="https://dgaida.github.io/PyADM1ODE_calibration/"><img alt="Documentation" src="https://img.shields.io/badge/docs-latest-blue.svg" /></a>
 <a href="development/metrics/"><img alt="Interrogate" src="assets/interrogate.svg" /></a>
-<a href="https://colab.research.google.com/github/dgaida/PyADM1ODE_calibration/blob/main/notebooks/calibration_tutorial.ipynb"><img alt="Open In Colab" src="assets/colab-badge.svg" /></a></p>
-<p><strong>Fortschrittliches Parameter-Kalibrierungs-Framework für PyADM1ODE Biogasanlagenmodelle.</strong></p>
-<p>PyADM1ODE_calibration bietet eine vollständige Lösung für die Kalibrierung von <a href="https://github.com/dgaida/PyADM1ODE">PyADM1ODE</a> Modellen. Es ermöglicht die präzise Abstimmung komplexer ADM1-Parameter auf reale Anlagendaten durch modernste Optimierungsverfahren.</p>
-<h2 id="hauptmerkmale">Hauptmerkmale<a class="headerlink" href="#hauptmerkmale" title="Permanent link">&para;</a></h2>
+<a href="https://colab.research.google.com/github/dgaida/PyADM1ODE_calibration/blob/main/notebooks/00_quickstart.ipynb"><img alt="Open In Colab" src="assets/colab-badge.svg" /></a></p>
+<p><strong>Parameterkalibrierung für <a href="https://github.com/dgaida/PyADM1ODE">PyADM1ODE</a>-Biogasanlagenmodelle.</strong></p>
+<p>Passt ADM1-Parameter an gemessene Anlagendaten an, einmalig aus einem historischen Zeitfenster oder fortlaufend im Betrieb.</p>
+<h2 id="was-das-paket-leistet">Was das Paket leistet<a class="headerlink" href="#was-das-paket-leistet" title="Permanent link">&para;</a></h2>
 <ul>
-<li>🎯 <strong>Präzision</strong>: Hochgenaue Abstimmung von ADM1-Parametern auf reale Anlagendaten.  </li>
-<li>⚡ <strong>Effizienz</strong>: Schnelle lokale Optimierer für den Online-Einsatz und robuste globale Optimierer für die Initialkalibrierung.  </li>
-<li>📊 <strong>Analyse</strong>: Integrierte Sensitivitäts- und Identifizierbarkeitsanalyse zur Identifizierung kritischer Parameter.  </li>
-<li>💾 <strong>Integration</strong>: Nahtlose Anbindung an PostgreSQL-Datenbanken und CSV-Workflows.  </li>
-<li>🌍 <strong>Mehrsprachig</strong>: Dokumentation in Deutsch und Englisch verfügbar.  </li>
+<li><strong>Initialkalibrierung</strong>: globale Suche über ein historisches Zeitfenster, mit Train/Test-Aufteilung.  </li>
+<li><strong>Online-Rekalibrierung</strong>: begrenzte Parameteranpassungen, ausgelöst über die Prognosevarianz.  </li>
+<li><strong>Analyse</strong>: Sensitivität und Identifizierbarkeit, damit erkennbar ist, welche Parameter die Daten überhaupt auflösen.  </li>
+<li><strong>Daten</strong>: CSV- und Datenbankquellen hinter einer Schemadatei, dazu Validierung, Ausreißerentfernung und Lückenfüllung.  </li>
 </ul>
-<h2 id="inhaltsverzeichnis">Inhaltsverzeichnis<a class="headerlink" href="#inhaltsverzeichnis" title="Permanent link">&para;</a></h2>
-<ul>
-<li><a href="getting-started/">Erste Schritte</a> — Schneller Einstieg in das Projekt.  </li>
-<li><a href="installation/">Installation</a> — Installationsanleitungen für verschiedene Umgebungen.  </li>
-<li><a href="configuration/">Konfiguration</a> — Überblick über Konfigurationsoptionen und Parameter.  </li>
-<li><a href="tutorials/">Tutorials</a> — Schritt-für-Schritt-Anleitungen (auch für Google Colab).  </li>
-<li><a href="api/">API-Referenz</a> — Detaillierte Dokumentation der Klassen und Funktionen.  </li>
-</ul>
+<h2 id="inhalt">Inhalt<a class="headerlink" href="#inhalt" title="Permanent link">&para;</a></h2>
+<table>
+<thead>
+<tr>
+<th>Seite</th>
+<th>Inhalt</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><a href="getting-started/">Erste Schritte</a></td>
+<td>Voraussetzungen und Grundbegriffe</td>
+</tr>
+<tr>
+<td><a href="installation/">Installation</a></td>
+<td>pip, conda, Docker</td>
+</tr>
+<tr>
+<td><a href="configuration/">Konfiguration</a></td>
+<td>Parameter, Grenzen, Optimierer, Datenbank</td>
+</tr>
+<tr>
+<td><a href="usage/">Nutzung</a></td>
+<td>Die beiden Workflows im Code</td>
+</tr>
+<tr>
+<td><a href="tutorials/">Tutorials</a></td>
+<td>Notebook-Reihe 00 bis 06</td>
+</tr>
+<tr>
+<td><a href="examples/">Beispiele</a></td>
+<td>Ausführbare Skripte</td>
+</tr>
+<tr>
+<td><a href="api/">API-Referenz</a></td>
+<td>Klassen und Funktionen</td>
+</tr>
+<tr>
+<td><a href="architecture/">Architektur</a></td>
+<td>Module und Datenfluss</td>
+</tr>
+</tbody>
+</table>
 <h2 id="quickstart">Quickstart<a class="headerlink" href="#quickstart" title="Permanent link">&para;</a></h2>
-<div class="language-python highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="kn">from</span><span class="w"> </span><span class="nn">pyadm1ode_calibration.calibration</span><span class="w"> </span><span class="kn">import</span> <span class="n">InitialCalibrator</span>
-</span><span id="__span-0-2"><a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a><span class="kn">from</span><span class="w"> </span><span class="nn">pyadm1ode_calibration.io.loaders</span><span class="w"> </span><span class="kn">import</span> <span class="n">MeasurementData</span>
-</span><span id="__span-0-3"><a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a>
-</span><span id="__span-0-4"><a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a><span class="c1"># 1. Daten laden</span>
-</span><span id="__span-0-5"><a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a><span class="n">measurements</span> <span class="o">=</span> <span class="n">MeasurementData</span><span class="o">.</span><span class="n">from_csv</span><span class="p">(</span><span class="s2">&quot;plant_data.csv&quot;</span><span class="p">)</span>
-</span><span id="__span-0-6"><a id="__codelineno-0-6" name="__codelineno-0-6" href="#__codelineno-0-6"></a>
-</span><span id="__span-0-7"><a id="__codelineno-0-7" name="__codelineno-0-7" href="#__codelineno-0-7"></a><span class="c1"># 2. Kalibrator erstellen</span>
-</span><span id="__span-0-8"><a id="__codelineno-0-8" name="__codelineno-0-8" href="#__codelineno-0-8"></a><span class="n">calibrator</span> <span class="o">=</span> <span class="n">InitialCalibrator</span><span class="p">(</span><span class="n">plant_model</span><span class="p">)</span>
-</span><span id="__span-0-9"><a id="__codelineno-0-9" name="__codelineno-0-9" href="#__codelineno-0-9"></a>
-</span><span id="__span-0-10"><a id="__codelineno-0-10" name="__codelineno-0-10" href="#__codelineno-0-10"></a><span class="c1"># 3. Kalibrierung ausführen</span>
-</span><span id="__span-0-11"><a id="__codelineno-0-11" name="__codelineno-0-11" href="#__codelineno-0-11"></a><span class="n">result</span> <span class="o">=</span> <span class="n">calibrator</span><span class="o">.</span><span class="n">calibrate</span><span class="p">(</span>
-</span><span id="__span-0-12"><a id="__codelineno-0-12" name="__codelineno-0-12" href="#__codelineno-0-12"></a>    <span class="n">measurements</span><span class="o">=</span><span class="n">measurements</span><span class="p">,</span>
-</span><span id="__span-0-13"><a id="__codelineno-0-13" name="__codelineno-0-13" href="#__codelineno-0-13"></a>    <span class="n">parameters</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;k_dis&quot;</span><span class="p">,</span> <span class="s2">&quot;k_hyd_ch&quot;</span><span class="p">],</span>
-</span><span id="__span-0-14"><a id="__codelineno-0-14" name="__codelineno-0-14" href="#__codelineno-0-14"></a>    <span class="n">objectives</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;Q_ch4&quot;</span><span class="p">,</span> <span class="s2">&quot;pH&quot;</span><span class="p">]</span>
-</span><span id="__span-0-15"><a id="__codelineno-0-15" name="__codelineno-0-15" href="#__codelineno-0-15"></a><span class="p">)</span>
-</span><span id="__span-0-16"><a id="__codelineno-0-16" name="__codelineno-0-16" href="#__codelineno-0-16"></a>
-</span><span id="__span-0-17"><a id="__codelineno-0-17" name="__codelineno-0-17" href="#__codelineno-0-17"></a><span class="c1"># 4. Ergebnisse anwenden</span>
-</span><span id="__span-0-18"><a id="__codelineno-0-18" name="__codelineno-0-18" href="#__codelineno-0-18"></a><span class="k">if</span> <span class="n">result</span><span class="o">.</span><span class="n">success</span><span class="p">:</span>
-</span><span id="__span-0-19"><a id="__codelineno-0-19" name="__codelineno-0-19" href="#__codelineno-0-19"></a>    <span class="n">calibrator</span><span class="o">.</span><span class="n">apply_calibration</span><span class="p">(</span><span class="n">result</span><span class="p">)</span>
+<div class="language-python highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="kn">from</span><span class="w"> </span><span class="nn">pyadm1ode_calibration</span><span class="w"> </span><span class="kn">import</span> <span class="n">Calibrator</span><span class="p">,</span> <span class="n">MeasurementData</span>
+</span><span id="__span-0-2"><a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a>
+</span><span id="__span-0-3"><a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a><span class="n">measurements</span> <span class="o">=</span> <span class="n">MeasurementData</span><span class="o">.</span><span class="n">from_csv</span><span class="p">(</span><span class="s2">"plant_data.csv"</span><span class="p">)</span>
+</span><span id="__span-0-4"><a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a><span class="n">calibrator</span> <span class="o">=</span> <span class="n">Calibrator</span><span class="p">(</span><span class="n">plant</span><span class="p">)</span>          <span class="c1"># plant: a pyadm1 BiogasPlant</span>
+</span><span id="__span-0-5"><a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a>
+</span><span id="__span-0-6"><a id="__codelineno-0-6" name="__codelineno-0-6" href="#__codelineno-0-6"></a><span class="n">result</span> <span class="o">=</span> <span class="n">calibrator</span><span class="o">.</span><span class="n">run_initial_calibration</span><span class="p">(</span>
+</span><span id="__span-0-7"><a id="__codelineno-0-7" name="__codelineno-0-7" href="#__codelineno-0-7"></a>    <span class="n">measurements</span><span class="o">=</span><span class="n">measurements</span><span class="p">,</span>
+</span><span id="__span-0-8"><a id="__codelineno-0-8" name="__codelineno-0-8" href="#__codelineno-0-8"></a>    <span class="n">parameters</span><span class="o">=</span><span class="p">[</span><span class="s2">"k_dis"</span><span class="p">,</span> <span class="s2">"k_hyd_ch"</span><span class="p">],</span>
+</span><span id="__span-0-9"><a id="__codelineno-0-9" name="__codelineno-0-9" href="#__codelineno-0-9"></a>    <span class="n">objectives</span><span class="o">=</span><span class="p">[</span><span class="s2">"Q_ch4"</span><span class="p">,</span> <span class="s2">"pH"</span><span class="p">],</span>
+</span><span id="__span-0-10"><a id="__codelineno-0-10" name="__codelineno-0-10" href="#__codelineno-0-10"></a><span class="p">)</span>
+</span><span id="__span-0-11"><a id="__codelineno-0-11" name="__codelineno-0-11" href="#__codelineno-0-11"></a>
+</span><span id="__span-0-12"><a id="__codelineno-0-12" name="__codelineno-0-12" href="#__codelineno-0-12"></a><span class="k">if</span> <span class="n">result</span><span class="o">.</span><span class="n">success</span><span class="p">:</span>
+</span><span id="__span-0-13"><a id="__codelineno-0-13" name="__codelineno-0-13" href="#__codelineno-0-13"></a>    <span class="n">calibrator</span><span class="o">.</span><span class="n">apply_calibration</span><span class="p">(</span><span class="n">result</span><span class="p">)</span>
 </span></code></pre></div>
 <h2 id="zitation">Zitation<a class="headerlink" href="#zitation" title="Permanent link">&para;</a></h2>
 <p>Wenn Sie PyADM1ODE_calibration in Ihrer Forschung verwenden, zitieren Sie bitte:</p>
@@ -1700,7 +1728,7 @@
       <script id="__config" type="application/json">{"annotate": null, "base": ".", "features": ["navigation.tabs", "navigation.sections", "navigation.expand", "navigation.top", "navigation.tracking", "search.suggest", "search.highlight", "search.share", "content.code.copy", "content.code.annotate", "content.tooltips"], "search": "assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "In Zwischenablage kopiert", "clipboard.copy": "In Zwischenablage kopieren", "search.result.more.one": "1 weiteres Suchergebnis auf dieser Seite", "search.result.more.other": "# weitere Suchergebnisse auf dieser Seite", "search.result.none": "Keine Suchergebnisse", "search.result.one": "1 Suchergebnis", "search.result.other": "# Suchergebnisse", "search.result.placeholder": "Suchbegriff eingeben", "search.result.term.missing": "Es fehlt", "select.version": "Version ausw\u00e4hlen"}, "version": {"provider": "mike"}}</script>
     
     
-      <script src="assets/javascripts/bundle.79ae519e.min.js"></script>
+      <script src="assets/javascripts/bundle.d7400e89.min.js"></script>
       
     
   </body>

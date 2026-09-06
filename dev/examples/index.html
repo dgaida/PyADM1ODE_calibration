@@ -27,7 +27,7 @@
       
       
       <link rel="icon" href="../assets/images/favicon.png">
-      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.6">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.7">
     
     
       
@@ -35,7 +35,7 @@
       
     
     
-      <link rel="stylesheet" href="../assets/stylesheets/main.484c7ddc.min.css">
+      <link rel="stylesheet" href="../assets/stylesheets/main.ec1eaa64.min.css">
       
         
         <link rel="stylesheet" href="../assets/stylesheets/palette.ab4e12ef.min.css">
@@ -819,6 +819,24 @@
         
       
       
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Übersicht
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
       <a href="./" class="md-nav__link md-nav__link--active">
         
   
@@ -835,6 +853,47 @@
   
 
       </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Inhaltsverzeichnis">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Inhaltsverzeichnis
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#calibration_workflow_completepy" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        calibration_workflow_complete.py
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#scheduled_recalibrationpy" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        scheduled_recalibration.py
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
       
     </li>
   
@@ -1441,6 +1500,36 @@
     
   
   
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Inhaltsverzeichnis
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#calibration_workflow_completepy" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        calibration_workflow_complete.py
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#scheduled_recalibrationpy" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        scheduled_recalibration.py
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
 </nav>
                   </div>
                 </div>
@@ -1460,10 +1549,72 @@
 
 
 <h1 id="beispiele">Beispiele<a class="headerlink" href="#beispiele" title="Permanent link">&para;</a></h1>
-<p>Hier finden Sie praktische Beispiele zur Anwendung von PyADM1ODE_calibration.</p>
-<ul>
-<li><a href="calibration_workflow/">Kalibrierungs-Workflow</a>: Ein vollständiges Beispiel zur Kalibrierung eines Modells.  </li>
-</ul>
+<p>Drei ausführbare Skripte in <code>examples/</code>. Anders als die Notebooks sind sie als Programme geschrieben,
+nicht als Erklärung.</p>
+<table>
+<thead>
+<tr>
+<th>Skript</th>
+<th>Zweck</th>
+<th>Laufzeit</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>calibration_example.py</code></td>
+<td>Kompakter Durchgang durch eine Kalibrierung</td>
+<td>Minuten</td>
+</tr>
+<tr>
+<td><code>calibration_workflow_complete.py</code></td>
+<td>Alle Schritte in einem Lauf gegen eine Twin-Aufzeichnung mit bekannter Lösung</td>
+<td>rund eine Stunde, siehe unten</td>
+</tr>
+<tr>
+<td><code>scheduled_recalibration.py</code></td>
+<td>Unbeaufsichtigter Auftrag für einen Scheduler</td>
+<td>Minuten</td>
+</tr>
+</tbody>
+</table>
+<h2 id="calibration_workflow_completepy">calibration_workflow_complete.py<a class="headerlink" href="#calibration_workflow_completepy" title="Permanent link">&para;</a></h2>
+<p>Die Referenz dafür, was das Paket kann, und das Langsamste im Repository. Die Standardeinstellungen
+kosten rund 1200 Anlagensimulationen, gemessen 56 Minuten auf einem Desktop-Rechner, siehe
+<a href="../configuration/#optimierer">Konfiguration</a>. Vor einem interaktiven Lauf <code>population_size</code> und
+<code>max_iterations</code> verkleinern.</p>
+<h2 id="scheduled_recalibrationpy">scheduled_recalibration.py<a class="headerlink" href="#scheduled_recalibrationpy" title="Permanent link">&para;</a></h2>
+<p>Das Skript liest ein Zeitfenster, schlägt die verwendeten Parameter nach, rekalibriert, verwirft das Ergebnis, wenn Daten oder
+Anpassung nicht vertrauenswürdig aussehen, und speichert das Angenommene. Der Scheduler muss nur den
+Rückgabewert auswerten:</p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>python<span class="w"> </span>examples/scheduled_recalibration.py<span class="w"> </span>--db<span class="w"> </span>sqlite:///calibration.db
+</span></code></pre></div>
+<table>
+<thead>
+<tr>
+<th>Code</th>
+<th>Bedeutung</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>0</td>
+<td>angenommen und gespeichert</td>
+</tr>
+<tr>
+<td>1</td>
+<td>von einer Schutzregel abgelehnt, bisherige Parameter bleiben</td>
+</tr>
+<tr>
+<td>2</td>
+<td>Eingabe unbrauchbar, zu kurz oder zu viele Lücken</td>
+</tr>
+<tr>
+<td>3</td>
+<td>unerwarteter Fehler, siehe Log</td>
+</tr>
+</tbody>
+</table>
+<p>Den Ablauf der Schritte zeigt <a href="calibration_workflow/">Kalibrierungs-Workflow</a>.</p>
 
 
 
@@ -1522,7 +1673,7 @@
       <script id="__config" type="application/json">{"annotate": null, "base": "..", "features": ["navigation.tabs", "navigation.sections", "navigation.expand", "navigation.top", "navigation.tracking", "search.suggest", "search.highlight", "search.share", "content.code.copy", "content.code.annotate", "content.tooltips"], "search": "../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "In Zwischenablage kopiert", "clipboard.copy": "In Zwischenablage kopieren", "search.result.more.one": "1 weiteres Suchergebnis auf dieser Seite", "search.result.more.other": "# weitere Suchergebnisse auf dieser Seite", "search.result.none": "Keine Suchergebnisse", "search.result.one": "1 Suchergebnis", "search.result.other": "# Suchergebnisse", "search.result.placeholder": "Suchbegriff eingeben", "search.result.term.missing": "Es fehlt", "select.version": "Version ausw\u00e4hlen"}, "version": {"provider": "mike"}}</script>
     
     
-      <script src="../assets/javascripts/bundle.79ae519e.min.js"></script>
+      <script src="../assets/javascripts/bundle.d7400e89.min.js"></script>
       
     
   </body>

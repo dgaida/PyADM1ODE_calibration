@@ -27,7 +27,7 @@
       
       
       <link rel="icon" href="../../assets/images/favicon.png">
-      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.6">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.7">
     
     
       
@@ -35,7 +35,7 @@
       
     
     
-      <link rel="stylesheet" href="../../assets/stylesheets/main.484c7ddc.min.css">
+      <link rel="stylesheet" href="../../assets/stylesheets/main.ec1eaa64.min.css">
       
         
         <link rel="stylesheet" href="../../assets/stylesheets/palette.ab4e12ef.min.css">
@@ -1365,24 +1365,6 @@
         
       
       
-        <label class="md-nav__link md-nav__link--active" for="__toc">
-          
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    Changelog
-  
-
-    
-  </span>
-  
-  
-
-          <span class="md-nav__icon md-icon"></span>
-        </label>
-      
       <a href="./" class="md-nav__link md-nav__link--active">
         
   
@@ -1399,47 +1381,6 @@
   
 
       </a>
-      
-        
-
-<nav class="md-nav md-nav--secondary" aria-label="Inhaltsverzeichnis">
-  
-  
-  
-    
-  
-  
-    <label class="md-nav__title" for="__toc">
-      <span class="md-nav__icon md-icon"></span>
-      Inhaltsverzeichnis
-    </label>
-    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
-      
-        <li class="md-nav__item">
-  <a href="#workflow-fur-mitwirkende" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Workflow für Mitwirkende
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#automatische-generierung" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Automatische Generierung
-      
-    </span>
-  </a>
-  
-</li>
-      
-    </ul>
-  
-</nav>
       
     </li>
   
@@ -1500,36 +1441,6 @@
     
   
   
-    <label class="md-nav__title" for="__toc">
-      <span class="md-nav__icon md-icon"></span>
-      Inhaltsverzeichnis
-    </label>
-    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
-      
-        <li class="md-nav__item">
-  <a href="#workflow-fur-mitwirkende" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Workflow für Mitwirkende
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#automatische-generierung" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Automatische Generierung
-      
-    </span>
-  </a>
-  
-</li>
-      
-    </ul>
-  
 </nav>
                   </div>
                 </div>
@@ -1549,17 +1460,42 @@
 
 
 <h1 id="changelog">Changelog<a class="headerlink" href="#changelog" title="Permanent link">&para;</a></h1>
-<p>Alle wichtigen Änderungen an diesem Projekt werden in dieser Datei festgehalten.</p>
-<h2 id="workflow-fur-mitwirkende">Workflow für Mitwirkende<a class="headerlink" href="#workflow-fur-mitwirkende" title="Permanent link">&para;</a></h2>
-<p>Wir verwenden <a href="https://www.conventionalcommits.org/de/v1.0.0/">Conventional Commits</a>, um das Changelog automatisch zu generieren. Bitte strukturieren Sie Ihre Commit-Nachrichten wie folgt:</p>
-<ul>
-<li>`feat: ...` für neue Features.  </li>
-<li>`fix: ...` für Bugfixes.  </li>
-<li>`docs: ...` für Dokumentationsänderungen.  </li>
-<li>`refactor: ...` für Code-Refactoring ohne Funktionsänderung.  </li>
-</ul>
-<h2 id="automatische-generierung">Automatische Generierung<a class="headerlink" href="#automatische-generierung" title="Permanent link">&para;</a></h2>
-<p>Das Changelog wird bei jedem Release mittels `git-cliff` aktualisiert und im Repository unter `CHANGELOG.md` gespeichert. Die Web-Version wird automatisch synchronisiert.</p>
+<p>Commit-Nachrichten folgen <a href="https://www.conventionalcommits.org/en/v1.0.0/">Conventional Commits</a>,
+und <code>git-cliff</code> erzeugt daraus bei jedem Release die <code>CHANGELOG.md</code>.</p>
+<table>
+<thead>
+<tr>
+<th>Präfix</th>
+<th>Verwendung</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>feat:</code></td>
+<td>neue Funktionalität</td>
+</tr>
+<tr>
+<td><code>fix:</code></td>
+<td>Fehlerbehebungen</td>
+</tr>
+<tr>
+<td><code>docs:</code></td>
+<td>nur Dokumentation</td>
+</tr>
+<tr>
+<td><code>refactor:</code></td>
+<td>Umbau ohne Verhaltensänderung</td>
+</tr>
+<tr>
+<td><code>test:</code></td>
+<td>nur Tests</td>
+</tr>
+<tr>
+<td><code>chore:</code></td>
+<td>Build, CI, Abhängigkeiten</td>
+</tr>
+</tbody>
+</table>
 <hr />
 <h1 id="changelog_1">Changelog<a class="headerlink" href="#changelog_1" title="Permanent link">&para;</a></h1>
 <p>All notable changes to this project will be documented in this file.</p>
@@ -1649,7 +1585,7 @@
       <script id="__config" type="application/json">{"annotate": null, "base": "../..", "features": ["navigation.tabs", "navigation.sections", "navigation.expand", "navigation.top", "navigation.tracking", "search.suggest", "search.highlight", "search.share", "content.code.copy", "content.code.annotate", "content.tooltips"], "search": "../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "In Zwischenablage kopiert", "clipboard.copy": "In Zwischenablage kopieren", "search.result.more.one": "1 weiteres Suchergebnis auf dieser Seite", "search.result.more.other": "# weitere Suchergebnisse auf dieser Seite", "search.result.none": "Keine Suchergebnisse", "search.result.one": "1 Suchergebnis", "search.result.other": "# Suchergebnisse", "search.result.placeholder": "Suchbegriff eingeben", "search.result.term.missing": "Es fehlt", "select.version": "Version ausw\u00e4hlen"}, "version": {"provider": "mike"}}</script>
     
     
-      <script src="../../assets/javascripts/bundle.79ae519e.min.js"></script>
+      <script src="../../assets/javascripts/bundle.d7400e89.min.js"></script>
       
     
   </body>

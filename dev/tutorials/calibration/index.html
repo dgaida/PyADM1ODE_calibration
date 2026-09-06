@@ -27,7 +27,7 @@
       
       
       <link rel="icon" href="../../assets/images/favicon.png">
-      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.6">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.7">
     
     
       
@@ -35,7 +35,7 @@
       
     
     
-      <link rel="stylesheet" href="../../assets/stylesheets/main.484c7ddc.min.css">
+      <link rel="stylesheet" href="../../assets/stylesheets/main.ec1eaa64.min.css">
       
         
         <link rel="stylesheet" href="../../assets/stylesheets/palette.ab4e12ef.min.css">
@@ -781,10 +781,10 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#1-datenvorbereitung" class="md-nav__link">
+  <a href="#1-daten-laden-und-bereinigen" class="md-nav__link">
     <span class="md-ellipsis">
       
-        1. Datenvorbereitung
+        1. Daten laden und bereinigen
       
     </span>
   </a>
@@ -792,10 +792,10 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#2-initialisierung-des-kalibrators" class="md-nav__link">
+  <a href="#2-parameter-auswahlen" class="md-nav__link">
     <span class="md-ellipsis">
       
-        2. Initialisierung des Kalibrators
+        2. Parameter auswählen
       
     </span>
   </a>
@@ -803,10 +803,10 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#3-durchfuhrung-der-kalibrierung" class="md-nav__link">
+  <a href="#3-anpassen" class="md-nav__link">
     <span class="md-ellipsis">
       
-        3. Durchführung der Kalibrierung
+        3. Anpassen
       
     </span>
   </a>
@@ -814,10 +814,10 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#4-auswertung" class="md-nav__link">
+  <a href="#4-ergebnis-prufen" class="md-nav__link">
     <span class="md-ellipsis">
       
-        4. Auswertung
+        4. Ergebnis prüfen
       
     </span>
   </a>
@@ -1529,10 +1529,10 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#1-datenvorbereitung" class="md-nav__link">
+  <a href="#1-daten-laden-und-bereinigen" class="md-nav__link">
     <span class="md-ellipsis">
       
-        1. Datenvorbereitung
+        1. Daten laden und bereinigen
       
     </span>
   </a>
@@ -1540,10 +1540,10 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#2-initialisierung-des-kalibrators" class="md-nav__link">
+  <a href="#2-parameter-auswahlen" class="md-nav__link">
     <span class="md-ellipsis">
       
-        2. Initialisierung des Kalibrators
+        2. Parameter auswählen
       
     </span>
   </a>
@@ -1551,10 +1551,10 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#3-durchfuhrung-der-kalibrierung" class="md-nav__link">
+  <a href="#3-anpassen" class="md-nav__link">
     <span class="md-ellipsis">
       
-        3. Durchführung der Kalibrierung
+        3. Anpassen
       
     </span>
   </a>
@@ -1562,10 +1562,10 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#4-auswertung" class="md-nav__link">
+  <a href="#4-ergebnis-prufen" class="md-nav__link">
     <span class="md-ellipsis">
       
-        4. Auswertung
+        4. Ergebnis prüfen
       
     </span>
   </a>
@@ -1593,27 +1593,36 @@
 
 
 <h1 id="kalibrierungs-tutorial">Kalibrierungs-Tutorial<a class="headerlink" href="#kalibrierungs-tutorial" title="Permanent link">&para;</a></h1>
-<p>Dieses Tutorial beschreibt die grundlegenden Schritte zur Kalibrierung eines ADM1-Modells.</p>
-<h2 id="1-datenvorbereitung">1. Datenvorbereitung<a class="headerlink" href="#1-datenvorbereitung" title="Permanent link">&para;</a></h2>
-<p>Messdaten müssen als Zeitreihen vorliegen. Das <code>MeasurementData</code> Objekt erwartet Spaltennamen, die den ADM1-Zustandsvariablen entsprechen.</p>
-<div class="language-python highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="kn">from</span><span class="w"> </span><span class="nn">pyadm1ode_calibration.io.loaders</span><span class="w"> </span><span class="kn">import</span> <span class="n">MeasurementData</span>
-</span><span id="__span-0-2"><a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a><span class="n">measurements</span> <span class="o">=</span> <span class="n">MeasurementData</span><span class="o">.</span><span class="n">from_csv</span><span class="p">(</span><span class="s2">&quot;daten.csv&quot;</span><span class="p">)</span>
+<p>Die Kurzfassung der Notebooks 01 bis 03.</p>
+<h2 id="1-daten-laden-und-bereinigen">1. Daten laden und bereinigen<a class="headerlink" href="#1-daten-laden-und-bereinigen" title="Permanent link">&para;</a></h2>
+<div class="language-python highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="kn">from</span><span class="w"> </span><span class="nn">pyadm1ode_calibration</span><span class="w"> </span><span class="kn">import</span> <span class="n">MeasurementData</span>
+</span><span id="__span-0-2"><a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a>
+</span><span id="__span-0-3"><a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a><span class="n">measurements</span> <span class="o">=</span> <span class="n">MeasurementData</span><span class="o">.</span><span class="n">from_csv</span><span class="p">(</span><span class="s2">"data.csv"</span><span class="p">)</span>
+</span><span id="__span-0-4"><a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a><span class="n">measurements</span><span class="o">.</span><span class="n">remove_outliers</span><span class="p">(</span><span class="n">method</span><span class="o">=</span><span class="s2">"zscore"</span><span class="p">,</span> <span class="n">threshold</span><span class="o">=</span><span class="mf">3.0</span><span class="p">)</span>
+</span><span id="__span-0-5"><a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a><span class="n">measurements</span><span class="o">.</span><span class="n">fill_gaps</span><span class="p">(</span><span class="n">method</span><span class="o">=</span><span class="s2">"interpolate"</span><span class="p">,</span> <span class="n">limit</span><span class="o">=</span><span class="mi">3</span><span class="p">)</span>
 </span></code></pre></div>
-<h2 id="2-initialisierung-des-kalibrators">2. Initialisierung des Kalibrators<a class="headerlink" href="#2-initialisierung-des-kalibrators" title="Permanent link">&para;</a></h2>
-<p>Der <code>InitialCalibrator</code> benötigt eine Instanz des Anlagenmodells.</p>
-<div class="language-python highlight"><pre><span></span><code><span id="__span-1-1"><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a><span class="kn">from</span><span class="w"> </span><span class="nn">pyadm1ode_calibration.calibration</span><span class="w"> </span><span class="kn">import</span> <span class="n">InitialCalibrator</span>
-</span><span id="__span-1-2"><a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a><span class="n">calibrator</span> <span class="o">=</span> <span class="n">InitialCalibrator</span><span class="p">(</span><span class="n">plant</span><span class="p">)</span>
+<p>Der Index muss ein Zeitstempel sein, und die Spalten tragen die Kanalnamen, auf die sich die
+Zielgrößen beziehen (<code>Q_gas</code>, <code>Q_ch4</code>, <code>pH</code>, ...).</p>
+<h2 id="2-parameter-auswahlen">2. Parameter auswählen<a class="headerlink" href="#2-parameter-auswahlen" title="Permanent link">&para;</a></h2>
+<p>Wenige anpassen. Am besten mit der Hydrolyserate der dominierenden Substratfraktion beginnen, denn
+sie bewegt die Gasproduktion am unmittelbarsten. <a href="../../configuration/">Konfiguration</a> listet die
+üblichen Kandidaten samt Grenzen.</p>
+<h2 id="3-anpassen">3. Anpassen<a class="headerlink" href="#3-anpassen" title="Permanent link">&para;</a></h2>
+<div class="language-python highlight"><pre><span></span><code><span id="__span-1-1"><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a><span class="kn">from</span><span class="w"> </span><span class="nn">pyadm1ode_calibration</span><span class="w"> </span><span class="kn">import</span> <span class="n">InitialCalibrator</span>
+</span><span id="__span-1-2"><a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a>
+</span><span id="__span-1-3"><a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a><span class="n">calibrator</span> <span class="o">=</span> <span class="n">InitialCalibrator</span><span class="p">(</span><span class="n">plant</span><span class="p">)</span>
+</span><span id="__span-1-4"><a id="__codelineno-1-4" name="__codelineno-1-4" href="#__codelineno-1-4"></a><span class="n">result</span> <span class="o">=</span> <span class="n">calibrator</span><span class="o">.</span><span class="n">calibrate</span><span class="p">(</span>
+</span><span id="__span-1-5"><a id="__codelineno-1-5" name="__codelineno-1-5" href="#__codelineno-1-5"></a>    <span class="n">measurements</span><span class="o">=</span><span class="n">measurements</span><span class="p">,</span>
+</span><span id="__span-1-6"><a id="__codelineno-1-6" name="__codelineno-1-6" href="#__codelineno-1-6"></a>    <span class="n">parameters</span><span class="o">=</span><span class="p">[</span><span class="s2">"k_hyd_ch"</span><span class="p">],</span>
+</span><span id="__span-1-7"><a id="__codelineno-1-7" name="__codelineno-1-7" href="#__codelineno-1-7"></a>    <span class="n">objectives</span><span class="o">=</span><span class="p">[</span><span class="s2">"Q_gas"</span><span class="p">],</span>
+</span><span id="__span-1-8"><a id="__codelineno-1-8" name="__codelineno-1-8" href="#__codelineno-1-8"></a>    <span class="n">validation_split</span><span class="o">=</span><span class="mf">0.2</span><span class="p">,</span>
+</span><span id="__span-1-9"><a id="__codelineno-1-9" name="__codelineno-1-9" href="#__codelineno-1-9"></a><span class="p">)</span>
 </span></code></pre></div>
-<h2 id="3-durchfuhrung-der-kalibrierung">3. Durchführung der Kalibrierung<a class="headerlink" href="#3-durchfuhrung-der-kalibrierung" title="Permanent link">&para;</a></h2>
-<p>Wählen Sie die Parameter aus, die optimiert werden sollen. Typischerweise sind dies Hydrolysekonstanten oder Ertragskoeffizienten.</p>
-<div class="language-python highlight"><pre><span></span><code><span id="__span-2-1"><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a><span class="n">result</span> <span class="o">=</span> <span class="n">calibrator</span><span class="o">.</span><span class="n">calibrate</span><span class="p">(</span>
-</span><span id="__span-2-2"><a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a>    <span class="n">measurements</span><span class="o">=</span><span class="n">measurements</span><span class="p">,</span>
-</span><span id="__span-2-3"><a id="__codelineno-2-3" name="__codelineno-2-3" href="#__codelineno-2-3"></a>    <span class="n">parameters</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;k_dis&quot;</span><span class="p">,</span> <span class="s2">&quot;k_hyd_ch&quot;</span><span class="p">],</span>
-</span><span id="__span-2-4"><a id="__codelineno-2-4" name="__codelineno-2-4" href="#__codelineno-2-4"></a>    <span class="n">method</span><span class="o">=</span><span class="s2">&quot;differential_evolution&quot;</span>
-</span><span id="__span-2-5"><a id="__codelineno-2-5" name="__codelineno-2-5" href="#__codelineno-2-5"></a><span class="p">)</span>
-</span></code></pre></div>
-<h2 id="4-auswertung">4. Auswertung<a class="headerlink" href="#4-auswertung" title="Permanent link">&para;</a></h2>
-<p>Prüfen Sie <code>result.success</code> und die optimierten Werte in <code>result.parameters</code>.</p>
+<h2 id="4-ergebnis-prufen">4. Ergebnis prüfen<a class="headerlink" href="#4-ergebnis-prufen" title="Permanent link">&para;</a></h2>
+<p><code>result.success</code> besagt nur, dass der Optimierer beendet wurde. Entscheidend ist, ob auch der Fehler
+auf dem zurückgehaltenen Teil gesunken ist: <code>result.validation_metrics</code> gegen die Trainingswerte
+halten. Eine große Lücke zwischen beiden bedeutet, dass die Anpassung dem Rauschen gefolgt ist und
+nicht der Anlage.</p>
 
 
 
@@ -1672,7 +1681,7 @@
       <script id="__config" type="application/json">{"annotate": null, "base": "../..", "features": ["navigation.tabs", "navigation.sections", "navigation.expand", "navigation.top", "navigation.tracking", "search.suggest", "search.highlight", "search.share", "content.code.copy", "content.code.annotate", "content.tooltips"], "search": "../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "In Zwischenablage kopiert", "clipboard.copy": "In Zwischenablage kopieren", "search.result.more.one": "1 weiteres Suchergebnis auf dieser Seite", "search.result.more.other": "# weitere Suchergebnisse auf dieser Seite", "search.result.none": "Keine Suchergebnisse", "search.result.one": "1 Suchergebnis", "search.result.other": "# Suchergebnisse", "search.result.placeholder": "Suchbegriff eingeben", "search.result.term.missing": "Es fehlt", "select.version": "Version ausw\u00e4hlen"}, "version": {"provider": "mike"}}</script>
     
     
-      <script src="../../assets/javascripts/bundle.79ae519e.min.js"></script>
+      <script src="../../assets/javascripts/bundle.d7400e89.min.js"></script>
       
     
   </body>

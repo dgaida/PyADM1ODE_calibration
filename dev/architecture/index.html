@@ -12,9 +12,9 @@
 <link href="./" hreflang="de" rel="alternate"/>
 <link href="../en/architecture/" hreflang="en" rel="alternate"/>
 <link href="../assets/images/favicon.png" rel="icon"/>
-<meta content="mkdocs-1.6.1, mkdocs-material-9.7.6" name="generator"/>
+<meta content="mkdocs-1.6.1, mkdocs-material-9.7.7" name="generator"/>
 <title>Architektur - PyADM1ODE Calibration</title>
-<link href="../assets/stylesheets/main.484c7ddc.min.css" rel="stylesheet"/>
+<link href="../assets/stylesheets/main.ec1eaa64.min.css" rel="stylesheet"/>
 <link href="../assets/stylesheets/palette.ab4e12ef.min.css" rel="stylesheet"/>
 <link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
 <link href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&amp;display=fallback" rel="stylesheet"/>
@@ -580,28 +580,28 @@
     </label>
 <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix="">
 <li class="md-nav__item">
-<a class="md-nav__link" href="#systemubersicht">
+<a class="md-nav__link" href="#module">
 <span class="md-ellipsis">
       
-        Systemübersicht
+        Module
       
     </span>
 </a>
 </li>
 <li class="md-nav__item">
-<a class="md-nav__link" href="#datenfluss-der-kalibrierung">
+<a class="md-nav__link" href="#die-optimierungsschleife">
 <span class="md-ellipsis">
       
-        Datenfluss der Kalibrierung
+        Die Optimierungsschleife
       
     </span>
 </a>
 </li>
 <li class="md-nav__item">
-<a class="md-nav__link" href="#komponenten-beschreibung">
+<a class="md-nav__link" href="#wissenswerte-entwurfsentscheidungen">
 <span class="md-ellipsis">
       
-        Komponenten-Beschreibung
+        Wissenswerte Entwurfsentscheidungen
       
     </span>
 </a>
@@ -722,28 +722,28 @@
     </label>
 <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix="">
 <li class="md-nav__item">
-<a class="md-nav__link" href="#systemubersicht">
+<a class="md-nav__link" href="#module">
 <span class="md-ellipsis">
       
-        Systemübersicht
+        Module
       
     </span>
 </a>
 </li>
 <li class="md-nav__item">
-<a class="md-nav__link" href="#datenfluss-der-kalibrierung">
+<a class="md-nav__link" href="#die-optimierungsschleife">
 <span class="md-ellipsis">
       
-        Datenfluss der Kalibrierung
+        Die Optimierungsschleife
       
     </span>
 </a>
 </li>
 <li class="md-nav__item">
-<a class="md-nav__link" href="#komponenten-beschreibung">
+<a class="md-nav__link" href="#wissenswerte-entwurfsentscheidungen">
 <span class="md-ellipsis">
       
-        Komponenten-Beschreibung
+        Wissenswerte Entwurfsentscheidungen
       
     </span>
 </a>
@@ -756,50 +756,56 @@
 <div class="md-content" data-md-component="content">
 <article class="md-content__inner md-typeset">
 <h1 id="architektur">Architektur<a class="headerlink" href="#architektur" title="Permanent link">¶</a></h1>
-<p>Diese Seite beschreibt die Systemarchitektur und den Datenfluss von PyADM1ODE_calibration.</p>
-<h2 id="systemubersicht">Systemübersicht<a class="headerlink" href="#systemubersicht" title="Permanent link">¶</a></h2>
-<p>Das Framework ist modular aufgebaut, um Flexibilität bei der Wahl der Optimierungsalgorithmen und Datenquellen zu ermöglichen.</p>
+<h2 id="module">Module<a class="headerlink" href="#module" title="Permanent link">¶</a></h2>
 <div class="mermaid">graph TD
-    A[Nutzer / Skript] --&gt; B[Calibrator Facade]
+    A[Script or notebook] --&gt; B[Calibrator]
     B --&gt; C[InitialCalibrator]
     B --&gt; D[OnlineCalibrator]
 
-    C --&gt; E[Optimizer Engine]
+    C --&gt; E[Optimizer]
     D --&gt; E
+    E --&gt; F[PlantSimulator]
+    F --&gt; G[PyADM1ODE plant]
 
-    E --&gt; F[Plant Simulator]
-    F --&gt; G[PyADM1ODE Model]
+    H[PlantSchema] --&gt; I[MeasurementBuilder]
+    I --&gt; J[MeasurementData]
+    K[CSV / database] --&gt; I
+    J --&gt; B
 
-    H[Data Loader] --&gt; B
-    I[Database/CSV] --&gt; H
-
-    C --&gt; J[Validation &amp; Metrics]
-    D --&gt; J
+    C --&gt; L[Sensitivity + Identifiability]
+    C --&gt; M[CalibrationValidator]
+    D --&gt; M
 </div>
-<h2 id="datenfluss-der-kalibrierung">Datenfluss der Kalibrierung<a class="headerlink" href="#datenfluss-der-kalibrierung" title="Permanent link">¶</a></h2>
-<p>Der typische Datenfluss während eines Kalibrierungszyklus:</p>
+<p><code>Calibrator</code> ist eine Fassade. Die beiden Kalibratoren darunter teilen sich einen <code>PlantSimulator</code>,
+die einzige Stelle mit Kontakt zu PyADM1ODE, und eine Optimierer-Schnittstelle, die einzige Stelle
+mit Kontakt zu SciPy. Daten erreichen sie als <code>MeasurementData</code>-Tabelle, gleich ob sie aus einer
+CSV-Datei, einer Datenbank oder einem schemagesteuerten Builder stammen.</p>
+<h2 id="die-optimierungsschleife">Die Optimierungsschleife<a class="headerlink" href="#die-optimierungsschleife" title="Permanent link">¶</a></h2>
 <div class="mermaid">sequenceDiagram
-    participant U as Nutzer
     participant C as Calibrator
-    participant S as Simulator
     participant O as Optimizer
+    participant S as PlantSimulator
+    participant J as Objective
 
-    U-&gt;&gt;C: Starte Kalibrierung (Daten, Parameter)
-    C-&gt;&gt;O: Initialisiere Optimierung
-    loop Optimierungsschleife
-        O-&gt;&gt;S: Simuliere mit Parameter-Set X
-        S-&gt;&gt;O: Rückgabe Simulationsergebnisse
-        O-&gt;&gt;O: Berechne Fehler (RMSE)
+    C-&gt;&gt;O: bounds, start values
+    loop until max_iterations
+        O-&gt;&gt;S: candidate parameter set
+        S-&gt;&gt;J: simulated channels
+        J-&gt;&gt;O: weighted error
     end
-    O-&gt;&gt;C: Rückgabe optimaler Parameter
-    C-&gt;&gt;U: Kalibrierungs-Resultat
+    O-&gt;&gt;C: best parameter set
+    C-&gt;&gt;C: validate on the held-out split
 </div>
-<h2 id="komponenten-beschreibung">Komponenten-Beschreibung<a class="headerlink" href="#komponenten-beschreibung" title="Permanent link">¶</a></h2>
+<p>Eine Iteration ist eine vollständige Anlagensimulation über das Trainingsfenster. Deshalb bestimmt
+die Zahl der Kandidaten die Laufzeit, nicht das Modell. Die Zielfunktion wandelt eine gescheiterte
+Simulation in einen großen Fehler statt in eine Ausnahme, ein einzelner unlösbarer Kandidat kann
+einen Lauf also nicht abbrechen.</p>
+<h2 id="wissenswerte-entwurfsentscheidungen">Wissenswerte Entwurfsentscheidungen<a class="headerlink" href="#wissenswerte-entwurfsentscheidungen" title="Permanent link">¶</a></h2>
 <ul>
-<li><strong>Calibrator Facade</strong>: Bietet eine einfache Schnittstelle für den Endanwender.  </li>
-<li><strong>Plant Simulator</strong>: Kapselt die Logik zur Ausführung von PyADM1ODE Simulationen.  </li>
-<li><strong>Optimizer Engine</strong>: Abstrakte Schicht für verschiedene Algorithmen (SciPy, eigene Implementierungen).  </li>
-<li><strong>Data Loader</strong>: Validiert und transformiert Eingangsdaten in ein für den Simulator nutzbares Format.  </li>
+<li><strong>Parameter sind benannt, nicht positionsbezogen</strong>, die Abbildung auf den Optimierervektor liegt an einer Stelle.  </li>
+<li><strong>Grenzen sind Daten</strong>: <code>create_default_bounds()</code> führt Einheiten, Standardwerte und soft/hard für 41 Parameter.  </li>
+<li><strong>Anlagentopologien bleiben Python</strong>, denn die PyADM1ODE-Anlagen-API ist ein Komponentengraph.  </li>
+<li><strong>Gespeicherte Zeitstempel sind naive UTC</strong>, geschrieben über <code>timeutils.utc_now()</code>.  </li>
 </ul>
 </article>
 </div>
@@ -829,7 +835,7 @@
 <div class="md-dialog__inner md-typeset"></div>
 </div>
 <script id="__config" type="application/json">{"annotate": null, "base": "..", "features": ["navigation.tabs", "navigation.sections", "navigation.expand", "navigation.top", "navigation.tracking", "search.suggest", "search.highlight", "search.share", "content.code.copy", "content.code.annotate", "content.tooltips"], "search": "../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "In Zwischenablage kopiert", "clipboard.copy": "In Zwischenablage kopieren", "search.result.more.one": "1 weiteres Suchergebnis auf dieser Seite", "search.result.more.other": "# weitere Suchergebnisse auf dieser Seite", "search.result.none": "Keine Suchergebnisse", "search.result.one": "1 Suchergebnis", "search.result.other": "# Suchergebnisse", "search.result.placeholder": "Suchbegriff eingeben", "search.result.term.missing": "Es fehlt", "select.version": "Version ausw\u00e4hlen"}, "version": {"provider": "mike"}}</script>
-<script src="../assets/javascripts/bundle.79ae519e.min.js"></script>
+<script src="../assets/javascripts/bundle.d7400e89.min.js"></script>
 <script type="module">import mermaid from "https://unpkg.com/mermaid@10.4.0/dist/mermaid.esm.min.mjs";
 mermaid.initialize({
     theme: "default"

@@ -27,15 +27,15 @@
       
       
       <link rel="icon" href="../../assets/images/favicon.png">
-      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.6">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.7">
     
     
       
-        <title>Konfiguration - PyADM1ODE Calibration</title>
+        <title>Configuration - PyADM1ODE Calibration</title>
       
     
     
-      <link rel="stylesheet" href="../../assets/stylesheets/main.484c7ddc.min.css">
+      <link rel="stylesheet" href="../../assets/stylesheets/main.ec1eaa64.min.css">
       
         
         <link rel="stylesheet" href="../../assets/stylesheets/palette.ab4e12ef.min.css">
@@ -124,7 +124,7 @@
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              Konfiguration
+              Configuration
             
           </span>
         </div>
@@ -293,7 +293,7 @@
   
     
   
-  Erste Schritte
+  Getting Started
 
       </a>
     </li>
@@ -333,7 +333,7 @@
   
     
   
-  Konfiguration
+  Configuration
 
       </a>
     </li>
@@ -372,7 +372,7 @@
           
   
   
-  Beispiele
+  Examples
 
         </a>
       </li>
@@ -392,7 +392,7 @@
           
   
   
-  Nutzung
+  Usage
 
         </a>
       </li>
@@ -412,7 +412,7 @@
           
   
   
-  API-Referenz
+  API Reference
 
         </a>
       </li>
@@ -432,7 +432,7 @@
   
     
   
-  Architektur
+  Architecture
 
       </a>
     </li>
@@ -451,7 +451,7 @@
           
   
   
-  Entwicklung
+  Development
 
         </a>
       </li>
@@ -471,7 +471,7 @@
   
     
   
-  Fehlerbehebung
+  Troubleshooting
 
       </a>
     </li>
@@ -564,7 +564,7 @@
   <span class="md-ellipsis">
     
   
-    Erste Schritte
+    Getting Started
   
 
     
@@ -627,7 +627,7 @@
   <span class="md-ellipsis">
     
   
-    Konfiguration
+    Configuration
   
 
     
@@ -645,7 +645,7 @@
   <span class="md-ellipsis">
     
   
-    Konfiguration
+    Configuration
   
 
     
@@ -671,38 +671,10 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#calibratable-parameters" class="md-nav__link">
+  <a href="#parameters-and-bounds" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Calibratable Parameters
-      
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="Calibratable Parameters">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#parameter-bounds" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Parameter Bounds
-      
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#optimization-methods" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Optimization Methods
+        Parameters and bounds
       
     </span>
   </a>
@@ -710,10 +682,10 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#objective-functions" class="md-nav__link">
+  <a href="#optimizers" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Objective Functions
+        Optimizers
       
     </span>
   </a>
@@ -721,10 +693,43 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#database-connection" class="md-nav__link">
+  <a href="#objectives" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Database Connection
+        Objectives
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#data-sources" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Data sources
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#feeds-that-change-over-time" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Feeds that change over time
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#database" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Database
       
     </span>
   </a>
@@ -807,7 +812,7 @@
   <span class="md-ellipsis">
     
   
-    Überblick
+    Overview
   
 
     
@@ -835,7 +840,7 @@
   <span class="md-ellipsis">
     
   
-    Kalibrierungs-Tutorial
+    Calibration Tutorial
   
 
     
@@ -888,7 +893,7 @@
   <span class="md-ellipsis">
     
   
-    Beispiele
+    Examples
   
 
     
@@ -904,7 +909,7 @@
             <span class="md-nav__icon md-icon"></span>
             
   
-    Beispiele
+    Examples
   
 
           </label>
@@ -924,7 +929,7 @@
   <span class="md-ellipsis">
     
   
-    Übersicht
+    Overview
   
 
     
@@ -952,7 +957,7 @@
   <span class="md-ellipsis">
     
   
-    Kalibrierungs-Workflow
+    Calibration Workflow
   
 
     
@@ -1005,7 +1010,7 @@
   <span class="md-ellipsis">
     
   
-    Nutzung
+    Usage
   
 
     
@@ -1021,7 +1026,7 @@
             <span class="md-nav__icon md-icon"></span>
             
   
-    Nutzung
+    Usage
   
 
           </label>
@@ -1041,7 +1046,7 @@
   <span class="md-ellipsis">
     
   
-    Übersicht
+    Overview
   
 
     
@@ -1069,7 +1074,7 @@
   <span class="md-ellipsis">
     
   
-    Kalibrierung
+    Calibration
   
 
     
@@ -1122,7 +1127,7 @@
   <span class="md-ellipsis">
     
   
-    API-Referenz
+    API Reference
   
 
     
@@ -1138,7 +1143,7 @@
             <span class="md-nav__icon md-icon"></span>
             
   
-    API-Referenz
+    API Reference
   
 
           </label>
@@ -1158,7 +1163,7 @@
   <span class="md-ellipsis">
     
   
-    Übersicht
+    Overview
   
 
     
@@ -1186,7 +1191,7 @@
   <span class="md-ellipsis">
     
   
-    Kalibrierung
+    Calibration
   
 
     
@@ -1242,7 +1247,7 @@
   <span class="md-ellipsis">
     
   
-    Optimierung
+    Optimization
   
 
     
@@ -1277,7 +1282,7 @@
   <span class="md-ellipsis">
     
   
-    Architektur
+    Architecture
   
 
     
@@ -1322,7 +1327,7 @@
   <span class="md-ellipsis">
     
   
-    Entwicklung
+    Development
   
 
     
@@ -1338,7 +1343,7 @@
             <span class="md-nav__icon md-icon"></span>
             
   
-    Entwicklung
+    Development
   
 
           </label>
@@ -1358,7 +1363,7 @@
   <span class="md-ellipsis">
     
   
-    Übersicht
+    Overview
   
 
     
@@ -1386,7 +1391,7 @@
   <span class="md-ellipsis">
     
   
-    Docstring-Guide
+    Docstring Guide
   
 
     
@@ -1414,7 +1419,7 @@
   <span class="md-ellipsis">
     
   
-    Metriken
+    Metrics
   
 
     
@@ -1442,7 +1447,7 @@
   <span class="md-ellipsis">
     
   
-    Versionierung
+    Versioning
   
 
     
@@ -1505,7 +1510,7 @@
   <span class="md-ellipsis">
     
   
-    Fehlerbehebung
+    Troubleshooting
   
 
     
@@ -1545,38 +1550,10 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#calibratable-parameters" class="md-nav__link">
+  <a href="#parameters-and-bounds" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Calibratable Parameters
-      
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="Calibratable Parameters">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#parameter-bounds" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Parameter Bounds
-      
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#optimization-methods" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Optimization Methods
+        Parameters and bounds
       
     </span>
   </a>
@@ -1584,10 +1561,10 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#objective-functions" class="md-nav__link">
+  <a href="#optimizers" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Objective Functions
+        Optimizers
       
     </span>
   </a>
@@ -1595,10 +1572,43 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#database-connection" class="md-nav__link">
+  <a href="#objectives" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Database Connection
+        Objectives
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#data-sources" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Data sources
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#feeds-that-change-over-time" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Feeds that change over time
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#database" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Database
       
     </span>
   </a>
@@ -1626,73 +1636,162 @@
 
 
 <h1 id="configuration">Configuration<a class="headerlink" href="#configuration" title="Permanent link">&para;</a></h1>
-<p>PyADM1ODE_calibration offers flexible configuration options for parameters, optimizers, and objective functions.</p>
-<h2 id="calibratable-parameters">Calibratable Parameters<a class="headerlink" href="#calibratable-parameters" title="Permanent link">&para;</a></h2>
-<p>The following ADM1 parameters are most commonly used for calibration:</p>
+<h2 id="parameters-and-bounds">Parameters and bounds<a class="headerlink" href="#parameters-and-bounds" title="Permanent link">&para;</a></h2>
+<p><code>create_default_bounds()</code> returns bounds for 41 ADM1 parameters. A <strong>soft</strong> bound is a weighted penalty the optimizer may cross, a <strong>hard</strong> bound makes the candidate infeasible.</p>
 <table>
 <thead>
 <tr>
 <th>Parameter</th>
-<th>Description</th>
+<th>Meaning</th>
 <th>Unit</th>
-<th>Typical Range</th>
+<th>Bounds</th>
+<th>Default</th>
+<th>Type</th>
 </tr>
 </thead>
 <tbody>
 <tr>
 <td><code>k_dis</code></td>
-<td>Disintegration constant</td>
+<td>Disintegration rate</td>
 <td>1/d</td>
-<td>0.3 - 0.8</td>
+<td>0.1 - 1.0</td>
+<td>0.5</td>
+<td>soft</td>
 </tr>
 <tr>
 <td><code>k_hyd_ch</code></td>
-<td>Carbohydrate hydrolysis rate</td>
+<td>Hydrolysis, carbohydrates</td>
 <td>1/d</td>
-<td>5.0 - 15.0</td>
+<td>1.0 - 15.0</td>
+<td>4.0</td>
+<td>soft</td>
+</tr>
+<tr>
+<td><code>k_hyd_pr</code></td>
+<td>Hydrolysis, proteins</td>
+<td>1/d</td>
+<td>1.0 - 15.0</td>
+<td>4.0</td>
+<td>soft</td>
+</tr>
+<tr>
+<td><code>k_hyd_li</code></td>
+<td>Hydrolysis, lipids</td>
+<td>1/d</td>
+<td>1.0 - 15.0</td>
+<td>4.0</td>
+<td>soft</td>
 </tr>
 <tr>
 <td><code>k_m_ac</code></td>
-<td>Max. uptake rate acetate</td>
+<td>Max. uptake rate, acetate</td>
 <td>1/d</td>
 <td>4.0 - 12.0</td>
+<td>8.0</td>
+<td>soft</td>
 </tr>
 <tr>
 <td><code>Y_su</code></td>
-<td>Yield coefficient sugar degraders</td>
+<td>Yield, sugar degraders</td>
 <td>kg COD/kg COD</td>
 <td>0.05 - 0.15</td>
+<td>0.1</td>
+<td>hard</td>
 </tr>
 </tbody>
 </table>
-<h3 id="parameter-bounds">Parameter Bounds<a class="headerlink" href="#parameter-bounds" title="Permanent link">&para;</a></h3>
-<p>You can manually define the search ranges for the optimization:</p>
-<div class="language-python highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="n">bounds</span> <span class="o">=</span> <span class="p">{</span>
-</span><span id="__span-0-2"><a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a>    <span class="s2">&quot;k_dis&quot;</span><span class="p">:</span> <span class="p">(</span><span class="mf">0.2</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">),</span>
-</span><span id="__span-0-3"><a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a>    <span class="s2">&quot;k_hyd_ch&quot;</span><span class="p">:</span> <span class="p">(</span><span class="mf">2.0</span><span class="p">,</span> <span class="mf">20.0</span><span class="p">)</span>
-</span><span id="__span-0-4"><a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a><span class="p">}</span>
+<div class="language-python highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="kn">from</span><span class="w"> </span><span class="nn">pyadm1ode_calibration</span><span class="w"> </span><span class="kn">import</span> <span class="n">create_default_bounds</span>
+</span><span id="__span-0-2"><a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a>
+</span><span id="__span-0-3"><a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a><span class="n">bounds</span> <span class="o">=</span> <span class="n">create_default_bounds</span><span class="p">()</span>
+</span><span id="__span-0-4"><a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a><span class="nb">print</span><span class="p">(</span><span class="n">bounds</span><span class="o">.</span><span class="n">get_bounds</span><span class="p">(</span><span class="s2">"k_dis"</span><span class="p">))</span>
 </span></code></pre></div>
-<h2 id="optimization-methods">Optimization Methods<a class="headerlink" href="#optimization-methods" title="Permanent link">&para;</a></h2>
-<p>Supported algorithms for the <code>calibrate</code> method:</p>
-<ul>
-<li><code>differential_evolution</code> (default): Robust for global search.  </li>
-<li><code>nelder-mead</code>: Efficient for local search (good for online calibration).  </li>
-<li><code>l-bfgs-b</code>: Gradient-based, requires smooth objective functions.  </li>
-<li><code>particle_swarm</code>: Stochastic global search.  </li>
-</ul>
-<h2 id="objective-functions">Objective Functions<a class="headerlink" href="#objective-functions" title="Permanent link">&para;</a></h2>
-<p>By default, methane production (<code>Q_ch4</code>) is optimized. However, you can weight multiple variables:</p>
-<div class="language-python highlight"><pre><span></span><code><span id="__span-1-1"><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a><span class="n">objectives</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;Q_ch4&quot;</span><span class="p">,</span> <span class="s2">&quot;pH&quot;</span><span class="p">,</span> <span class="s2">&quot;VFA&quot;</span><span class="p">]</span>
-</span><span id="__span-1-2"><a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a><span class="n">weights</span> <span class="o">=</span> <span class="p">{</span>
-</span><span id="__span-1-3"><a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a>    <span class="s2">&quot;Q_ch4&quot;</span><span class="p">:</span> <span class="mf">0.7</span><span class="p">,</span>
-</span><span id="__span-1-4"><a id="__codelineno-1-4" name="__codelineno-1-4" href="#__codelineno-1-4"></a>    <span class="s2">&quot;pH&quot;</span><span class="p">:</span> <span class="mf">0.2</span><span class="p">,</span>
-</span><span id="__span-1-5"><a id="__codelineno-1-5" name="__codelineno-1-5" href="#__codelineno-1-5"></a>    <span class="s2">&quot;VFA&quot;</span><span class="p">:</span> <span class="mf">0.1</span>
-</span><span id="__span-1-6"><a id="__codelineno-1-6" name="__codelineno-1-6" href="#__codelineno-1-6"></a><span class="p">}</span>
+<p>Which parameters belong in a run is a question the data answers, not the modeller.
+<code>calibrate(..., check_identifiability=True)</code> screens the set before the optimizer starts and warns
+when the data cannot resolve it, at the cost of <code>2 * len(parameters) + 1</code> simulations. See
+<a href="../usage/calibration/#which-parameters-are-worth-fitting">Calibration</a>.</p>
+<p>Pass narrower ranges per run instead of editing the defaults:</p>
+<div class="language-python highlight"><pre><span></span><code><span id="__span-1-1"><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a><span class="n">result</span> <span class="o">=</span> <span class="n">calibrator</span><span class="o">.</span><span class="n">calibrate</span><span class="p">(</span>
+</span><span id="__span-1-2"><a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a>    <span class="n">measurements</span><span class="o">=</span><span class="n">measurements</span><span class="p">,</span>
+</span><span id="__span-1-3"><a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a>    <span class="n">parameters</span><span class="o">=</span><span class="p">[</span><span class="s2">"k_dis"</span><span class="p">,</span> <span class="s2">"k_hyd_ch"</span><span class="p">],</span>
+</span><span id="__span-1-4"><a id="__codelineno-1-4" name="__codelineno-1-4" href="#__codelineno-1-4"></a>    <span class="n">bounds</span><span class="o">=</span><span class="p">{</span><span class="s2">"k_dis"</span><span class="p">:</span> <span class="p">(</span><span class="mf">0.3</span><span class="p">,</span> <span class="mf">0.8</span><span class="p">),</span> <span class="s2">"k_hyd_ch"</span><span class="p">:</span> <span class="p">(</span><span class="mf">2.0</span><span class="p">,</span> <span class="mf">8.0</span><span class="p">)},</span>
+</span><span id="__span-1-5"><a id="__codelineno-1-5" name="__codelineno-1-5" href="#__codelineno-1-5"></a><span class="p">)</span>
 </span></code></pre></div>
-<h2 id="database-connection">Database Connection<a class="headerlink" href="#database-connection" title="Permanent link">&para;</a></h2>
-<p>The database is configured via a connection URL (SQLAlchemy format):</p>
-<div class="language-python highlight"><pre><span></span><code><span id="__span-2-1"><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a><span class="n">db_url</span> <span class="o">=</span> <span class="s2">&quot;postgresql://user:password@localhost:5432/biogas_db&quot;</span>
+<h2 id="optimizers">Optimizers<a class="headerlink" href="#optimizers" title="Permanent link">&para;</a></h2>
+<p>Pass one via <code>method=</code>. Hyphens, spaces and case are normalised, so <code>"Nelder-Mead"</code> and <code>"nelder_mead"</code> are the same.</p>
+<table>
+<thead>
+<tr>
+<th>Name</th>
+<th>Type</th>
+<th>Use for</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>differential_evolution</code>, <code>de</code></td>
+<td>global</td>
+<td>initial calibration (default)</td>
+</tr>
+<tr>
+<td><code>particle_swarm</code>, <code>pso</code></td>
+<td>global</td>
+<td>alternative to DE</td>
+</tr>
+<tr>
+<td><code>nelder_mead</code>, <code>nm</code></td>
+<td>local</td>
+<td>online recalibration (default there)</td>
+</tr>
+<tr>
+<td><code>powell</code></td>
+<td>local</td>
+<td>derivative-free, no bounds needed</td>
+</tr>
+<tr>
+<td><code>l_bfgs_b</code></td>
+<td>gradient</td>
+<td>smooth objectives</td>
+</tr>
+<tr>
+<td><code>slsqp</code></td>
+<td>gradient</td>
+<td>smooth objectives with constraints</td>
+</tr>
+</tbody>
+</table>
+<p>Sizing matters more than the choice: differential evolution runs <code>population_size x len(parameters)</code>
+simulations per generation. With three parameters, <code>population_size=10</code> and <code>max_iterations=50</code> that
+came to 1217 simulations and 56 minutes, so budget roughly three seconds per simulated window.</p>
+<h2 id="objectives">Objectives<a class="headerlink" href="#objectives" title="Permanent link">&para;</a></h2>
+<div class="language-python highlight"><pre><span></span><code><span id="__span-2-1"><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a><span class="n">objectives</span> <span class="o">=</span> <span class="p">[</span><span class="s2">"Q_ch4"</span><span class="p">,</span> <span class="s2">"pH"</span><span class="p">,</span> <span class="s2">"VFA"</span><span class="p">]</span>
+</span><span id="__span-2-2"><a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a><span class="n">weights</span> <span class="o">=</span> <span class="p">{</span><span class="s2">"Q_ch4"</span><span class="p">:</span> <span class="mf">0.7</span><span class="p">,</span> <span class="s2">"pH"</span><span class="p">:</span> <span class="mf">0.2</span><span class="p">,</span> <span class="s2">"VFA"</span><span class="p">:</span> <span class="mf">0.1</span><span class="p">}</span>
 </span></code></pre></div>
+<p>Weights are normalised internally. A channel missing from the data is skipped rather than scored as zero.</p>
+<h2 id="data-sources">Data sources<a class="headerlink" href="#data-sources" title="Permanent link">&para;</a></h2>
+<p>A plant schema declares its sources and channels in one YAML file. Copy <code>configs/plants/_template.yaml</code> and adapt it:</p>
+<div class="language-python highlight"><pre><span></span><code><span id="__span-3-1"><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a><span class="kn">from</span><span class="w"> </span><span class="nn">pyadm1ode_calibration.io.loaders</span><span class="w"> </span><span class="kn">import</span> <span class="n">MeasurementBuilder</span><span class="p">,</span> <span class="n">PlantSchema</span>
+</span><span id="__span-3-2"><a id="__codelineno-3-2" name="__codelineno-3-2" href="#__codelineno-3-2"></a>
+</span><span id="__span-3-3"><a id="__codelineno-3-3" name="__codelineno-3-3" href="#__codelineno-3-3"></a><span class="n">schema</span> <span class="o">=</span> <span class="n">PlantSchema</span><span class="o">.</span><span class="n">from_yaml</span><span class="p">(</span><span class="s2">"configs/plants/my_plant.yaml"</span><span class="p">)</span>
+</span><span id="__span-3-4"><a id="__codelineno-3-4" name="__codelineno-3-4" href="#__codelineno-3-4"></a><span class="n">measurements</span> <span class="o">=</span> <span class="n">MeasurementBuilder</span><span class="p">(</span><span class="n">schema</span><span class="p">)</span><span class="o">.</span><span class="n">build</span><span class="p">(</span><span class="n">variables</span><span class="o">=</span><span class="p">[</span><span class="s2">"Q_gas"</span><span class="p">,</span> <span class="s2">"T_digester"</span><span class="p">])</span>
+</span></code></pre></div>
+<h2 id="feeds-that-change-over-time">Feeds that change over time<a class="headerlink" href="#feeds-that-change-over-time" title="Permanent link">&para;</a></h2>
+<p>By default a calibration collapses the whole substrate feed series of a window into
+its mean and holds it constant. That is cheap and correct for a record at steady
+load, but it hides every load step and substrate change, and those are exactly what
+makes the kinetics identifiable. Pass <code>time_varying_feed=True</code> to apply the feeds
+step by step:</p>
+<div class="language-python highlight"><pre><span></span><code><span id="__span-4-1"><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a><span class="n">calibrator</span> <span class="o">=</span> <span class="n">InitialCalibrator</span><span class="p">(</span><span class="n">plant</span><span class="p">,</span> <span class="n">time_varying_feed</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+</span></code></pre></div>
+<p>It costs roughly 20 % more run time, and it is available on <code>InitialCalibrator</code>,
+<code>OnlineCalibrator</code>, <code>CalibrationValidator</code> and <code>PlantSimulator</code>. A window whose feed
+really is constant takes the cheap path either way.</p>
+<h2 id="database">Database<a class="headerlink" href="#database" title="Permanent link">&para;</a></h2>
+<div class="language-python highlight"><pre><span></span><code><span id="__span-5-1"><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a><span class="kn">from</span><span class="w"> </span><span class="nn">pyadm1ode_calibration</span><span class="w"> </span><span class="kn">import</span> <span class="n">Database</span>
+</span><span id="__span-5-2"><a id="__codelineno-5-2" name="__codelineno-5-2" href="#__codelineno-5-2"></a>
+</span><span id="__span-5-3"><a id="__codelineno-5-3" name="__codelineno-5-3" href="#__codelineno-5-3"></a><span class="n">db</span> <span class="o">=</span> <span class="n">Database</span><span class="p">(</span><span class="n">connection_string</span><span class="o">=</span><span class="s2">"postgresql://user:pw@localhost:5432/biogas"</span><span class="p">)</span>
+</span><span id="__span-5-4"><a id="__codelineno-5-4" name="__codelineno-5-4" href="#__codelineno-5-4"></a><span class="n">db</span> <span class="o">=</span> <span class="n">Database</span><span class="o">.</span><span class="n">from_env</span><span class="p">()</span>   <span class="c1"># reads DB_HOST, DB_PORT, DB_NAME, DB_USER, DB_PASSWORD</span>
+</span></code></pre></div>
+<p>Timestamps are stored as naive UTC. Use <code>pyadm1ode_calibration.timeutils.utc_now()</code> when writing your own rows.</p>
 
 
 
@@ -1751,7 +1850,7 @@
       <script id="__config" type="application/json">{"annotate": null, "base": "../..", "features": ["navigation.tabs", "navigation.sections", "navigation.expand", "navigation.top", "navigation.tracking", "search.suggest", "search.highlight", "search.share", "content.code.copy", "content.code.annotate", "content.tooltips"], "search": "../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": {"provider": "mike"}}</script>
     
     
-      <script src="../../assets/javascripts/bundle.79ae519e.min.js"></script>
+      <script src="../../assets/javascripts/bundle.d7400e89.min.js"></script>
       
     
   </body>
