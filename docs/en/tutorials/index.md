@@ -20,4 +20,4 @@ Notebook 00 runs in **Google Colab** without a local installation:
 The others expect a local install. They share `notebooks/demo_plant.py`, which builds the small
 plant and generates the measurement records.
 
-- [Calibration Tutorial](calibration.md): the same path as a text summary.
+- [Calibration Tutorial](calibration.md): the same path as a text summary.  

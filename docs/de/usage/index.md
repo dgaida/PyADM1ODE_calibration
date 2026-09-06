@@ -26,6 +26,6 @@ Die gebräuchlichsten Namen sind auf oberster Ebene erneut exportiert,
 
 ## Weiterlesen
 
-- [Tutorials](../tutorials/index.md) für die Notebook-Reihe.
-- [Beispiele](../examples/index.md) für ausführbare Skripte.
-- [API-Referenz](../api/index.md) für Signaturen.
+- [Tutorials](../tutorials/index.md) für die Notebook-Reihe.  
+- [Beispiele](../examples/index.md) für ausführbare Skripte.  
+- [API-Referenz](../api/index.md) für Signaturen.  

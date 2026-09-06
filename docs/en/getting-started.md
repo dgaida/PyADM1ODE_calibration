@@ -2,9 +2,9 @@
 
 ## Prerequisites
 
-- **Python** 3.10 or newer.
-- **[PyADM1ODE](https://github.com/dgaida/PyADM1ODE)**, which provides the plant model this package calibrates.
-- **Measurement data** as a time series, from CSV or a database. Useful channels are gas flow, methane content, pH and VFA.
+- **Python** 3.10 or newer.  
+- **[PyADM1ODE](https://github.com/dgaida/PyADM1ODE)**, which provides the plant model this package calibrates.  
+- **Measurement data** as a time series, from CSV or a database. Useful channels are gas flow, methane content, pH and VFA.  
 
 ## Install
 
@@ -28,6 +28,6 @@ For development, see [Installation](installation.md).
 
 ## Next steps
 
-- Work through the notebooks, starting at [Tutorials](tutorials/index.md).
-- Look up parameters and optimizers in [Configuration](configuration.md).
-- See both workflows in code under [Usage](usage/index.md).
+- Work through the notebooks, starting at [Tutorials](tutorials/index.md).  
+- Look up parameters and optimizers in [Configuration](configuration.md).  
+- See both workflows in code under [Usage](usage/index.md).  

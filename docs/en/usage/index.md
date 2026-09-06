@@ -25,6 +25,6 @@ The most-used names are re-exported at the top level, so
 
 ## Where to look next
 
-- [Tutorials](../tutorials/index.md) for the notebook series.
-- [Examples](../examples/index.md) for runnable scripts.
-- [API Reference](../api/index.md) for signatures.
+- [Tutorials](../tutorials/index.md) for the notebook series.  
+- [Examples](../examples/index.md) for runnable scripts.  
+- [API Reference](../api/index.md) for signatures.  

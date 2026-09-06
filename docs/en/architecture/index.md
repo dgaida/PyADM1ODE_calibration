@@ -53,7 +53,7 @@ into a large error instead of an exception, so a single unsolvable candidate can
 
 ## Design decisions worth knowing
 
-- **Parameters are named, not positional**, so the mapping to the optimizer's vector lives in one place.
-- **Bounds are data**: `create_default_bounds()` carries units, defaults and a soft/hard flag for 41 parameters.
-- **Plant topologies stay Python**, because the PyADM1ODE plant API is a component graph.
-- **Stored timestamps are naive UTC**, written through `timeutils.utc_now()`.
+- **Parameters are named, not positional**, so the mapping to the optimizer's vector lives in one place.  
+- **Bounds are data**: `create_default_bounds()` carries units, defaults and a soft/hard flag for 41 parameters.  
+- **Plant topologies stay Python**, because the PyADM1ODE plant API is a component graph.  
+- **Stored timestamps are naive UTC**, written through `timeutils.utc_now()`.  

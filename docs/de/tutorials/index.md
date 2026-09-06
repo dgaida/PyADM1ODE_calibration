@@ -20,4 +20,4 @@ Notebook 00 läuft ohne lokale Installation in **Google Colab**:
 Die übrigen setzen eine lokale Installation voraus. Sie teilen sich `notebooks/demo_plant.py`, das
 die kleine Anlage aufbaut und die Messreihen erzeugt.
 
-- [Kalibrierungs-Tutorial](calibration.md): derselbe Weg als Textfassung.
+- [Kalibrierungs-Tutorial](calibration.md): derselbe Weg als Textfassung.  
