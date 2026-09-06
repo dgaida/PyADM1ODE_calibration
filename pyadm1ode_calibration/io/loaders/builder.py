@@ -210,6 +210,19 @@ class MeasurementBuilder:
     # ----- Internals ---------------------------------------------------------
 
     def _select_variables(self, requested: list[str] | None) -> list[VariableSpec]:
+        """The variable specs to build, defaulting to every one the schema declares.
+
+        Args:
+            requested: Variable names to build, or ``None`` for all of them.
+
+        Returns:
+            list[VariableSpec]: The matching specs, in the requested order.
+
+        Raises:
+            KeyError: If a requested name is not declared in the schema. Failing here
+                is deliberate: a typo would otherwise show up as a silently missing
+                column much later.
+        """
         if requested is None:
             return list(self.schema.variables.values())
         result: list[VariableSpec] = []
@@ -220,6 +233,18 @@ class MeasurementBuilder:
         return result
 
     def _drop_ignored(self, vars_: list[VariableSpec]) -> list[VariableSpec]:
+        """Remove variables whose tag the schema marks as ignored.
+
+        A tag lands in ``ignored_tags`` when it is known to be broken or meaningless,
+        so a variable pointing at one is a mistake worth a warning rather than a
+        column of rubbish.
+
+        Args:
+            vars_: The candidate specs.
+
+        Returns:
+            list[VariableSpec]: Those not referencing an ignored tag.
+        """
         kept: list[VariableSpec] = []
         for var in vars_:
             if self.schema.is_tag_ignored(var.source, var.tag):
@@ -235,6 +260,15 @@ class MeasurementBuilder:
     def _partition_by_availability(
         self, source: DataSource, vars_in_src: list[VariableSpec]
     ) -> tuple[list[VariableSpec], list[VariableSpec]]:
+        """Split the variables into those the source can deliver and those it cannot.
+
+        Args:
+            source: The data source to interrogate.
+            vars_in_src: Variables declared against that source.
+
+        Returns:
+            tuple: ``(present, missing)``, both in the input order.
+        """
         available = set(source.list_tags())
         present = [v for v in vars_in_src if v.tag in available]
         missing = [v for v in vars_in_src if v.tag not in available]
@@ -246,6 +280,17 @@ class MeasurementBuilder:
         missing: list[VariableSpec],
         skip_missing: bool,
     ) -> None:
+        """Warn about or reject the tags a source does not expose.
+
+        Args:
+            src_name: Name of the source, for the message.
+            missing: Variables whose tags are absent.
+            skip_missing: Warn and carry on when true, raise when false.
+
+        Raises:
+            KeyError: If ``skip_missing`` is false. Building a frame that quietly
+                lacks columns the caller asked for is the worse failure mode.
+        """
         names = ", ".join(f"'{v.name}'->'{v.tag}'" for v in missing)
         if skip_missing:
             warnings.warn(
@@ -281,6 +326,17 @@ class MeasurementBuilder:
 
     @staticmethod
     def _normalize_ts(ts: str | datetime | None) -> pd.Timestamp | None:
+        """Turn a window bound into a UTC timestamp, or pass ``None`` through.
+
+        A naive input is read as UTC rather than as local time, so the same schema
+        gives the same window on every machine.
+
+        Args:
+            ts: The bound, as a string, a datetime, or ``None`` for open-ended.
+
+        Returns:
+            pd.Timestamp | None: The bound in UTC.
+        """
         if ts is None:
             return None
         t = pd.Timestamp(ts)
@@ -294,6 +350,19 @@ class MeasurementBuilder:
         start: str | datetime | None,
         end: str | datetime | None,
     ) -> MeasurementData:
+        """An empty result that still carries the requested columns and metadata.
+
+        Returned when no source yields a single row. Keeping the columns means callers
+        can go on addressing them instead of guarding every access.
+
+        Args:
+            selected: The variables that were requested.
+            start: Start of the requested window, kept for the metadata.
+            end: End of the requested window, kept for the metadata.
+
+        Returns:
+            MeasurementData: A frame with zero rows and the expected columns.
+        """
         idx = pd.DatetimeIndex([], name="timestamp", tz="UTC")
         df = pd.DataFrame(index=idx, columns=[v.name for v in selected])
         return MeasurementData(
@@ -307,6 +376,16 @@ class MeasurementBuilder:
         selected: list[VariableSpec],
         vars_by_source: dict[str, list[VariableSpec]],
     ) -> dict[str, Any]:
+        """Describe what was built, so a stored result can be traced back later.
+
+        Args:
+            df: The assembled frame, read for its time range.
+            selected: The variables that went into it.
+            vars_by_source: Which source contributed which variables.
+
+        Returns:
+            dict[str, Any]: Plant id, sources, variables, time range and build time.
+        """
         if len(df) > 0:
             time_range = (df.index.min().isoformat(), df.index.max().isoformat())
         else:

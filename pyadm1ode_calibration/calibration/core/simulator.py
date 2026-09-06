@@ -225,6 +225,11 @@ class PlantSimulator:
 
     @staticmethod
     def _unpatch_chp_step(chp: Any) -> None:
+        """Undo :meth:`_patch_chp_step`, leaving the CHP as it was found.
+
+        Idempotent, so the ``finally`` block can call it for every CHP without
+        tracking which ones were actually patched.
+        """
         original = getattr(chp, "_original_step", None)
         if original is None:
             return

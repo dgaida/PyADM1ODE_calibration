@@ -310,6 +310,18 @@ class PlantSchema:
     # ----- Validation -------------------------------------------------------
 
     def _validate(self) -> None:
+        """Check the whole schema and report every defect at once.
+
+        Collecting the errors rather than raising on the first one matters for a
+        hand-written config: one run tells the author everything to fix.
+
+        Checked per variable: the source exists, the units are known and convertible,
+        the resample aggregation is supported, and ``valid_range`` is ordered. Checked
+        for the substrate mix: fractions in [0, 1] summing to 1.
+
+        Raises:
+            ValueError: If anything is wrong, listing all findings.
+        """
         errors: list[str] = []
 
         for var_name, var in self.variables.items():

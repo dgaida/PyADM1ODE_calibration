@@ -179,9 +179,19 @@ class TabularCSVSource:
     # ----- DataSource protocol ----------------------------------------------
 
     def list_tags(self) -> list[str]:
+        """Every tag this source can deliver, qualified and sorted.
+
+        Returns:
+            list[str]: Tag names in the ``file::column`` form the schema refers to.
+        """
         return sorted(self._tag_index.keys())
 
     def time_range(self) -> TimeRange:
+        """The period covered, if it can be known without reading the data.
+
+        Returns:
+            TimeRange: ``(None, None)``, see the note below.
+        """
         # We do not parse metadata headers here because the format is
         # vendor-specific. Callers that need the range without reading
         # all data can override this in a subclass.
@@ -193,6 +203,20 @@ class TabularCSVSource:
         end: datetime | None = None,
         tags: list[str] | None = None,
     ) -> pd.DataFrame:
+        """Read the requested tags over the requested window.
+
+        Only the files that actually carry one of the tags are opened, so asking for a
+        single channel does not cost a full directory scan.
+
+        Args:
+            start: Inclusive lower bound on the timestamp, or ``None`` for open.
+            end: Inclusive upper bound on the timestamp, or ``None`` for open.
+            tags: Qualified tag names, or ``None`` for everything available.
+
+        Returns:
+            pd.DataFrame: One column per tag on a shared UTC timestamp index, empty
+            with that index when nothing matches.
+        """
         files_to_read = self._files_for_tags(tags)
         if not files_to_read:
             return self._empty_frame()
@@ -261,11 +285,24 @@ class TabularCSVSource:
     # ----- Internals --------------------------------------------------------
 
     def _resolve_path(self, p: Path) -> Path:
+        """Make a file path absolute, relative to ``base_dir`` when there is one.
+
+        Args:
+            p: The path as configured, absolute or relative.
+
+        Returns:
+            Path: The path to open.
+        """
         if p.is_absolute() or self.base_dir is None:
             return p
         return self.base_dir / p
 
     def _build_tag_index(self) -> None:
+        """Read every file header once and map each qualified tag to its file.
+
+        Done up front so :meth:`list_tags` and :meth:`read` can answer without
+        touching the data rows, which is what makes a missing tag cheap to detect.
+        """
         for idx, spec in enumerate(self.files):
             raw_tags = self._read_header_tags(spec)
             self._raw_tags_by_file[idx] = raw_tags
@@ -324,6 +361,15 @@ class TabularCSVSource:
 
     @staticmethod
     def _strip_prefix(tag: str, spec: FileSpec) -> str:
+        """Remove a file's tag prefix, turning a qualified tag back into a column name.
+
+        Args:
+            tag: The qualified tag.
+            spec: The file it belongs to, carrying prefix and separator.
+
+        Returns:
+            str: The column name as it appears in the file.
+        """
         if spec.tag_prefix is None:
             return tag
         head = f"{spec.tag_prefix}{spec.prefix_separator}"
@@ -336,6 +382,17 @@ class TabularCSVSource:
         end: datetime | None,
         raw_tags: list[str] | None,
     ) -> pd.DataFrame:
+        """Read one file, windowed and narrowed to the requested columns.
+
+        Args:
+            spec: The file to read, carrying its dialect and column conventions.
+            start: Inclusive lower bound on the timestamp, or ``None``.
+            end: Inclusive upper bound on the timestamp, or ``None``.
+            raw_tags: Column names to keep, or ``None`` for all of them.
+
+        Returns:
+            pd.DataFrame: Timestamp-indexed, typed, with qualified column names.
+        """
         path = self._resolve_path(spec.path)
 
         # Read everything as string first; we coerce to numeric / bool
@@ -390,6 +447,15 @@ class TabularCSVSource:
         return df
 
     def _raw_tags_by_file_for(self, spec: FileSpec) -> list[str]:
+        """The column names of one file, from the index built at construction.
+
+        Args:
+            spec: The file to look up.
+
+        Returns:
+            list[str]: Its raw column names, re-read from the header if the spec was
+            not part of the index.
+        """
         for idx, s in enumerate(self.files):
             if s is spec:
                 return self._raw_tags_by_file[idx]
@@ -397,6 +463,18 @@ class TabularCSVSource:
         return self._read_header_tags(spec)
 
     def _attach_timestamp(self, df: pd.DataFrame, spec: FileSpec) -> pd.DataFrame:
+        """Parse the date column into a UTC index and drop it from the columns.
+
+        Args:
+            df: The frame as read from the file.
+            spec: The file's spec, naming the date column and its timezone.
+
+        Returns:
+            pd.DataFrame: The frame indexed by timestamp.
+
+        Raises:
+            ValueError: If the configured date column is not in the file.
+        """
         if spec.date_column not in df.columns:
             raise ValueError(
                 f"Date column '{spec.date_column}' not found in " f"{spec.path}. Available columns: {list(df.columns)}"
@@ -425,6 +503,19 @@ class TabularCSVSource:
         return df
 
     def _coerce_types(self, df: pd.DataFrame, spec: FileSpec) -> pd.DataFrame:
+        """Turn the text of a SCADA export into numbers and booleans.
+
+        Everything arrives as strings. Numbers may use a comma as the decimal mark,
+        and switch states appear as vendor-specific words. A column that is neither
+        is left as text rather than forced into NaN.
+
+        Args:
+            df: The raw frame, all columns text.
+            spec: The file's spec, carrying the decimal mark and the boolean words.
+
+        Returns:
+            pd.DataFrame: The frame with numeric and boolean columns converted.
+        """
         out = pd.DataFrame(index=df.index)
         for col in df.columns:
             raw = df[col].astype(str).str.strip()
@@ -476,6 +567,11 @@ class TabularCSVSource:
         return t
 
     def _empty_frame(self) -> pd.DataFrame:
+        """A zero-row frame with the UTC timestamp index callers expect.
+
+        Returns:
+            pd.DataFrame: Empty, but indexable and concatenable like a real result.
+        """
         idx = pd.DatetimeIndex([], name="timestamp", tz="UTC")
         return pd.DataFrame(index=idx)
 
