@@ -29,6 +29,25 @@ from pyadm1ode_calibration.calibration.core.simulator import PlantSimulator
 
 DAYS = 2
 
+
+def _set_state_writes_attributes() -> bool:
+    """Does the installed pyadm1 mirror a restored state back onto the attributes?
+
+    ``Component.set_state`` assigns the report dict. Whether it also writes the values
+    onto the attributes the model integrates from is a property of pyadm1, and older
+    releases do not. ``PlantSimulator`` no longer depends on it either way, so only the
+    test that pins the upstream contract needs to know.
+    """
+    from pyadm1.components.energy import CHP
+
+    probe = CHP(component_id="probe", P_el_nom=1.0)
+    probe._state_probe = 1
+    probe.set_state({"_state_probe": 2})
+    return getattr(probe, "_state_probe", None) == 2
+
+
+SET_STATE_WRITES_ATTRIBUTES = _set_state_writes_attributes()
+
 #: Substrate files shipped with this repository. Passing paths rather than bare IDs
 #: keeps the test working whether pyadm1 is an editable install next to a checkout
 #: that carries the substrate data or a wheel whose data directory is empty.
@@ -76,8 +95,18 @@ class TestComponentStateRoundTrip:
 
         assert list(snapshot["adm1_state"]) == before, "snapshot followed the live state"
 
+    @pytest.mark.skipif(
+        not SET_STATE_WRITES_ATTRIBUTES,
+        reason="installed pyadm1 does not mirror set_state onto attributes; "
+        "PlantSimulator compensates, see test_repeated_evaluation_is_reproducible",
+    )
     def test_set_state_reaches_the_attribute_the_model_reads(self) -> None:
-        """Restoring the dict alone would leave ``adm1_state`` untouched."""
+        """Restoring the dict alone would leave ``adm1_state`` untouched.
+
+        This one pins pyadm1's own contract rather than ours. The rewind that
+        calibration depends on is covered by :class:`TestSimulatorRewind`, which passes
+        either way because ``PlantSimulator`` writes the attributes back itself.
+        """
         plant = _plant()
         digester = plant.components["F1"]
         snapshot = digester.get_state()

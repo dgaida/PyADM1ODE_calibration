@@ -1,5 +1,6 @@
 """Simulator module."""
 
+import copy
 import types
 from typing import TYPE_CHECKING, Any, Optional
 
@@ -108,17 +109,42 @@ class PlantSimulator:
         return self.plant.simulate(duration=n_steps * dt, dt=dt, save_interval=dt)
 
     def _backup_state(self) -> None:
-        """Snapshot the dynamic state of every component that exposes one."""
+        """Snapshot the dynamic state of every component that exposes one.
+
+        The deep copy is the whole point. ``Component.get_state`` hands back a shallow
+        copy, so the dict still references the very arrays a digester integrates in
+        place: the snapshot would drift along with the simulation and restore nothing.
+        """
         self._original_state = {
-            cid: comp.get_state() for cid, comp in self.plant.components.items() if hasattr(comp, "get_state")
+            cid: copy.deepcopy(comp.get_state()) for cid, comp in self.plant.components.items() if hasattr(comp, "get_state")
         }
 
     def _restore_state(self) -> None:
-        """Rewind every component to the snapshot taken by :meth:`_backup_state`."""
+        """Rewind every component to the snapshot taken by :meth:`_backup_state`.
+
+        ``Component.set_state`` assigns the report dict, which leaves the attributes
+        the model actually integrates untouched: restoring ``adm1_state`` has to reach
+        ``comp.adm1_state``, not only ``comp.state["adm1_state"]``. Mirroring the keys
+        back here keeps the rewind working whichever pyadm1 is installed, for the same
+        reason :meth:`_restore_parameters` writes ``ADM1._kinetic`` itself.
+
+        Without a working rewind the second evaluation of a parameter set starts from
+        where the first one stopped, and an optimizer ends up searching a landscape
+        that moves under it.
+        """
         for cid, state in self._original_state.items():
             comp = self.plant.components.get(cid)
-            if comp is not None and hasattr(comp, "set_state"):
-                comp.set_state(state)
+            if comp is None or not hasattr(comp, "set_state"):
+                continue
+
+            # A fresh copy per restore, so the snapshot survives the next run intact.
+            snapshot = copy.deepcopy(state)
+            comp.set_state(snapshot)
+            for key, value in snapshot.items():
+                if isinstance(getattr(type(comp), key, None), property):
+                    continue  # computed from the others, no setter
+                if hasattr(comp, key):
+                    setattr(comp, key, copy.deepcopy(value))
 
     def _step_through(
         self,
