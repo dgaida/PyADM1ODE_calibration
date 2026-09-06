@@ -6,6 +6,7 @@ from typing import Any
 import numpy as np
 import pandas as pd
 
+from ...timeutils import normalize_freq
 from ..validation.validators import DataValidator, OutlierDetector, ValidationResult
 
 
@@ -170,7 +171,7 @@ class MeasurementData:
             freq (str): Frequency string (e.g., '1h', '1d').
             aggregation (str): Aggregation function ('mean', 'sum', 'first', 'last').
         """
-        resampler = self.data.resample(freq)
+        resampler = self.data.resample(normalize_freq(freq))
         if aggregation == "mean":
             self.data = resampler.mean()
         elif aggregation == "sum":

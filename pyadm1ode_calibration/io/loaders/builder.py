@@ -43,6 +43,7 @@ from typing import Any
 
 import pandas as pd
 
+from ...timeutils import normalize_freq
 from . import units
 from .measurement_data import MeasurementData
 from .schema import PlantSchema, VariableSpec
@@ -275,7 +276,7 @@ class MeasurementBuilder:
             series = units.convert(series, var.unit, var.to_unit)
 
         # 3. Resample.
-        resampled = series.resample(var.resample.freq).agg(var.resample.agg)
+        resampled = series.resample(normalize_freq(var.resample.freq)).agg(var.resample.agg)
         return resampled
 
     @staticmethod

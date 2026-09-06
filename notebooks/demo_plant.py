@@ -17,6 +17,8 @@ minute.
 
 from __future__ import annotations
 
+from pathlib import Path
+
 import numpy as np
 import pandas as pd
 from pyadm1 import BiogasPlant, Feedstock
@@ -28,7 +30,12 @@ from pyadm1ode_calibration.calibration.core.simulator import PlantSimulator
 #: The substrate columns of the measurement frame map onto these, in order.
 #: The plant must declare exactly as many substrates as the data has feed
 #: columns, otherwise the feed vector cannot be applied.
-SUBSTRATES = ["maize_silage_milk_ripeness", "cattle_manure", "grass_silage"]
+#:
+#: Given as paths into this repository rather than as bare IDs. pyadm1 resolves a bare
+#: ID against its own package data directory, which is populated for an editable
+#: install but empty for a wheel - as on Colab, where these notebooks are meant to run.
+_SUBSTRATE_DIR = Path(__file__).resolve().parent.parent / "data" / "substrates"
+SUBSTRATES = [str(_SUBSTRATE_DIR / f"{name}.yaml") for name in ("maize_silage_milk_ripeness", "cattle_manure", "grass_silage")]
 
 #: Daily feed of the demo plant [m3/d], one entry per substrate.
 FEED = [15.0, 10.0, 0.0]

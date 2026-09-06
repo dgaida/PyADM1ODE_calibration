@@ -13,6 +13,8 @@ in pyadm1, and the rewind that ``PlantSimulator`` performs around a run.
 
 from __future__ import annotations
 
+from pathlib import Path
+
 import numpy as np
 import pandas as pd
 import pytest
@@ -27,10 +29,16 @@ from pyadm1ode_calibration.calibration.core.simulator import PlantSimulator
 
 DAYS = 2
 
+#: Substrate files shipped with this repository. Passing paths rather than bare IDs
+#: keeps the test working whether pyadm1 is an editable install next to a checkout
+#: that carries the substrate data or a wheel whose data directory is empty.
+SUBSTRATE_DIR = Path(__file__).resolve().parents[3] / "data" / "substrates"
+SUBSTRATES = [str(SUBSTRATE_DIR / f"{name}.yaml") for name in ("maize_silage_milk_ripeness", "cattle_manure", "grass_silage")]
+
 
 def _plant() -> BiogasPlant:
     feedstock = Feedstock(
-        ["maize_silage_milk_ripeness", "cattle_manure", "grass_silage"],
+        SUBSTRATES,
         feeding_freq=24,
         total_simtime=DAYS,
     )

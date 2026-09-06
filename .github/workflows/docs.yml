@@ -32,7 +32,9 @@ jobs:
           pip install interrogate git-cliff
 
       - name: Run Tests
-        run: python3 -m pytest -c /dev/null tests/
+        # No -c override: the project configuration registers the pytest markers and
+        # keeps the rootdir at the repository, both of which an override discards.
+        run: python3 -m pytest tests/ -rs
 
       - name: Check API Doc Coverage
         run: |

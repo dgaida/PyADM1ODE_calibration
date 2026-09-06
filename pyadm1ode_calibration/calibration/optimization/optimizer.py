@@ -529,7 +529,9 @@ class LBFGSBOptimizer(GradientBasedOptimizer):
             x0=initial_guess,
             method="L-BFGS-B",
             bounds=self.bounds_array,
-            options={"maxiter": self.max_iterations, "ftol": self.tolerance, "gtol": self.gtol, "disp": False},
+            # `disp` is deprecated for L-BFGS-B and removed in SciPy 1.18. Silence is
+            # the default, so dropping it changes nothing but the warning.
+            options={"maxiter": self.max_iterations, "ftol": self.tolerance, "gtol": self.gtol},
         )
 
         execution_time = time.time() - start_time
