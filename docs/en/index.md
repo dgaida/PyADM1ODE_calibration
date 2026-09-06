@@ -5,48 +5,46 @@
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Documentation](https://img.shields.io/badge/docs-latest-blue.svg)](https://dgaida.github.io/PyADM1ODE_calibration/)
 [![Interrogate](assets/interrogate.svg)](development/metrics.md)
-[![Open In Colab](assets/colab-badge.svg)](https://colab.research.google.com/github/dgaida/PyADM1ODE_calibration/blob/main/notebooks/calibration_tutorial.ipynb)
+[![Open In Colab](assets/colab-badge.svg)](https://colab.research.google.com/github/dgaida/PyADM1ODE_calibration/blob/main/notebooks/00_quickstart.ipynb)
 
-**Advanced parameter calibration framework for PyADM1ODE biogas plant models.**
+**Parameter calibration for [PyADM1ODE](https://github.com/dgaida/PyADM1ODE) biogas plant models.**
 
-PyADM1ODE_calibration provides a complete solution for the calibration of [PyADM1ODE](https://github.com/dgaida/PyADM1ODE) models. It enables precise tuning of complex ADM1 parameters to real plant data using state-of-the-most optimization techniques.
+Fits ADM1 parameters to measured plant data, either once from a historical window or continuously during operation.
 
-## Key Features
+## What it does
 
-- 🎯 **Precision**: Highly accurate matching of ADM1 parameters to real plant data.  
-- ⚡ **Efficiency**: Fast local optimizers for online use and robust global optimizers for initial calibration.  
-- 📊 **Analysis**: Integrated sensitivity and identifiability analysis to identify critical parameters.  
-- 💾 **Integration**: Seamless connection to PostgreSQL databases and CSV workflows.  
-- 🌍 **Multilingual**: Documentation available in German and English.  
+- **Initial calibration**: global search over a historical window, with a train/test split.
+- **Online recalibration**: bounded parameter updates, triggered by prediction variance.
+- **Analysis**: sensitivity and identifiability, so you can tell which parameters the data actually resolves.
+- **Data**: CSV and database sources behind one schema file, plus validation, outlier removal and gap filling.
 
-## Table of Contents
+## Contents
 
-- [Getting Started](getting-started.md) — Quick start with the project.  
-- [Installation](installation.md) — Installation guides for various environments.  
-- [Configuration](configuration.md) — Overview of configuration options and parameters.  
-- [Tutorials](tutorials/index.md) — Step-by-step guides (also for Google Colab).  
-- [API Reference](api/index.md) — Detailed documentation of classes and functions.  
+| Page | Content |
+|------|---------|
+| [Getting Started](getting-started.md) | Prerequisites and the core concepts |
+| [Installation](installation.md) | pip, conda, Docker |
+| [Configuration](configuration.md) | Parameters, bounds, optimizers, database |
+| [Usage](usage/index.md) | The two workflows in code |
+| [Tutorials](tutorials/index.md) | Notebook series 00 to 06 |
+| [Examples](examples/index.md) | Runnable scripts |
+| [API Reference](api/index.md) | Classes and functions |
+| [Architecture](architecture/index.md) | Modules and data flow |
 
 ## Quickstart
 
 ```python
-from pyadm1ode_calibration.calibration import InitialCalibrator
-from pyadm1ode_calibration.io.loaders import MeasurementData
+from pyadm1ode_calibration import Calibrator, MeasurementData
 
-# 1. Load data
 measurements = MeasurementData.from_csv("plant_data.csv")
+calibrator = Calibrator(plant)          # plant: a pyadm1 BiogasPlant
 
-# 2. Create calibrator
-calibrator = InitialCalibrator(plant_model)
-
-# 3. Run calibration
-result = calibrator.calibrate(
+result = calibrator.run_initial_calibration(
     measurements=measurements,
     parameters=["k_dis", "k_hyd_ch"],
-    objectives=["Q_ch4", "pH"]
+    objectives=["Q_ch4", "pH"],
 )
 
-# 4. Apply results
 if result.success:
     calibrator.apply_calibration(result)
 ```

@@ -1,6 +1,8 @@
-import pytest
 from unittest.mock import MagicMock
-from pyadm1ode_calibration.calibration import Calibrator, CalibrationResult
+
+import pytest
+
+from pyadm1ode_calibration.calibration import CalibrationResult, Calibrator
 
 
 @pytest.fixture

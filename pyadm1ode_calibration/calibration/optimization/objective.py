@@ -1,9 +1,11 @@
 """Objective module."""
 
 from abc import ABC, abstractmethod
-from typing import Dict, List, Optional, Callable, Any
-import numpy as np
+from collections.abc import Callable
 from dataclasses import dataclass
+from typing import Any
+
+import numpy as np
 
 
 @dataclass
@@ -47,6 +49,14 @@ class ErrorMetrics:
         observed = np.atleast_1d(observed)
         predicted = np.atleast_1d(predicted)
 
+        # Truncate to common length BEFORE building the NaN mask so
+        # length-mismatched arrays from simulators that drop a sample
+        # (PyADM1ODE rounds the step count down by one for some
+        # durations) don't trip a broadcasting error.
+        min_len = min(len(observed), len(predicted))
+        observed = observed[:min_len]
+        predicted = predicted[:min_len]
+
         valid = ~(np.isnan(observed) | np.isnan(predicted))
         if not np.any(valid):
             return cls(
@@ -61,8 +71,6 @@ class ErrorMetrics:
 
         observed = observed[valid]
         predicted = predicted[valid]
-        min_len = min(len(observed), len(predicted))
-        observed, predicted = observed[:min_len], predicted[:min_len]
 
         residuals = observed - predicted
         abs_residuals = np.abs(residuals)
@@ -104,7 +112,7 @@ class ObjectiveFunction(ABC):
         lower_is_better (bool): Whether to minimize (True) or maximize (False). Defaults to True.
     """
 
-    def __init__(self, parameter_names: List[str], lower_is_better: bool = True):
+    def __init__(self, parameter_names: list[str], lower_is_better: bool = True):
         self.parameter_names = parameter_names
         self.lower_is_better = lower_is_better
 
@@ -119,9 +127,8 @@ class ObjectiveFunction(ABC):
         Returns:
             float: Calculated objective value.
         """
-        pass
 
-    def _params_to_dict(self, x: np.ndarray) -> Dict[str, float]:
+    def _params_to_dict(self, x: np.ndarray) -> dict[str, float]:
         """
         Convert a parameter array to a dictionary.
 
@@ -151,10 +158,10 @@ class SingleObjective(ObjectiveFunction):
 
     def __init__(
         self,
-        simulator: Callable[[Dict[str, float]], Dict[str, np.ndarray]],
+        simulator: Callable[[dict[str, float]], dict[str, np.ndarray]],
         measurements: np.ndarray,
         objective_name: str,
-        parameter_names: List[str],
+        parameter_names: list[str],
         error_metric: str = "rmse",
     ):
         super().__init__(parameter_names)
@@ -191,7 +198,7 @@ class SingleObjective(ObjectiveFunction):
                 "r2": -metrics.r2,
             }
             return error_map.get(self.error_metric, metrics.rmse)
-        except Exception:
+        except Exception:  # noqa: BLE001 - an unevaluable candidate is penalised, not raised
             return 1e10
 
 
@@ -213,11 +220,11 @@ class MultiObjectiveFunction(ObjectiveFunction):
 
     def __init__(
         self,
-        simulator: Callable[[Dict[str, float]], Dict[str, np.ndarray]],
-        measurements_dict: Dict[str, np.ndarray],
-        objectives: List[str],
-        weights: Dict[str, float],
-        parameter_names: List[str],
+        simulator: Callable[[dict[str, float]], dict[str, np.ndarray]],
+        measurements_dict: dict[str, np.ndarray],
+        objectives: list[str],
+        weights: dict[str, float],
+        parameter_names: list[str],
         error_metric: str = "rmse",
         normalize: bool = True,
     ):
@@ -276,7 +283,7 @@ class MultiObjectiveFunction(ObjectiveFunction):
                 n_valid += 1
 
             return total_error if n_valid > 0 else 1e10
-        except Exception:
+        except Exception:  # noqa: BLE001 - an unevaluable candidate is penalised, not raised
             return 1e10
 
 
@@ -295,11 +302,11 @@ class WeightedSumObjective(MultiObjectiveFunction):
 
     def __init__(
         self,
-        simulator: Callable[[Dict[str, float]], Dict[str, np.ndarray]],
-        measurements_dict: Dict[str, np.ndarray],
-        objectives: List[str],
-        parameter_names: List[str],
-        weights: Optional[Dict[str, float]] = None,
+        simulator: Callable[[dict[str, float]], dict[str, np.ndarray]],
+        measurements_dict: dict[str, np.ndarray],
+        objectives: list[str],
+        parameter_names: list[str],
+        weights: dict[str, float] | None = None,
         **kwargs: Any,
     ):
         if weights is None:
@@ -324,11 +331,11 @@ class LikelihoodObjective(ObjectiveFunction):
 
     def __init__(
         self,
-        simulator: Callable[[Dict[str, float]], Dict[str, np.ndarray]],
-        measurements_dict: Dict[str, np.ndarray],
-        objectives: List[str],
-        parameter_names: List[str],
-        sigma: Optional[Dict[str, float]] = None,
+        simulator: Callable[[dict[str, float]], dict[str, np.ndarray]],
+        measurements_dict: dict[str, np.ndarray],
+        objectives: list[str],
+        parameter_names: list[str],
+        sigma: dict[str, float] | None = None,
     ):
         super().__init__(parameter_names)
         self.simulator = simulator
@@ -378,7 +385,7 @@ class LikelihoodObjective(ObjectiveFunction):
                 n_total += n
 
             return neg_log_likelihood if n_total > 0 else 1e10
-        except Exception:
+        except Exception:  # noqa: BLE001 - an unevaluable candidate is penalised, not raised
             return 1e10
 
 
@@ -396,10 +403,10 @@ class CustomObjective(ObjectiveFunction):
 
     def __init__(
         self,
-        simulator: Callable[[Dict[str, float]], Dict[str, np.ndarray]],
-        measurements_dict: Dict[str, np.ndarray],
-        objectives: List[str],
-        parameter_names: List[str],
+        simulator: Callable[[dict[str, float]], dict[str, np.ndarray]],
+        measurements_dict: dict[str, np.ndarray],
+        objectives: list[str],
+        parameter_names: list[str],
         custom_func: Callable[[np.ndarray, np.ndarray], float],
     ):
         super().__init__(parameter_names)
@@ -434,16 +441,16 @@ class CustomObjective(ObjectiveFunction):
                 n_valid += 1
 
             return total_error / n_valid if n_valid > 0 else 1e10
-        except Exception:
+        except Exception:  # noqa: BLE001 - an unevaluable candidate is penalised, not raised
             return 1e10
 
 
 def create_objective(
     objective_type: str,
-    simulator: Callable[[Dict[str, float]], Dict[str, np.ndarray]],
-    measurements_dict: Dict[str, np.ndarray],
-    objectives: List[str],
-    parameter_names: List[str],
+    simulator: Callable[[dict[str, float]], dict[str, np.ndarray]],
+    measurements_dict: dict[str, np.ndarray],
+    objectives: list[str],
+    parameter_names: list[str],
     **kwargs: Any,
 ) -> ObjectiveFunction:
     """

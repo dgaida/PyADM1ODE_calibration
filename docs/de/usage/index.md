@@ -1,27 +1,31 @@
 # Nutzung
 
-Willkommen im Nutzungs-Leitfaden für PyADM1ODE_calibration. Hier erfahren Sie, wie Sie die Kernfunktionalitäten des Pakets in Ihren Workflow integrieren.
+## Die beiden Workflows
 
-## Typische Workflows
+**Initialkalibrierung** passt ein neues Modell einmalig an ein historisches Zeitfenster an. Globaler
+Optimierer, Train/Test-Aufteilung, Sensitivitätsanalyse. Siehe
+[Kalibrierung](calibration.md#initialkalibrierung).
 
-### 1. Initialkalibrierung
-Wird verwendet, um ein neues Anlagenmodell an historische Daten anzupassen.
-[Mehr erfahren](calibration.md#initialkalibrierung)
+**Online-Rekalibrierung** hält ein laufendes Modell nach. Lokaler Optimierer, begrenzte
+Schrittweite, Varianzauslöser. Siehe [Kalibrierung](calibration.md#online-rekalibrierung).
 
-### 2. Online-Monitoring & Rekalibrierung
-Kontinuierliche Überwachung der Modellgüte und automatische Parameteranpassung.
-[Mehr erfahren](calibration.md#online-rekalibrierung)
+## Paketaufbau
 
-### 3. Datenmanagement
-Effizientes Laden, Validieren und Speichern von Messwerten.
-[API Referenz zu IO](../api/io.md)
+| Modul | Inhalt |
+|-------|--------|
+| `pyadm1ode_calibration.calibration` | `Calibrator`, `InitialCalibrator`, `OnlineCalibrator`, `CalibrationResult`, Grenzen |
+| `pyadm1ode_calibration.calibration.optimization` | Optimierer, Zielfunktionen, Nebenbedingungen |
+| `pyadm1ode_calibration.calibration.analysis` | Sensitivität und Identifizierbarkeit |
+| `pyadm1ode_calibration.io.loaders` | `MeasurementData`, `CSVHandler`, `PlantSchema`, `MeasurementBuilder` |
+| `pyadm1ode_calibration.io.persistence` | `Database`, ORM-Modelle, Repositories |
+| `pyadm1ode_calibration.io.validation` | `DataValidator`, `OutlierDetector` |
+| `pyadm1ode_calibration.plants` | Aufbauroutinen für Anlagentopologien |
 
-## Code-Struktur
+Die gebräuchlichsten Namen sind auf oberster Ebene erneut exportiert,
+`from pyadm1ode_calibration import Calibrator, MeasurementData` funktioniert also.
 
-- **`calibration`**: Enthält die Optimierungslogik und Kalibratoren.  
-- **`io`**: Behandelt den Datenimport (CSV, Datenbank) und Validierung.  
-- **`optimization`**: Implementiert verschiedene Optimierungsalgorithmen.  
+## Weiterlesen
 
-## Beispiele
-
-Praktische Beispiele finden Sie im [Beispiele-Bereich](../examples/index.md) oder in den interaktiven [Tutorials](../tutorials/index.md).
+- [Tutorials](../tutorials/index.md) für die Notebook-Reihe.
+- [Beispiele](../examples/index.md) für ausführbare Skripte.
+- [API-Referenz](../api/index.md) für Signaturen.

@@ -65,8 +65,14 @@ docs = [
     "mike>=2.0.0",
     "interrogate>=1.7.0",
 ]
+# Only needed for method="particle_swarm"; every other optimizer comes
+# from scipy. Both the 0.6 tuple API and the 1.0 OptimizeResult are
+# supported, so the lower bound stays loose.
+pso = [
+    "pyswarm",
+]
 all = [
-    "pyadm1ode_calibration[dev,docs]",
+    "pyadm1ode_calibration[dev,docs,pso]",
 ]
 
 [project.urls]
@@ -76,7 +82,10 @@ Documentation = "https://github.com/dgaida/PyADM1ODE_calibration#readme"
 "Bug Tracker" = "https://github.com/dgaida/PyADM1ODE_calibration/issues"
 
 [tool.setuptools]
-packages = {find = {}}
+# Ship the library only. Auto-discovery without a filter also picked up
+# data/, docs/, output/, scripts/ and tests/ (see the old top_level.txt),
+# and would package anything else that carries an __init__.py.
+packages = {find = {include = ["pyadm1ode_calibration*"]}}
 
 [tool.setuptools.package-data]
 pyadm1ode_calibration = ["py.typed"]
@@ -100,6 +109,16 @@ exclude = '''
 [tool.ruff]
 line-length = 127
 target-version = "py310"
+
+[tool.ruff.lint.per-file-ignores]
+# PlantSchema reports every defect in a schema file as ValueError, including the ones
+# found with isinstance. That contract is what the loaders and their tests rely on, so
+# TRY004's TypeError would be a breaking change for a purely stylistic gain.
+"pyadm1ode_calibration/io/loaders/schema.py" = ["TRY004"]
+# The window bounds in these tests are naive on purpose: handling naive input is the
+# behaviour under test, so DTZ001 would ask us to delete the test case.
+"tests/unit/test_io/test_builder.py" = ["DTZ001"]
+"tests/unit/test_io/test_tabular_csv.py" = ["DTZ001"]
 
 [tool.mypy]
 python_version = "3.10"

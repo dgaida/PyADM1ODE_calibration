@@ -6,12 +6,12 @@ for PostgreSQL database connections.
 """
 
 import os
-from typing import Optional
+from dataclasses import dataclass
+from urllib.parse import quote_plus
+
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy.pool import QueuePool
-from urllib.parse import quote_plus
-from dataclasses import dataclass
 
 
 @dataclass
@@ -49,7 +49,7 @@ class ConnectionManager:
         config (Optional[DatabaseConfig]): Structured configuration object.
     """
 
-    def __init__(self, connection_string: Optional[str] = None, config: Optional[DatabaseConfig] = None):
+    def __init__(self, connection_string: str | None = None, config: DatabaseConfig | None = None):
         if connection_string:
             self.connection_string = connection_string
         elif config:

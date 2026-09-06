@@ -1,22 +1,23 @@
 # Tutorials
 
-Lernen Sie PyADM1ODE_calibration durch praktische, interaktive Beispiele kennen.
+Eine Reihe von sieben Notebooks in `notebooks/`, gedacht zum Durcharbeiten in dieser Reihenfolge.
+Jedes läuft für sich und erzeugt seine Daten selbst, ein Anlagenzugang ist also nicht nötig.
 
-## Interaktive Notebooks
+| Notebook | Frage, die es beantwortet |
+|----------|---------------------------|
+| [`00_quickstart`](https://colab.research.google.com/github/dgaida/PyADM1ODE_calibration/blob/main/notebooks/00_quickstart.ipynb) | Der gesamte Ablauf in einem Durchgang |
+| `01_explore_measurements` | Was steckt in den Daten, und wo sind sie defekt? |
+| `02_model_vs_measurement` | Wie weit liegt ein unkalibriertes Modell daneben? |
+| `03_first_calibration` | Einen Parameter anpassen, bis die Kurven zusammenfallen |
+| `04_which_parameters_matter` | Welche Parameter lohnen sich überhaupt? |
+| `05_train_test_and_residuals` | Hält die Anpassung auf ungesehenen Daten? |
+| `06_online_recalibration` | Einer driftenden Anlage folgen |
 
-Die folgenden Tutorials können direkt in **Google Colab** ausgeführt werden, ohne dass eine lokale Installation erforderlich ist.
+Notebook 00 läuft ohne lokale Installation in **Google Colab**:
 
-### 1. Grundlagen der Kalibrierung
-In diesem Tutorial führen wir Sie durch den kompletten Workflow einer Initialkalibrierung:  
-- Installation der Abhängigkeiten (inkl. Mono/.NET)  
-- Laden und Vorverarbeiten von Messdaten  
-- Konfiguration des Optimierers  
-- Ausführen der Kalibrierung und Analyse der Ergebnisse  
+[![Open In Colab](../assets/colab-badge.svg)](https://colab.research.google.com/github/dgaida/PyADM1ODE_calibration/blob/main/notebooks/00_quickstart.ipynb)
 
-[![Open In Colab](../assets/colab-badge.svg)](https://colab.research.google.com/github/dgaida/PyADM1ODE_calibration/blob/main/notebooks/calibration_tutorial.ipynb)
+Die übrigen setzen eine lokale Installation voraus. Sie teilen sich `notebooks/demo_plant.py`, das
+die kleine Anlage aufbaut und die Messreihen erzeugt.
 
-## Lokale Tutorials
-
-Alternativ finden Sie alle Notebooks im Ordner \`notebooks/\` des Repositories.
-
-- [Kalibrierungs-Workflow](calibration.md): Eine detaillierte Text-Version des Tutorials.  
+- [Kalibrierungs-Tutorial](calibration.md): derselbe Weg als Textfassung.

@@ -14,11 +14,12 @@ Run with:
     pytest tests/unit/test_io/test_csv_handler.py -v
 """
 
-import pytest
-import pandas as pd
-import numpy as np
-import tempfile
 import os
+import tempfile
+
+import numpy as np
+import pandas as pd
+import pytest
 
 from pyadm1ode_calibration import CSVHandler
 
@@ -609,7 +610,7 @@ class TestEdgeCases:
         df = pd.DataFrame(columns=["substrate_name", "TS", "VS"])
         df.to_csv(temp_csv_file, index=False)
 
-        with pytest.raises(Exception):  # Should raise IndexError or similar
+        with pytest.raises(IndexError):
             handler.load_substrate_lab_data(temp_csv_file, validate=False)
 
     def test_load_csv_missing_columns(self, handler, temp_csv_file):
@@ -617,8 +618,10 @@ class TestEdgeCases:
         df = pd.DataFrame({"col1": [1, 2], "col2": [3, 4]})
         df.to_csv(temp_csv_file, index=False)
 
-        # Should still work, just with no recognized parameters
-        data = handler.load_substrate_lab_data(temp_csv_file, substrate_name="Test", validate=False)
+        # Should still work, just with no recognized parameters. Two rows in a lab
+        # report are ambiguous, so the handler says which one it took.
+        with pytest.warns(UserWarning, match="using first row only"):
+            data = handler.load_substrate_lab_data(temp_csv_file, substrate_name="Test", validate=False)
         assert data["substrate_name"] == "Test"
 
     def test_load_csv_with_special_characters(self, handler, temp_csv_file):

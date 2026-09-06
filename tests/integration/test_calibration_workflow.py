@@ -1,7 +1,9 @@
-import pytest
+from unittest.mock import MagicMock
+
 import numpy as np
 import pandas as pd
-from unittest.mock import MagicMock
+import pytest
+
 from pyadm1ode_calibration.calibration.methods.initial import InitialCalibrator
 from pyadm1ode_calibration.io.loaders.measurement_data import MeasurementData
 
@@ -51,5 +53,5 @@ class TestInitialCalibrationWorkflow:
             max_iterations=2,
         )
 
-        assert result.success or True  # Success depends on optimizer convergence
+        # Convergence in two iterations is not guaranteed, the parameter set is.
         assert "k_dis" in result.parameters

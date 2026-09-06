@@ -49,6 +49,25 @@ plugins:
         - locale: en
           name: English
           build: true
+          nav_translations:
+            Erste Schritte: Getting Started
+            Konfiguration: Configuration
+            Tutorials: Tutorials
+            Überblick: Overview
+            Kalibrierungs-Tutorial: Calibration Tutorial
+            Beispiele: Examples
+            Übersicht: Overview
+            Kalibrierungs-Workflow: Calibration Workflow
+            Nutzung: Usage
+            Kalibrierung: Calibration
+            API-Referenz: API Reference
+            Optimierung: Optimization
+            Architektur: Architecture
+            Entwicklung: Development
+            Docstring-Guide: Docstring Guide
+            Metriken: Metrics
+            Versionierung: Versioning
+            Fehlerbehebung: Troubleshooting
   - mkdocstrings:
       handlers:
         python:

@@ -30,13 +30,16 @@ Usage:
 """
 
 import sys
+
+if hasattr(sys.stdout, "reconfigure"):
+    sys.stdout.reconfigure(encoding="utf-8", errors="replace")
+
 from pathlib import Path
 
-# Add pyadm1 to path if needed
-# sys.path.insert(0, str(Path(__file__).parent.parent))
+# generate_measurement_data lives in scripts/, which is not an installed package.
+sys.path.insert(0, str(Path(__file__).resolve().parent.parent / "scripts"))
 
-from pyadm1ode_calibration import create_default_bounds
-from pyadm1ode_calibration import MeasurementData
+from pyadm1ode_calibration import MeasurementData, create_default_bounds
 
 
 def example_parameter_bounds():
@@ -399,7 +402,7 @@ def main():
 
         print("\n✓ All examples completed successfully!")
 
-    except Exception as e:
+    except Exception as e:  # noqa: BLE001 - a demo entry point reports any failure
         print(f"\n✗ Error: {e}")
         import traceback
 

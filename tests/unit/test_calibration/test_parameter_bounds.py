@@ -1,9 +1,10 @@
-import pytest
 import numpy as np
+import pytest
+
 from pyadm1ode_calibration.calibration.parameter_bounds import (
+    BoundType,
     ParameterBound,
     ParameterBounds,
-    BoundType,
     create_default_bounds,
 )
 

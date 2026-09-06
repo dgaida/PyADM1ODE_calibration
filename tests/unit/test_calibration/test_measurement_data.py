@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """
 Unit tests
 
@@ -8,8 +7,9 @@ Unit tests
 - Test gap filling
 """
 
-import pandas as pd
 import numpy as np
+import pandas as pd
+
 from pyadm1ode_calibration import (
     MeasurementData,
     OutlierDetector,

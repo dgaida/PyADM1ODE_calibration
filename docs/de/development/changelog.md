@@ -1,19 +1,16 @@
 # Changelog
 
-Alle wichtigen Änderungen an diesem Projekt werden in dieser Datei festgehalten.
+Commit-Nachrichten folgen [Conventional Commits](https://www.conventionalcommits.org/en/v1.0.0/),
+und `git-cliff` erzeugt daraus bei jedem Release die `CHANGELOG.md`.
 
-## Workflow für Mitwirkende
-
-Wir verwenden [Conventional Commits](https://www.conventionalcommits.org/de/v1.0.0/), um das Changelog automatisch zu generieren. Bitte strukturieren Sie Ihre Commit-Nachrichten wie folgt:
-
-- \`feat: ...\` für neue Features.  
-- \`fix: ...\` für Bugfixes.  
-- \`docs: ...\` für Dokumentationsänderungen.  
-- \`refactor: ...\` für Code-Refactoring ohne Funktionsänderung.  
-
-## Automatische Generierung
-
-Das Changelog wird bei jedem Release mittels \`git-cliff\` aktualisiert und im Repository unter \`CHANGELOG.md\` gespeichert. Die Web-Version wird automatisch synchronisiert.
+| Präfix | Verwendung |
+|--------|------------|
+| `feat:` | neue Funktionalität |
+| `fix:` | Fehlerbehebungen |
+| `docs:` | nur Dokumentation |
+| `refactor:` | Umbau ohne Verhaltensänderung |
+| `test:` | nur Tests |
+| `chore:` | Build, CI, Abhängigkeiten |
 
 ---
 

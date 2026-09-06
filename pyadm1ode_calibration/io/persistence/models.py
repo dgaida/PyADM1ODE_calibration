@@ -1,8 +1,9 @@
 """Database models module."""
 
-from datetime import datetime
-from sqlalchemy import Column, Integer, Float, String, DateTime, Text, Boolean, ForeignKey, Index, JSON
-from sqlalchemy.orm import relationship, declarative_base
+from sqlalchemy import JSON, Boolean, Column, DateTime, Float, ForeignKey, Index, Integer, String, Text
+from sqlalchemy.orm import declarative_base, relationship
+
+from ...timeutils import utc_now
 
 Base = declarative_base()
 
@@ -23,7 +24,7 @@ class Plant(Base):
     T_ad = Column(Float)  # Operating temperature [K]
     P_el_nom = Column(Float)  # Nominal electrical power [kW]
     configuration = Column(JSON)
-    created_at = Column(DateTime, default=datetime.utcnow)
+    created_at = Column(DateTime, default=utc_now)
 
     measurements = relationship("Measurement", back_populates="plant", cascade="all, delete-orphan")
     simulations = relationship("Simulation", back_populates="plant", cascade="all, delete-orphan")
@@ -54,7 +55,7 @@ class Measurement(Base):
 
     # Generic values for other parameters
     values = Column(JSON)
-    created_at = Column(DateTime, default=datetime.utcnow)
+    created_at = Column(DateTime, default=utc_now)
 
     plant = relationship("Plant", back_populates="measurements")
 
@@ -87,7 +88,7 @@ class Simulation(Base):
     status = Column(String(20), default="pending")
     started_at = Column(DateTime)
     completed_at = Column(DateTime)
-    created_at = Column(DateTime, default=datetime.utcnow)
+    created_at = Column(DateTime, default=utc_now)
 
     plant = relationship("Plant", back_populates="simulations")
     time_series = relationship("SimulationTimeSeries", back_populates="simulation", cascade="all, delete-orphan")
@@ -138,7 +139,7 @@ class Calibration(Base):
     data_end = Column(DateTime)
     success = Column(Boolean, default=True)
     message = Column(Text)
-    created_at = Column(DateTime, default=datetime.utcnow)
+    created_at = Column(DateTime, default=utc_now)
 
     plant = relationship("Plant", back_populates="calibrations")
 
@@ -177,6 +178,6 @@ class Substrate(Base):
 
     lab_name = Column(String(100))
     notes = Column(Text)
-    created_at = Column(DateTime, default=datetime.utcnow)
+    created_at = Column(DateTime, default=utc_now)
 
     plant = relationship("Plant", back_populates="substrates")

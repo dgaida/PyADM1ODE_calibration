@@ -13,8 +13,6 @@ class PyADM1CalibrationError(Exception):
     All custom exceptions in this package inherit from this class.
     """
 
-    pass
-
 
 class DataValidationError(PyADM1CalibrationError):
     """
@@ -23,8 +21,6 @@ class DataValidationError(PyADM1CalibrationError):
     This error indicates that the provided measurement data is missing
     required columns, has invalid ranges, or fails quality checks.
     """
-
-    pass
 
 
 class CalibrationError(PyADM1CalibrationError):
@@ -35,8 +31,6 @@ class CalibrationError(PyADM1CalibrationError):
     calibration configurations.
     """
 
-    pass
-
 
 class SimulationError(PyADM1CalibrationError):
     """
@@ -46,8 +40,6 @@ class SimulationError(PyADM1CalibrationError):
     fails to converge or encounters numerical errors during simulation.
     """
 
-    pass
-
 
 class DatabaseError(PyADM1CalibrationError):
     """
@@ -56,5 +48,3 @@ class DatabaseError(PyADM1CalibrationError):
     Includes connection errors, query failures, or schema mismatches
     when interacting with the PostgreSQL persistence layer.
     """
-
-    pass

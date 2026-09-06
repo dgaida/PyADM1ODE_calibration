@@ -6,11 +6,13 @@ by comparing simulated plant outputs with real measurement data using
 various statistical metrics and residual analysis.
 """
 
-import numpy as np
-from typing import Dict, List, Optional, Tuple, Any
-from dataclasses import dataclass, field
-from scipy import stats
 import warnings
+from dataclasses import dataclass, field
+from typing import Any
+
+import numpy as np
+from scipy import stats
+
 from ..exceptions import DataValidationError
 from ..io.loaders.measurement_data import MeasurementData
 
@@ -52,7 +54,7 @@ class ValidationMetrics:
     predictions_mean: float
     predictions_std: float
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> dict[str, Any]:
         """
         Convert metrics to a dictionary.
 
@@ -98,10 +100,10 @@ class ResidualAnalysis:
     objective: str
     residuals: np.ndarray
     standardized_residuals: np.ndarray
-    normality_test: Dict[str, float]
+    normality_test: dict[str, float]
     autocorrelation: float
-    heteroscedasticity_test: Dict[str, float]
-    outlier_indices: List[int] = field(default_factory=list)
+    heteroscedasticity_test: dict[str, float]
+    outlier_indices: list[int] = field(default_factory=list)
 
     def is_normally_distributed(self, alpha: float = 0.05) -> bool:
         """
@@ -153,9 +155,9 @@ class ParameterCorrelation:
     """
 
     correlation_matrix: np.ndarray
-    parameter_names: List[str]
-    high_correlations: List[Tuple[str, str, float]] = field(default_factory=list)
-    vif: Optional[Dict[str, float]] = None
+    parameter_names: list[str]
+    high_correlations: list[tuple[str, str, float]] = field(default_factory=list)
+    vif: dict[str, float] | None = None
 
     def get_correlation(self, param1: str, param2: str) -> float:
         """
@@ -185,17 +187,19 @@ class CalibrationValidator:
         verbose (bool): Whether to enable verbose output. Defaults to True.
     """
 
-    def __init__(self, plant: Any, verbose: bool = True):
+    def __init__(self, plant: Any, verbose: bool = True, time_varying_feed: bool = False):
         self.plant = plant
         self.verbose = verbose
+        self.time_varying_feed = time_varying_feed
 
     def validate(
         self,
-        parameters: Dict[str, float],
+        parameters: dict[str, float],
         measurements: MeasurementData,
-        objectives: Optional[List[str]] = None,
-        simulation_duration: Optional[float] = None,
-    ) -> Dict[str, ValidationMetrics]:
+        objectives: list[str] | None = None,
+        simulation_duration: float | None = None,
+        warmup: MeasurementData | None = None,
+    ) -> dict[str, ValidationMetrics]:
         """
         Validate parameters against measurement data.
 
@@ -204,6 +208,11 @@ class CalibrationValidator:
             measurements (MeasurementData): Reference measurement data.
             objectives (Optional[List[str]]): Variables to validate.
             simulation_duration (Optional[float]): Duration in days.
+            warmup (Optional[MeasurementData]): Window to run before the scored
+                one, so a later stretch of a record is not judged from the
+                plant's initial state. Pass the training window when validating
+                on the test window that follows it; without it the score
+                contains the start-up transient rather than the model error.
 
         Returns:
             Dict[str, ValidationMetrics]: Metrics for each objective.
@@ -211,12 +220,7 @@ class CalibrationValidator:
         if objectives is None:
             objectives = ["Q_ch4", "pH", "VFA"]
 
-        self._apply_parameters(parameters)
-
-        if simulation_duration is None:
-            simulation_duration = len(measurements) * (1.0 / 24.0)
-
-        simulated_outputs = self._simulate_plant(measurements, simulation_duration)
+        simulated_outputs = self._simulate_plant(measurements, parameters, warmup=warmup)
 
         metrics = {}
         for objective in objectives:
@@ -241,9 +245,9 @@ class CalibrationValidator:
     def analyze_residuals(
         self,
         measurements: MeasurementData,
-        simulated: Dict[str, np.ndarray],
-        objectives: Optional[List[str]] = None,
-    ) -> Dict[str, ResidualAnalysis]:
+        simulated: dict[str, np.ndarray],
+        objectives: list[str] | None = None,
+    ) -> dict[str, ResidualAnalysis]:
         """
         Perform detailed residual analysis.
 
@@ -292,11 +296,11 @@ class CalibrationValidator:
 
     def cross_validate(
         self,
-        parameters: Dict[str, float],
+        parameters: dict[str, float],
         measurements: MeasurementData,
         n_folds: int = 5,
-        objectives: Optional[List[str]] = None,
-    ) -> Dict[str, List[ValidationMetrics]]:
+        objectives: list[str] | None = None,
+    ) -> dict[str, list[ValidationMetrics]]:
         """
         Perform k-fold cross-validation.
 
@@ -314,7 +318,7 @@ class CalibrationValidator:
 
         n_samples = len(measurements)
         fold_size = n_samples // n_folds
-        cv_results: Dict[str, List[ValidationMetrics]] = {obj: [] for obj in objectives}
+        cv_results: dict[str, list[ValidationMetrics]] = {obj: [] for obj in objectives}
 
         for fold in range(n_folds):
             start_idx = fold * fold_size
@@ -329,27 +333,107 @@ class CalibrationValidator:
 
         return cv_results
 
-    def _apply_parameters(self, parameters: Dict[str, float]) -> None:
-        """Apply parameters to plant."""
-        for component in self.plant.components.values():
-            if component.component_type.value == "digester":
-                if not hasattr(component, "_calibration_params"):
-                    component._calibration_params = {}
-                component._calibration_params.update(parameters)
+    def _simulate_plant(
+        self,
+        measurements: MeasurementData,
+        parameters: dict[str, float],
+        warmup: MeasurementData | None = None,
+    ) -> dict[str, np.ndarray]:
+        """Run the plant over the measurement window with ``parameters`` applied.
 
-    def _simulate_plant(self, measurements: MeasurementData, duration: float) -> Dict[str, np.ndarray]:
-        """Run plant simulation."""
-        dt = 1.0 / 24.0
-        results = self.plant.simulate(duration=duration, dt=dt, save_interval=dt)
-        return self._extract_outputs_from_results(results)
+        This delegates to :class:`PlantSimulator` on purpose. Validation used to
+        carry its own copy of the setup, and it had drifted: parameters were
+        written to ``_calibration_params``, which pyadm1 only reads for ``k_p``
+        and ``k_L_a`` -- every kinetic rate silently had no effect, so a
+        calibrated parameter set scored exactly like the default one. The
+        simulator writes ``ADM1._kinetic`` where those rates are actually read,
+        applies the substrate feeds from the measurements, and rewinds the plant
+        afterwards.
+        """
+        from .core.simulator import PlantSimulator
 
-    def _extract_outputs_from_results(self, results: List[Dict[str, Any]]) -> Dict[str, np.ndarray]:
-        """Extract relevant outputs."""
-        outputs: Dict[str, List[float]] = {"Q_ch4": [], "pH": [], "VFA": [], "TAC": []}
+        return PlantSimulator(
+            self.plant, verbose=self.verbose, time_varying_feed=self.time_varying_feed
+        ).simulate_with_parameters(parameters, measurements, warmup=warmup)
+
+    def _extract_outputs_from_results(self, results: list[dict[str, Any]]) -> dict[str, np.ndarray]:
+        """Extract canonical observables from a multi-component simulation.
+
+        Mirrors :meth:`PlantSimulator._extract_outputs_from_results`:
+        gas flows aggregate over digesters, power aggregates over CHPs
+        and heating systems, intensive quantities are averaged across
+        digesters, and one gas-storage fill fraction is emitted per
+        digester as ``stored_<digester_id>``.
+        """
+        type_by_id: dict[str, str] = {cid: comp.component_type.value for cid, comp in self.plant.components.items()}
+        digester_ids = [cid for cid, t in type_by_id.items() if t == "digester"]
+
+        scalar_keys = [
+            "Q_ch4",
+            "Q_gas",
+            "Q_co2",
+            "P_el",
+            "P_th",
+            "Q_gas_consumed",
+            "P_aux_heat",
+            "P_th_used",
+            "pH",
+            "VFA",
+            "TAC",
+        ]
+        outputs: dict[str, list[float]] = {k: [] for k in scalar_keys}
+        for cid in digester_ids:
+            outputs[f"stored_{cid}"] = []
+
         for result in results:
-            comp_data = next(iter(result["components"].values()))
-            for key in outputs:
-                outputs[key].append(comp_data.get(key, 0.0))
+            components = result.get("components", {})
+            sums = {
+                "Q_ch4": 0.0,
+                "Q_gas": 0.0,
+                "Q_co2": 0.0,
+                "P_el": 0.0,
+                "P_th": 0.0,
+                "Q_gas_consumed": 0.0,
+                "P_aux_heat": 0.0,
+                "P_th_used": 0.0,
+            }
+            ph_list: list[float] = []
+            vfa_list: list[float] = []
+            tac_list: list[float] = []
+
+            for cid, comp_result in components.items():
+                ctype = type_by_id.get(cid, "")
+                if ctype == "digester":
+                    sums["Q_gas"] += comp_result.get("Q_gas", 0.0)
+                    sums["Q_ch4"] += comp_result.get("Q_ch4", 0.0)
+                    sums["Q_co2"] += comp_result.get("Q_co2", 0.0)
+                    if "pH" in comp_result:
+                        ph_list.append(comp_result["pH"])
+                    if "VFA" in comp_result:
+                        vfa_list.append(comp_result["VFA"])
+                    if "TAC" in comp_result:
+                        tac_list.append(comp_result["TAC"])
+                elif ctype == "chp":
+                    sums["P_el"] += comp_result.get("P_el", 0.0)
+                    sums["P_th"] += comp_result.get("P_th", 0.0)
+                    sums["Q_gas_consumed"] += comp_result.get("Q_gas_consumed", 0.0)
+                elif ctype == "heating":
+                    sums["P_aux_heat"] += comp_result.get("P_aux_heat", 0.0)
+                    sums["P_th_used"] += comp_result.get("P_th_used", 0.0)
+
+            for k, v in sums.items():
+                outputs[k].append(v)
+            outputs["pH"].append(float(np.mean(ph_list)) if ph_list else 7.0)
+            outputs["VFA"].append(float(np.mean(vfa_list)) if vfa_list else 0.0)
+            outputs["TAC"].append(float(np.mean(tac_list)) if tac_list else 0.0)
+
+            for cid in digester_ids:
+                gs = components.get(cid, {}).get("gas_storage", {})
+                vol = gs.get("stored_volume_m3", float("nan"))
+                cap = float(self.plant.components[cid].V_gas) if hasattr(self.plant.components[cid], "V_gas") else float("nan")
+                frac = vol / cap if cap and cap > 0 else float("nan")
+                outputs[f"stored_{cid}"].append(frac)
+
         return {k: np.array(v) for k, v in outputs.items()}
 
     def _extract_measurements(self, measurements: MeasurementData, objective: str) -> np.ndarray:
@@ -363,7 +447,7 @@ class CalibrationValidator:
 
         return series.values
 
-    def _align_arrays(self, observed: np.ndarray, predicted: np.ndarray) -> Tuple[np.ndarray, np.ndarray]:
+    def _align_arrays(self, observed: np.ndarray, predicted: np.ndarray) -> tuple[np.ndarray, np.ndarray]:
         """Align observed and predicted arrays."""
         min_len = min(len(observed), len(predicted))
         observed, predicted = observed[:min_len], predicted[:min_len]
@@ -385,7 +469,13 @@ class CalibrationValidator:
         r2 = float(1 - (ss_res / ss_tot) if ss_tot > 0 else 0.0)
 
         pbias = float((np.sum(residuals) / np.sum(observed)) * 100 if np.sum(observed) != 0 else 0.0)
-        correlation = float(np.corrcoef(observed, predicted)[0, 1] if n > 1 else 0.0)
+
+        # Correlation needs both series to vary. A flat channel, a mocked simulator or
+        # a controlled quantity like the digester temperature makes numpy divide by a
+        # zero standard deviation and answer NaN, which would then be reported as if
+        # it were a measurement.
+        can_correlate = n > 1 and obs_std > 0 and pred_std > 0
+        correlation = float(np.corrcoef(observed, predicted)[0, 1]) if can_correlate else 0.0
 
         nonzero = observed != 0
         mape = float(np.mean(np.abs(residuals[nonzero] / observed[nonzero])) * 100 if np.any(nonzero) else 0.0)
@@ -413,12 +503,12 @@ class CalibrationValidator:
         std = np.std(residuals)
         return (residuals - np.mean(residuals)) / std if std > 0 else np.zeros_like(residuals)
 
-    def _test_normality(self, residuals: np.ndarray) -> Dict[str, float]:
+    def _test_normality(self, residuals: np.ndarray) -> dict[str, float]:
         """Test for residual normality."""
         try:
             stat, p = stats.shapiro(residuals)
             return {"statistic": float(stat), "p_value": float(p)}
-        except Exception:
+        except ValueError:
             return {"statistic": 0.0, "p_value": 1.0}
 
     def _calculate_autocorrelation(self, residuals: np.ndarray) -> float:
@@ -426,14 +516,21 @@ class CalibrationValidator:
         if len(residuals) < 2:
             return 0.0
         res_centered = residuals - np.mean(residuals)
+        # Residuals that never move have no autocorrelation to speak of.
+        if np.std(res_centered[:-1]) == 0 or np.std(res_centered[1:]) == 0:
+            return 0.0
         return float(np.corrcoef(res_centered[:-1], res_centered[1:])[0, 1])
 
-    def _test_heteroscedasticity(self, residuals: np.ndarray, predicted: np.ndarray) -> Dict[str, float]:
+    def _test_heteroscedasticity(self, residuals: np.ndarray, predicted: np.ndarray) -> dict[str, float]:
         """Test for heteroscedasticity."""
+        squared = residuals**2
+        if len(residuals) < 2 or np.std(squared) == 0 or np.std(predicted) == 0:
+            # Nothing to test: constant residuals or a constant prediction.
+            return {"statistic": 0.0, "p_value": 1.0}
         try:
-            corr = np.corrcoef(residuals**2, predicted)[0, 1]
+            corr = np.corrcoef(squared, predicted)[0, 1]
             stat = len(residuals) * corr**2
             p = 1 - stats.chi2.cdf(stat, df=1)
             return {"statistic": float(stat), "p_value": float(p)}
-        except Exception:
+        except (ValueError, IndexError):
             return {"statistic": 0.0, "p_value": 1.0}

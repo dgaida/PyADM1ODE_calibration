@@ -1,6 +1,8 @@
-import pytest
-import pandas as pd
 from unittest.mock import MagicMock
+
+import pandas as pd
+import pytest
+
 from pyadm1ode_calibration.calibration.core.simulator import PlantSimulator
 from pyadm1ode_calibration.io.loaders.measurement_data import MeasurementData
 

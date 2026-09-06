@@ -35,8 +35,8 @@ Example:
 """
 
 from dataclasses import dataclass
-from typing import Dict, Optional, Tuple, List
 from enum import Enum
+
 import numpy as np
 
 
@@ -182,7 +182,7 @@ class ParameterBounds:
 
     def __init__(self):
         """Initialize empty parameter bounds manager."""
-        self.bounds: Dict[str, ParameterBound] = {}
+        self.bounds: dict[str, ParameterBound] = {}
 
     def add_bound(
         self,
@@ -222,7 +222,7 @@ class ParameterBounds:
             substrate_dependent=substrate_dependent,
         )
 
-    def get_bounds(self, name: str) -> Optional[ParameterBound]:
+    def get_bounds(self, name: str) -> ParameterBound | None:
         """
         Get bounds for parameter.
 
@@ -234,7 +234,7 @@ class ParameterBounds:
         """
         return self.bounds.get(name)
 
-    def get_bounds_tuple(self, name: str) -> Optional[Tuple[float, float]]:
+    def get_bounds_tuple(self, name: str) -> tuple[float, float] | None:
         """
         Get bounds as tuple (lower, upper).
 
@@ -299,7 +299,7 @@ class ParameterBounds:
             return 0.0
         return bound.calculate_penalty(value, penalty_type)
 
-    def calculate_total_penalty(self, parameters: Dict[str, float], penalty_type: str = "quadratic") -> float:
+    def calculate_total_penalty(self, parameters: dict[str, float], penalty_type: str = "quadratic") -> float:
         """
         Calculate total penalty for all parameters.
 
@@ -318,7 +318,7 @@ class ParameterBounds:
             total_penalty += penalty
         return total_penalty
 
-    def validate_parameters(self, parameters: Dict[str, float], raise_on_invalid: bool = False) -> Tuple[bool, List[str]]:
+    def validate_parameters(self, parameters: dict[str, float], raise_on_invalid: bool = False) -> tuple[bool, list[str]]:
         """
         Validate all parameters against bounds.
 
@@ -345,7 +345,7 @@ class ParameterBounds:
 
         return (len(errors) == 0, errors)
 
-    def get_default_values(self, parameter_names: List[str]) -> Dict[str, float]:
+    def get_default_values(self, parameter_names: list[str]) -> dict[str, float]:
         """
         Get default values for parameters.
 
@@ -438,9 +438,9 @@ def create_default_bounds() -> ParameterBounds:
     # Hydrolysis rates [1/d] - substrate dependent
     bounds.add_bound(
         "k_hyd_ch",
-        lower=5.0,
+        lower=1.0,
         upper=15.0,
-        default=10.0,
+        default=4.0,
         bound_type=BoundType.SOFT,
         penalty_weight=1.0,
         description="Hydrolysis rate for carbohydrates",
@@ -450,9 +450,9 @@ def create_default_bounds() -> ParameterBounds:
 
     bounds.add_bound(
         "k_hyd_pr",
-        lower=5.0,
+        lower=1.0,
         upper=15.0,
-        default=10.0,
+        default=4.0,
         bound_type=BoundType.SOFT,
         penalty_weight=1.0,
         description="Hydrolysis rate for proteins",
@@ -462,9 +462,9 @@ def create_default_bounds() -> ParameterBounds:
 
     bounds.add_bound(
         "k_hyd_li",
-        lower=5.0,
+        lower=1.0,
         upper=15.0,
-        default=10.0,
+        default=4.0,
         bound_type=BoundType.SOFT,
         penalty_weight=1.0,
         description="Hydrolysis rate for lipids",
@@ -778,6 +778,66 @@ def create_default_bounds() -> ParameterBounds:
         bound_type=BoundType.SOFT,
         penalty_weight=0.5,
         description="Decay rate for hydrogen degraders",
+        unit="1/d",
+    )
+
+    # ------------------------------------------------------------------
+    # ADM1da (Schlattmann 2011) parameter names — these are the names
+    # pyadm1.core.adm1 actually reads from ``ADM1._kinetic`` at every
+    # ODE step. The bounds above use the classical ADM1 names
+    # (``k_dis``, ``k_dec_X_*``); pyadm1 ignores those, so calibrating
+    # them was a no-op. The block below adds the actual ADM1da names
+    # with defaults matching ``ADMParams.get_kinetic_params()``.
+    # ------------------------------------------------------------------
+
+    # Two-pool disintegration: slow (PS, particulate substrate) and
+    # fast (PF, particulate feed) pools.
+    bounds.add_bound(
+        "k_dis_PS",
+        lower=0.01,
+        upper=0.20,
+        default=0.04,
+        bound_type=BoundType.SOFT,
+        penalty_weight=2.0,
+        description="Disintegration rate, slow particulate pool (ADM1da)",
+        unit="1/d",
+        substrate_dependent=True,
+    )
+
+    bounds.add_bound(
+        "k_dis_PF",
+        lower=0.1,
+        upper=2.0,
+        default=0.4,
+        bound_type=BoundType.SOFT,
+        penalty_weight=2.0,
+        description="Disintegration rate, fast particulate pool (ADM1da)",
+        unit="1/d",
+        substrate_dependent=True,
+    )
+
+    # Per-organism decay rates [1/d] — pyadm1 reads ``k_dec_<group>``
+    # without the ``X_`` prefix used in the classical-ADM1 bounds above.
+    for group in ("su", "aa", "fa", "c4", "pro", "h2"):
+        bounds.add_bound(
+            f"k_dec_{group}",
+            lower=0.01,
+            upper=0.04,
+            default=0.02,
+            bound_type=BoundType.SOFT,
+            penalty_weight=0.5,
+            description=f"Decay rate for {group} degraders (ADM1da)",
+            unit="1/d",
+        )
+    # Acetate decay is doubled in ADM1da (Schlattmann 2011): 0.04 /d.
+    bounds.add_bound(
+        "k_dec_ac",
+        lower=0.02,
+        upper=0.08,
+        default=0.04,
+        bound_type=BoundType.SOFT,
+        penalty_weight=0.5,
+        description="Decay rate for acetate degraders (ADM1da: 0.04 /d)",
         unit="1/d",
     )
 

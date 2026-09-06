@@ -1,11 +1,13 @@
 """Optimization module."""
 
-from abc import ABC, abstractmethod
-from typing import Dict, List, Optional, Tuple, Callable, Any
-from dataclasses import dataclass, field
-import numpy as np
-from scipy.optimize import differential_evolution, minimize, OptimizeResult
 import time
+from abc import ABC, abstractmethod
+from collections.abc import Callable
+from dataclasses import dataclass, field
+from typing import Any
+
+import numpy as np
+from scipy.optimize import OptimizeResult, differential_evolution, minimize
 
 
 @dataclass
@@ -34,14 +36,14 @@ class OptimizationResult:
     nit: int
     nfev: int
     message: str
-    parameter_names: List[str]
-    parameter_dict: Dict[str, float] = field(default_factory=dict)
-    history: List[Dict[str, Any]] = field(default_factory=list)
+    parameter_names: list[str]
+    parameter_dict: dict[str, float] = field(default_factory=dict)
+    history: list[dict[str, Any]] = field(default_factory=list)
     execution_time: float = 0.0
 
     @classmethod
     def from_scipy_result(
-        cls, result: OptimizeResult, parameter_names: List[str], execution_time: float, history: Optional[List] = None
+        cls, result: OptimizeResult, parameter_names: list[str], execution_time: float, history: list | None = None
     ) -> "OptimizationResult":
         """
         Create an OptimizationResult from a scipy OptimizeResult.
@@ -87,7 +89,7 @@ class Optimizer(ABC):
 
     def __init__(
         self,
-        bounds: Dict[str, Tuple[float, float]],
+        bounds: dict[str, tuple[float, float]],
         max_iterations: int = 100,
         tolerance: float = 1e-6,
         verbose: bool = True,
@@ -101,13 +103,13 @@ class Optimizer(ABC):
         self.bounds_array = np.array([bounds[name] for name in self.parameter_names])
 
         # History tracking
-        self.history: List[Dict[str, Any]] = []
+        self.history: list[dict[str, Any]] = []
         self._best_value = float("inf")
         self._n_evaluations = 0
 
     @abstractmethod
     def optimize(
-        self, objective_func: Callable[[np.ndarray], float], initial_guess: Optional[np.ndarray] = None
+        self, objective_func: Callable[[np.ndarray], float], initial_guess: np.ndarray | None = None
     ) -> OptimizationResult:
         """
         Run the optimization process.
@@ -119,7 +121,6 @@ class Optimizer(ABC):
         Returns:
             OptimizationResult: The result of the optimization.
         """
-        pass
 
     def _wrap_objective(self, objective_func: Callable[[np.ndarray], float]) -> Callable[[np.ndarray], float]:
         """
@@ -148,7 +149,10 @@ class Optimizer(ABC):
                 self._best_value = value
                 if self.verbose:
                     param_str = ", ".join([f"{name}={val:.4f}" for name, val in param_dict.items()])
-                    print(f"  Iteration {self._n_evaluations}: f={value:.6f} | {param_str}")
+                    # Note: _n_evaluations counts function evaluations,
+                    # not optimizer iterations. For DE these differ by a
+                    # factor of popsize * n_params per generation.
+                    print(f"  Eval {self._n_evaluations}: f={value:.6f} | {param_str}")
 
             return value
 
@@ -190,13 +194,9 @@ class Optimizer(ABC):
 class GradientFreeOptimizer(Optimizer):
     """Base class for gradient-free optimization methods."""
 
-    pass
-
 
 class GradientBasedOptimizer(Optimizer):
     """Base class for gradient-based optimization methods."""
-
-    pass
 
 
 class DifferentialEvolutionOptimizer(GradientFreeOptimizer):
@@ -220,15 +220,15 @@ class DifferentialEvolutionOptimizer(GradientFreeOptimizer):
 
     def __init__(
         self,
-        bounds: Dict[str, Tuple[float, float]],
+        bounds: dict[str, tuple[float, float]],
         max_iterations: int = 100,
         tolerance: float = 1e-6,
         verbose: bool = True,
         population_size: int = 15,
         strategy: str = "best1bin",
-        mutation: Tuple[float, float] = (0.5, 1.0),
+        mutation: tuple[float, float] = (0.5, 1.0),
         recombination: float = 0.7,
-        seed: Optional[int] = None,
+        seed: int | None = None,
     ):
         super().__init__(bounds, max_iterations, tolerance, verbose)
         self.population_size = population_size
@@ -238,7 +238,7 @@ class DifferentialEvolutionOptimizer(GradientFreeOptimizer):
         self.seed = seed
 
     def optimize(
-        self, objective_func: Callable[[np.ndarray], float], initial_guess: Optional[np.ndarray] = None
+        self, objective_func: Callable[[np.ndarray], float], initial_guess: np.ndarray | None = None
     ) -> OptimizationResult:
         """
         Run differential evolution optimization.
@@ -290,7 +290,7 @@ class ParticleSwarmOptimizer(GradientFreeOptimizer):
 
     def __init__(
         self,
-        bounds: Dict[str, Tuple[float, float]],
+        bounds: dict[str, tuple[float, float]],
         max_iterations: int = 100,
         tolerance: float = 1e-6,
         verbose: bool = True,
@@ -306,7 +306,7 @@ class ParticleSwarmOptimizer(GradientFreeOptimizer):
         self.phig = phig
 
     def optimize(
-        self, objective_func: Callable[[np.ndarray], float], initial_guess: Optional[np.ndarray] = None
+        self, objective_func: Callable[[np.ndarray], float], initial_guess: np.ndarray | None = None
     ) -> OptimizationResult:
         """Run particle swarm optimization."""
         try:
@@ -324,7 +324,7 @@ class ParticleSwarmOptimizer(GradientFreeOptimizer):
         lb = self.bounds_array[:, 0]
         ub = self.bounds_array[:, 1]
 
-        xopt, fopt = pso(
+        raw = pso(
             wrapped_objective,
             lb,
             ub,
@@ -337,14 +337,29 @@ class ParticleSwarmOptimizer(GradientFreeOptimizer):
         )
 
         execution_time = time.time() - start_time
-        result = OptimizeResult(
-            x=xopt,
-            fun=fopt,
-            success=True,
-            nit=self.max_iterations,
-            nfev=len(self.history),
-            message="Optimization terminated successfully",
-        )
+
+        # pyswarm changed its return contract: 0.6 handed back ``(xopt, fopt)``,
+        # 1.0 returns a scipy-style OptimizeResult. Accept both so the method
+        # does not depend on which release happens to be installed.
+        if isinstance(raw, tuple):
+            xopt, fopt = raw
+            result = OptimizeResult(
+                x=np.asarray(xopt, dtype=float),
+                fun=float(fopt),
+                success=True,
+                nit=self.max_iterations,
+                nfev=len(self.history),
+                message="Optimization terminated successfully",
+            )
+        else:
+            result = OptimizeResult(
+                x=np.asarray(raw.x, dtype=float),
+                fun=float(raw.fun),
+                success=bool(getattr(raw, "success", True)),
+                nit=int(getattr(raw, "nit", self.max_iterations)),
+                nfev=len(self.history) or int(getattr(raw, "nfev", 0)),
+                message=str(getattr(raw, "message", "Optimization terminated successfully")),
+            )
         return OptimizationResult.from_scipy_result(result, self.parameter_names, execution_time, self.history)
 
 
@@ -365,7 +380,7 @@ class NelderMeadOptimizer(GradientFreeOptimizer):
 
     def __init__(
         self,
-        bounds: Dict[str, Tuple[float, float]],
+        bounds: dict[str, tuple[float, float]],
         max_iterations: int = 100,
         tolerance: float = 1e-6,
         verbose: bool = True,
@@ -375,7 +390,7 @@ class NelderMeadOptimizer(GradientFreeOptimizer):
         self.adaptive = adaptive
 
     def optimize(
-        self, objective_func: Callable[[np.ndarray], float], initial_guess: Optional[np.ndarray] = None
+        self, objective_func: Callable[[np.ndarray], float], initial_guess: np.ndarray | None = None
     ) -> OptimizationResult:
         """
         Run Nelder-Mead optimization.
@@ -430,7 +445,7 @@ class PowellOptimizer(GradientFreeOptimizer):
     """
 
     def optimize(
-        self, objective_func: Callable[[np.ndarray], float], initial_guess: Optional[np.ndarray] = None
+        self, objective_func: Callable[[np.ndarray], float], initial_guess: np.ndarray | None = None
     ) -> OptimizationResult:
         """Run Powell optimization."""
         if initial_guess is None:
@@ -477,7 +492,7 @@ class LBFGSBOptimizer(GradientBasedOptimizer):
 
     def __init__(
         self,
-        bounds: Dict[str, Tuple[float, float]],
+        bounds: dict[str, tuple[float, float]],
         max_iterations: int = 100,
         tolerance: float = 1e-6,
         verbose: bool = True,
@@ -487,7 +502,7 @@ class LBFGSBOptimizer(GradientBasedOptimizer):
         self.gtol = gtol
 
     def optimize(
-        self, objective_func: Callable[[np.ndarray], float], initial_guess: Optional[np.ndarray] = None
+        self, objective_func: Callable[[np.ndarray], float], initial_guess: np.ndarray | None = None
     ) -> OptimizationResult:
         """
         Run L-BFGS-B optimization.
@@ -532,17 +547,17 @@ class SLSQPOptimizer(GradientBasedOptimizer):
 
     def __init__(
         self,
-        bounds: Dict[str, Tuple[float, float]],
+        bounds: dict[str, tuple[float, float]],
         max_iterations: int = 100,
         tolerance: float = 1e-6,
         verbose: bool = True,
-        constraints: Optional[List] = None,
+        constraints: list | None = None,
     ):
         super().__init__(bounds, max_iterations, tolerance, verbose)
         self.constraints = constraints or []
 
     def optimize(
-        self, objective_func: Callable[[np.ndarray], float], initial_guess: Optional[np.ndarray] = None
+        self, objective_func: Callable[[np.ndarray], float], initial_guess: np.ndarray | None = None
     ) -> OptimizationResult:
         """Run SLSQP optimization."""
         if initial_guess is None:
@@ -570,7 +585,7 @@ class SLSQPOptimizer(GradientBasedOptimizer):
 
 
 def create_optimizer(
-    method: str, bounds: Dict[str, Tuple[float, float]], max_iterations: int = 100, verbose: bool = True, **kwargs
+    method: str, bounds: dict[str, tuple[float, float]], max_iterations: int = 100, verbose: bool = True, **kwargs
 ) -> Optimizer:
     """
     Factory function to create optimizer instances.

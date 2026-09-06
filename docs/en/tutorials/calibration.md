@@ -1,37 +1,42 @@
 # Calibration Tutorial
 
-This tutorial describes the basic steps for calibrating an ADM1 model.
+The short version of notebooks 01 to 03.
 
-## 1. Data Preparation
-
-Measurement data must be available as time series. The `MeasurementData` object expects column names corresponding to ADM1 state variables.
+## 1. Load and clean the data
 
 ```python
-from pyadm1ode_calibration.io.loaders import MeasurementData
+from pyadm1ode_calibration import MeasurementData
+
 measurements = MeasurementData.from_csv("data.csv")
+measurements.remove_outliers(method="zscore", threshold=3.0)
+measurements.fill_gaps(method="interpolate", limit=3)
 ```
 
-## 2. Initializing the Calibrator
+The index must be a timestamp, and the columns carry the channel names the objectives refer to
+(`Q_gas`, `Q_ch4`, `pH`, ...).
 
-The `InitialCalibrator` requires an instance of the plant model.
+## 2. Pick the parameters
+
+Fit few of them. Start with the hydrolysis rate of the dominant substrate fraction, since it is what
+most directly moves gas production. [Configuration](../configuration.md) lists the usual candidates
+with their bounds.
+
+## 3. Fit
 
 ```python
-from pyadm1ode_calibration.calibration import InitialCalibrator
+from pyadm1ode_calibration import InitialCalibrator
+
 calibrator = InitialCalibrator(plant)
-```
-
-## 3. Running the Calibration
-
-Select the parameters to be optimized. Typically, these are hydrolysis constants or yield coefficients.
-
-```python
 result = calibrator.calibrate(
     measurements=measurements,
-    parameters=["k_dis", "k_hyd_ch"],
-    method="differential_evolution"
+    parameters=["k_hyd_ch"],
+    objectives=["Q_gas"],
+    validation_split=0.2,
 )
 ```
 
-## 4. Evaluation
+## 4. Check the result
 
-Check `result.success` and the optimized values in `result.parameters`.
+`result.success` only says the optimizer terminated. What matters is whether the error on the
+held-out part dropped as well: compare `result.validation_metrics` against the training metrics. A
+large gap between the two means the fit followed noise, not the plant.

@@ -1,41 +1,39 @@
 # Development
 
-Welcome to the developer area of PyADM1ODE_calibration. We welcome contributions!
+## Setup
 
-## Development Setup
+```bash
+git clone https://github.com/dgaida/PyADM1ODE_calibration.git
+cd PyADM1ODE_calibration
+pip install -e ".[dev,docs]"
+```
 
-1. Clone the repository:  
-   ```bash
-   git clone https://github.com/dgaida/PyADM1ODE_calibration.git
-   cd PyADM1ODE_calibration
-   ```
+## Before every commit
 
-2. Create a virtual environment and install dependencies:  
-   ```bash
-   pip install -e ".[dev,docs]"
-   ```
+```bash
+ruff check .
+black --check .
+python -m pytest
+```
 
-## Guidelines
+CI runs all three and fails on any of them. `.pre-commit-config.yaml` runs the same tools on staged
+files, install it with `pre-commit install`.
 
-- **Code Style**: We use `ruff` for linting and `black` for formatting.  
-- **Tests**: New features must be covered by tests in `tests/`. We aim for > 90% coverage.  
-- **Docstrings**: All public functions must have Google-style docstrings.  
+## Conventions
 
-## Workflow
-
-1. Create a feature branch.  
-2. Implement your changes.  
-3. Run tests and linter:  
-   ```bash
-   ruff check .
-   black --check .
-   python3 -m pytest tests/
-   ```
-4. Create a pull request.  
+- **Formatting**: black, line length 127. Ruff uses the same limit.
+- **Lint**: the repository is clean under ruff's default rule set. Where a rule is deliberately not
+  followed, the reason stands next to it, either as `# noqa: <RULE> - reason` or as an entry under
+  `[tool.ruff.lint.per-file-ignores]` in `pyproject.toml`.
+- **Tests**: new behaviour needs a test in `tests/`. Coverage is around 90 %.
+- **Docstrings**: Google style, see the [Docstring Guide](docstring-guide.md).
+- **Language**: code, comments and docstrings in English. The documentation is bilingual.
 
 ## Documentation
 
-The documentation is built with MkDocs. To view it locally:
 ```bash
 mkdocs serve
 ```
+
+`docs/de/` and `docs/en/` mirror each other file by file. Change both in the same commit, otherwise
+the language switch drops readers onto a stale page.

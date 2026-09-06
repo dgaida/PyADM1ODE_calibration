@@ -17,18 +17,25 @@ Author: PyADM1 Team
 Date: 2025
 """
 
-import numpy as np
-import pandas as pd
+import sys
+
+if hasattr(sys.stdout, "reconfigure"):
+    sys.stdout.reconfigure(encoding="utf-8", errors="replace")
+
 from pathlib import Path
 
+import numpy as np
+import pandas as pd
+
 # PyADM1 imports
-from pyadm1 import BiogasPlant
-from pyadm1 import Feedstock
+from pyadm1 import BiogasPlant, Feedstock
 from pyadm1.components.biological import Digester
 from pyadm1.components.energy import CHP
-from pyadm1ode_calibration import InitialCalibrator
-from pyadm1ode_calibration import MeasurementData
-from pyadm1.core.adm1 import get_state_zero_from_initial_state
+from pyadm1.core.adm1 import get_state_zero_from_csv
+
+from pyadm1ode_calibration import InitialCalibrator, MeasurementData
+from pyadm1ode_calibration.calibration.analysis.identifiability import MAX_COLLINEARITY_INDEX
+from pyadm1ode_calibration.calibration.core.simulator import PlantSimulator
 
 
 def create_example_plant(feedstock: Feedstock) -> BiogasPlant:
@@ -60,7 +67,7 @@ def create_example_plant(feedstock: Feedstock) -> BiogasPlant:
     initial_state_file = data_path / "digester_initial8.csv"
 
     if initial_state_file.exists():
-        adm1_state = get_state_zero_from_initial_state(str(initial_state_file))
+        adm1_state = get_state_zero_from_csv(str(initial_state_file))
         Q_substrates = [15.0, 10.0, 0, 0, 0, 0, 0, 0, 0, 0]
         digester.initialize({"adm1_state": adm1_state, "Q_substrates": Q_substrates})
     else:
@@ -85,51 +92,82 @@ def create_example_plant(feedstock: Feedstock) -> BiogasPlant:
     return plant
 
 
-def create_synthetic_measurements(duration_days: int = 30) -> pd.DataFrame:
-    """
-    Create synthetic measurement data for testing calibration.
+#: Parameter values the twin record is generated with. They differ from the ADM1
+#: defaults (k_m_ac 8.0, Y_su 0.10, k_hyd_ch 4.0), so an uncalibrated model visibly
+#: misses the record and the calibration has a known answer to be judged against.
+TRUE_PARAMETERS = {"k_m_ac": 6.0, "Y_su": 0.12, "k_hyd_ch": 2.5}
 
-    In practice, this would be replaced with actual plant measurements.
+#: Feed profile of the record, one phase per entry: (days, Q_maize, Q_manure) in m3/d.
+#: Kinetics only show up in the response to a change. A constant feed drives the
+#: digester to a steady state in which several parameters produce the same gas curve,
+#: so the record steps the organic load up and down and shifts the substrate mix.
+FEED_PHASES = [
+    (7, 15.0, 10.0),  # base load, lets the start transient decay
+    (6, 22.5, 10.0),  # +50 % maize: organic load step up
+    (6, 9.0, 18.0),  # mix shifted to manure at a similar volume
+    (6, 10.0, 7.0),  # load step down
+    (5, 15.0, 10.0),  # back to base
+]
+
+
+def feed_profile(duration_days: int) -> tuple[np.ndarray, np.ndarray]:
+    """Hourly substrate feeds [m3/d] for the phases in :data:`FEED_PHASES`."""
+    q1, q2 = [], []
+    for days, maize, manure in FEED_PHASES:
+        q1 += [maize] * (days * 24)
+        q2 += [manure] * (days * 24)
+    n = duration_days * 24
+    if len(q1) < n:  # repeat the last phase if a longer record was asked for
+        q1 += [q1[-1]] * (n - len(q1))
+        q2 += [q2[-1]] * (n - len(q2))
+    return np.array(q1[:n]), np.array(q2[:n])
+
+
+def create_twin_measurements(plant: BiogasPlant, duration_days: int = 30, noise: float = 0.02) -> pd.DataFrame:
+    """Simulate the plant with known parameters and return the result as measurements.
+
+    A calibration example needs a known answer, otherwise "it converged" is the only
+    thing it can report. The record here is produced by this very plant running with
+    :data:`TRUE_PARAMETERS`, plus measurement noise, so the calibration can be judged
+    on whether it recovers those values.
 
     Args:
-        duration_days: Duration of measurement period in days.
+        plant: The plant to simulate. Its state is restored afterwards.
+        duration_days: Length of the record.
+        noise: Relative Gaussian noise added to every measured channel.
 
     Returns:
-        pd.DataFrame: Synthetic measurement data.
+        pd.DataFrame: Feed columns and noisy measured channels, hourly.
     """
-    print(f"Creating synthetic measurements for {duration_days} days...")
+    print(f"Generating a {duration_days} day twin record from the plant itself...")
+    print(f"  true parameters: {TRUE_PARAMETERS}")
 
-    # Create hourly timestamps
     n_hours = duration_days * 24
-    timestamps = pd.date_range(start="2024-01-01", periods=n_hours, freq="H")
+    timestamps = pd.date_range(start="2024-01-01", periods=n_hours, freq="h")
+    q_maize, q_manure = feed_profile(duration_days)
 
-    # Generate synthetic data with realistic noise
-    np.random.seed(42)
-
-    data = pd.DataFrame(
-        {
-            "timestamp": timestamps,
-            # Substrate feeds (m³/d)
-            "Q_sub1": 15.0 + np.random.normal(0, 0.5, n_hours),  # Corn silage
-            "Q_sub2": 10.0 + np.random.normal(0, 0.3, n_hours),  # Cattle manure
-            # Measured outputs
-            "Q_ch4": 750 + np.random.normal(0, 20, n_hours) + 30 * np.sin(np.arange(n_hours) * 2 * np.pi / 24),
-            "Q_gas": 1250 + np.random.normal(0, 30, n_hours) + 40 * np.sin(np.arange(n_hours) * 2 * np.pi / 24),
-            "pH": 7.2 + np.random.normal(0, 0.05, n_hours),
-            "VFA": 2.5 + np.random.normal(0, 0.15, n_hours) + 0.3 * np.sin(np.arange(n_hours) * 2 * np.pi / 168),
-            "TAC": 15.0 + np.random.normal(0, 0.5, n_hours),
-            "T_digester": 308.15 + np.random.normal(0, 0.5, n_hours),
-        }
+    feeds = pd.DataFrame({"timestamp": timestamps, "Q_sub1": q_maize, "Q_sub2": q_manure})
+    simulated = PlantSimulator(plant, verbose=False, time_varying_feed=True).simulate_with_parameters(
+        TRUE_PARAMETERS, MeasurementData(feeds)
     )
 
-    # Ensure non-negative values
-    for col in ["Q_sub1", "Q_sub2", "Q_ch4", "Q_gas", "VFA", "TAC"]:
-        data[col] = data[col].clip(lower=0)
+    rng = np.random.default_rng(42)
+    data = feeds.copy()
+    for channel in ("Q_ch4", "Q_gas", "pH", "VFA", "TAC"):
+        values = np.asarray(simulated[channel], dtype=float)
+        data[channel] = values * (1.0 + rng.normal(0.0, noise, values.size))
 
-    # Ensure pH in reasonable range
+    # The digester temperature is controlled, not simulated. Record it as measured.
+    data["T_digester"] = 308.15 + rng.normal(0.0, 0.5, n_hours)
+
+    for col in ("Q_sub1", "Q_sub2", "Q_ch4", "Q_gas", "VFA", "TAC"):
+        data[col] = data[col].clip(lower=0)
     data["pH"] = data["pH"].clip(6.5, 8.0)
 
-    print(f"Created {len(data)} measurement points")
+    print(
+        f"Created {len(data)} measurement points, "
+        f"Q_ch4 {data['Q_ch4'].mean():.0f} m3/d, VFA {data['VFA'].mean():.2f} kg/m3"
+    )
     return data
 
 
@@ -153,12 +191,12 @@ def main():
     # Create plant
     plant = create_example_plant(feedstock)
 
-    # Create/load measurement data
-    measurements_df = create_synthetic_measurements(duration_days=30)
+    # Create measurement data by running the plant itself, see create_twin_measurements
+    measurements_df = create_twin_measurements(plant, duration_days=30)
 
     # Save to CSV for reference
     measurements_df.to_csv("calibration_measurements.csv", index=False)
-    print("Saved synthetic measurements to 'calibration_measurements.csv'")
+    print("Saved twin measurements to 'calibration_measurements.csv'")
 
     # ========================================================================
     # 2. Load and Validate Measurement Data
@@ -181,8 +219,10 @@ def main():
     print("\nData validation:")
     print(f"  Valid: {validation.is_valid}")
     print(f"  Quality score: {validation.quality_score:.2f}")
-    print(f"  Number of samples: {validation.statistics['n_rows']}")
-    print(f"  Missing data: {validation.statistics['pct_missing']:.1f}%")
+    # ValidationResult.statistics only carries the aggregate; the row count comes
+    # straight from the frame.
+    print(f"  Number of samples: {len(measurements.data)}")
+    print(f"  Missing data: {validation.statistics['missing_pct_avg']:.1f}%")
 
     if not validation.is_valid:
         validation.print_report()
@@ -203,19 +243,28 @@ def main():
     print("=" * 70)
 
     # Create calibrator
-    calibrator = InitialCalibrator(plant, verbose=True)
+    # time_varying_feed is what lets the model see the load changes in the record.
+    # Without it PlantSimulator averages the whole feed series into one constant and
+    # the phases of the record become invisible.
+    calibrator = InitialCalibrator(plant, verbose=True, time_varying_feed=True)
 
-    # Define parameters to calibrate
+    # Parameters this plant actually reveals. A +20 % change moves VFA by 29 %
+    # (k_m_ac), 8.7 % (Y_su) and 0.6 % (k_hyd_ch), so the set spans a strong, a
+    # moderate and a weak case and step 6 has something to distinguish.
+    # k_dis is deliberately absent: the substrates enter as hydrolysable fractions,
+    # never as composites, so disintegration has no substrate and changing k_dis
+    # moves no output at all.
     parameters_to_calibrate = [
-        "k_dis",  # Disintegration rate
-        "k_hyd_ch",  # Carbohydrate hydrolysis rate
-        "Y_su",  # Sugar uptake yield
+        "k_m_ac",  # Max. acetate uptake rate, the strongest lever on VFA
+        "Y_su",  # Sugar degrader yield
+        "k_hyd_ch",  # Carbohydrate hydrolysis rate, weakly observable here
     ]
 
-    # Define custom bounds (optional)
+    # Narrower than the defaults, but wide enough to contain the true values.
     custom_bounds = {
-        "k_dis": (0.3, 0.8),
+        "k_m_ac": (4.0, 12.0),
         "Y_su": (0.05, 0.15),
+        "k_hyd_ch": (1.0, 8.0),
     }
 
     # Run calibration
@@ -224,8 +273,8 @@ def main():
         measurements=measurements,
         parameters=parameters_to_calibrate,
         bounds=custom_bounds,
-        objectives=["Q_ch4", "pH"],
-        weights={"Q_ch4": 0.8, "pH": 0.2},
+        objectives=["Q_ch4", "VFA", "pH"],
+        weights={"Q_ch4": 0.4, "VFA": 0.5, "pH": 0.1},
         method="differential_evolution",
         validation_split=0.2,
         max_iterations=50,  # Reduced for example
@@ -249,10 +298,14 @@ def main():
         print("\n" + "-" * 70)
         print("Calibrated Parameters:")
         print("-" * 70)
+        print(f"  {'parameter':15s}  {'start':>8s}  {'fitted':>8s}  {'true':>8s}  {'error':>8s}")
         for param, value in result.parameters.items():
             initial = result.initial_parameters[param]
-            change = ((value - initial) / initial * 100) if initial != 0 else 0
-            print(f"  {param:15s}: {initial:8.4f} → {value:8.4f}  ({change:+6.1f}%)")
+            true = TRUE_PARAMETERS.get(param)
+            if true is None:
+                print(f"  {param:15s}  {initial:8.4f}  {value:8.4f}  {'-':>8s}  {'-':>8s}")
+            else:
+                print(f"  {param:15s}  {initial:8.4f}  {value:8.4f}  {true:8.4f}  {(value - true) / true * 100:+7.1f}%")
 
         if result.validation_metrics:
             print("\n" + "-" * 70)
@@ -284,7 +337,7 @@ def main():
     print("=" * 70)
 
     sensitivity_results = calibrator.sensitivity_analysis(
-        parameters=result.parameters, measurements=measurements, objectives=["Q_ch4", "pH", "VFA"]
+        parameters=result.parameters, measurements=measurements, objectives=["Q_ch4", "VFA", "pH"]
     )
 
     print("\nParameter Sensitivity Indices:")
@@ -321,6 +374,16 @@ def main():
             for other_param, corr in ident_result.correlation_with.items():
                 if abs(corr) > 0.5:
                     print(f"    {other_param}: {corr:6.3f}")
+
+    # Individual verdicts are only half the answer: parameters that each pass can
+    # still be unidentifiable as a set when one can undo what another did.
+    subset = calibrator.identifiability_analyzer.analyze_subset(result.parameters, measurements)
+    print()
+    print("-" * 70)
+    print("The set as a whole:")
+    print("-" * 70)
+    print(f"  Collinearity index: {subset.collinearity_index:.2f} (limit {MAX_COLLINEARITY_INDEX:.0f})")
+    print(f"  {'OK' if subset.is_identifiable else 'Rejected'}: {subset.reason}")
 
     # ========================================================================
     # 7. Apply Calibrated Parameters

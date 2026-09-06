@@ -1,65 +1,43 @@
 # Installation
 
-## Standard Installation
-
-The most stable version of PyADM1ODE_calibration can be installed directly via the Python Package Index (PyPI):
+## From PyPI
 
 ```bash
 pip install pyadm1ode-calibration
 ```
 
-## Installation from Source
-
-For the latest features or active development, you can clone the repository:
+## From source
 
 ```bash
 git clone https://github.com/dgaida/PyADM1ODE_calibration.git
 cd PyADM1ODE_calibration
-pip install .
-```
-
-### Development Mode
-
-If you want to make changes to the code, install the package in editable mode with all development dependencies:
-
-```bash
 pip install -e ".[dev]"
 ```
 
-## Installation as Anaconda Environment
+`[dev]` adds pytest, ruff and black. Use `.[docs]` for MkDocs, or `.[dev,docs]` for both.
 
-If you are using Conda, you can create the environment using the provided `environment.yml` file:
+## Conda
 
 ```bash
 conda env create -f environment.yml
 conda activate biogas
-```
-
-Then install this package in editable mode:
-
-```bash
 pip install -e .
-```
-
-## Documentation Tools
-
-To build the documentation locally, install the `docs` extras:
-
-```bash
-pip install -e ".[docs]"
-```
-
-Then you can view the documentation using MkDocs:
-
-```bash
-mkdocs serve
 ```
 
 ## Docker
 
-A Dockerfile is available in the repository to provide a consistent environment that already includes all dependencies.
+The repository ships a Dockerfile with all dependencies pinned:
 
 ```bash
 docker build -t pyadm1-calibration .
 docker run -it pyadm1-calibration
 ```
+
+## Building the docs
+
+```bash
+pip install -e ".[docs]"
+mkdocs serve
+```
+
+The site is bilingual. `docs/de/` is the default locale and `docs/en/` mirrors it file by file.

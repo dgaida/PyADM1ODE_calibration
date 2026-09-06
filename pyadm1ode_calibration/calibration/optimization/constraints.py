@@ -1,9 +1,10 @@
 """Constraints module."""
 
 from abc import ABC, abstractmethod
-from typing import Dict, List, Optional, Tuple, Callable
-import numpy as np
+from collections.abc import Callable
 from dataclasses import dataclass
+
+import numpy as np
 
 
 @dataclass
@@ -52,27 +53,25 @@ class LinearConstraint:
         constraint_type (str): 'inequality' or 'equality'.
     """
 
-    coefficients: Dict[str, float]
-    lower_bound: Optional[float] = None
-    upper_bound: Optional[float] = None
+    coefficients: dict[str, float]
+    lower_bound: float | None = None
+    upper_bound: float | None = None
     constraint_type: str = "inequality"
 
-    def evaluate(self, parameters: Dict[str, float]) -> float:
+    def evaluate(self, parameters: dict[str, float]) -> float:
         """Evaluate LHS."""
         return sum(coef * parameters.get(name, 0.0) for name, coef in self.coefficients.items())
 
-    def is_feasible(self, parameters: Dict[str, float]) -> bool:
+    def is_feasible(self, parameters: dict[str, float]) -> bool:
         """Check feasibility."""
         val = self.evaluate(parameters)
         if self.constraint_type == "equality":
             return abs(val - (self.upper_bound or 0.0)) < 1e-6
         if self.lower_bound is not None and val < self.lower_bound:
             return False
-        if self.upper_bound is not None and val > self.upper_bound:
-            return False
-        return True
+        return not (self.upper_bound is not None and val > self.upper_bound)
 
-    def violation(self, parameters: Dict[str, float]) -> float:
+    def violation(self, parameters: dict[str, float]) -> float:
         """Calculate violation."""
         val = self.evaluate(parameters)
         if self.constraint_type == "equality":
@@ -90,22 +89,22 @@ class NonlinearConstraint:
     """Nonlinear constraint."""
 
     name: str
-    function: Callable[[Dict[str, float]], float]
+    function: Callable[[dict[str, float]], float]
     constraint_type: str = "inequality"
     tolerance: float = 1e-6
 
-    def evaluate(self, parameters: Dict[str, float]) -> float:
+    def evaluate(self, parameters: dict[str, float]) -> float:
         """Evaluate function."""
         return self.function(parameters)
 
-    def is_feasible(self, parameters: Dict[str, float]) -> bool:
+    def is_feasible(self, parameters: dict[str, float]) -> bool:
         """Check feasibility."""
         val = self.evaluate(parameters)
         if self.constraint_type == "equality":
             return abs(val) <= self.tolerance
         return val <= self.tolerance
 
-    def violation(self, parameters: Dict[str, float]) -> float:
+    def violation(self, parameters: dict[str, float]) -> float:
         """Calculate violation."""
         val = self.evaluate(parameters)
         if self.constraint_type == "equality":
@@ -119,7 +118,6 @@ class PenaltyFunction(ABC):
     @abstractmethod
     def __call__(self, violation: float, weight: float = 1.0) -> float:
         """Calculate penalty."""
-        pass
 
 
 class QuadraticPenalty(PenaltyFunction):
@@ -166,12 +164,12 @@ class BarrierPenalty(PenaltyFunction):
 class ParameterConstraints:
     """Manager for parameter constraints."""
 
-    def __init__(self, penalty_function: Optional[PenaltyFunction] = None):
-        self.box_constraints: Dict[str, BoxConstraint] = {}
-        self.linear_constraints: List[LinearConstraint] = []
-        self.nonlinear_constraints: List[NonlinearConstraint] = []
+    def __init__(self, penalty_function: PenaltyFunction | None = None):
+        self.box_constraints: dict[str, BoxConstraint] = {}
+        self.linear_constraints: list[LinearConstraint] = []
+        self.nonlinear_constraints: list[NonlinearConstraint] = []
         self.penalty_function = penalty_function or QuadraticPenalty()
-        self.penalty_weights: Dict[str, float] = {}
+        self.penalty_weights: dict[str, float] = {}
 
     def add_box_constraint(self, parameter_name: str, lower: float, upper: float, hard: bool = True, weight: float = 1.0):
         """Add box constraint."""
@@ -197,7 +195,7 @@ class ParameterConstraints:
         self.nonlinear_constraints.append(c)
         self.penalty_weights[f"nonlinear_{name}"] = weight
 
-    def is_feasible(self, parameters: Dict[str, float]) -> bool:
+    def is_feasible(self, parameters: dict[str, float]) -> bool:
         """Check if parameters satisfy all hard constraints."""
         for c in self.box_constraints.values():
             if c.hard and not c.is_feasible(parameters.get(c.parameter_name, 0.0)):
@@ -210,7 +208,7 @@ class ParameterConstraints:
                 return False
         return True
 
-    def calculate_penalty(self, parameters: Dict[str, float]) -> float:
+    def calculate_penalty(self, parameters: dict[str, float]) -> float:
         """Calculate total penalty for all violated constraints."""
         p = 0.0
         for name, c in self.box_constraints.items():
@@ -229,7 +227,7 @@ class ParameterConstraints:
                 p += self.penalty_function(v, self.penalty_weights.get(f"nonlinear_{c.name}", 1.0))
         return p
 
-    def project_to_feasible(self, parameters: Dict[str, float]) -> Dict[str, float]:
+    def project_to_feasible(self, parameters: dict[str, float]) -> dict[str, float]:
         """Project parameters to feasible region (box constraints only)."""
         projected = parameters.copy()
         for name, constraint in self.box_constraints.items():
@@ -237,7 +235,7 @@ class ParameterConstraints:
                 projected[name] = constraint.project(projected[name])
         return projected
 
-    def get_scipy_constraints(self, parameter_names: List[str]) -> List[Dict]:
+    def get_scipy_constraints(self, parameter_names: list[str]) -> list[dict]:
         """Convert constraints to scipy format."""
         scipy_constraints = []
         for constraint in self.linear_constraints:
@@ -267,7 +265,7 @@ class ParameterConstraints:
                 scipy_constraints.append({"type": "ineq", "fun": lambda x, f=constraint_func: -f(x)})
         return scipy_constraints
 
-    def validate_parameters(self, parameters: Dict[str, float]) -> Tuple[bool, List[str]]:
+    def validate_parameters(self, parameters: dict[str, float]) -> tuple[bool, list[str]]:
         """Validate parameters and return detailed error messages."""
         errors = []
         for name, constraint in self.box_constraints.items():

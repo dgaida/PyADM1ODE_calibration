@@ -5,12 +5,13 @@ Provides tools for initial batch calibration and online re-calibration
 of biogas plant model parameters.
 """
 
-from typing import List, Any, TYPE_CHECKING
+from typing import TYPE_CHECKING, Any
+
 from .core.base_calibrator import BaseCalibrator
 from .core.result import CalibrationResult
 from .methods.initial import InitialCalibrator
 from .methods.online import OnlineCalibrator
-from .parameter_bounds import ParameterBounds, ParameterBound, BoundType, create_default_bounds
+from .parameter_bounds import BoundType, ParameterBound, ParameterBounds, create_default_bounds
 from .validation import CalibrationValidator, ValidationMetrics
 
 if TYPE_CHECKING:
@@ -36,7 +37,7 @@ class Calibrator:
         self.online_calibrator = OnlineCalibrator(plant, verbose)
 
     def run_initial_calibration(
-        self, measurements: "MeasurementData", parameters: List[str], **kwargs: Any
+        self, measurements: "MeasurementData", parameters: list[str], **kwargs: Any
     ) -> CalibrationResult:
         """
         Run initial batch calibration from historical data.
@@ -52,7 +53,7 @@ class Calibrator:
         return self.initial_calibrator.calibrate(measurements, parameters, **kwargs)
 
     def run_online_calibration(
-        self, measurements: "MeasurementData", parameters: List[str], **kwargs: Any
+        self, measurements: "MeasurementData", parameters: list[str], **kwargs: Any
     ) -> CalibrationResult:
         """
         Run online re-calibration for real-time adjustments.
@@ -79,14 +80,14 @@ class Calibrator:
 
 __all__ = [
     "BaseCalibrator",
+    "BoundType",
     "CalibrationResult",
+    "CalibrationValidator",
+    "Calibrator",
     "InitialCalibrator",
     "OnlineCalibrator",
-    "ParameterBounds",
     "ParameterBound",
-    "BoundType",
-    "create_default_bounds",
-    "CalibrationValidator",
+    "ParameterBounds",
     "ValidationMetrics",
-    "Calibrator",
+    "create_default_bounds",
 ]

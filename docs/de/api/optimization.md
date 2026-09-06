@@ -3,7 +3,7 @@
 ## Optimizer Base
 ::: pyadm1ode_calibration.calibration.optimization.optimizer.Optimizer
 
-## Zielfunktionen
+## Objective Functions
 ::: pyadm1ode_calibration.calibration.optimization.objective.MultiObjectiveFunction
 ::: pyadm1ode_calibration.calibration.optimization.objective.WeightedSumObjective
 

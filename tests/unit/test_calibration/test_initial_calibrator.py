@@ -1,10 +1,12 @@
-import pytest
+from unittest.mock import MagicMock
+
 import numpy as np
 import pandas as pd
-from unittest.mock import MagicMock
+import pytest
+
+from pyadm1ode_calibration.calibration.core.result import CalibrationResult
 from pyadm1ode_calibration.calibration.methods.initial import InitialCalibrator
 from pyadm1ode_calibration.io.loaders.measurement_data import MeasurementData
-from pyadm1ode_calibration.calibration.core.result import CalibrationResult
 
 
 @pytest.fixture

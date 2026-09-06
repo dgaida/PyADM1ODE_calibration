@@ -1,9 +1,9 @@
 """Result module."""
 
-from dataclasses import dataclass, field
-from typing import Dict, List, Any
-from datetime import datetime
 import json
+from dataclasses import dataclass, field
+from datetime import datetime, timezone
+from typing import Any
 
 
 @dataclass
@@ -30,19 +30,19 @@ class CalibrationResult:
     """
 
     success: bool
-    parameters: Dict[str, float]
-    initial_parameters: Dict[str, float]
+    parameters: dict[str, float]
+    initial_parameters: dict[str, float]
     objective_value: float
     n_iterations: int
     execution_time: float
     method: str
     message: str
-    validation_metrics: Dict[str, float] = field(default_factory=dict)
-    sensitivity: Dict[str, Any] = field(default_factory=dict)
-    history: List[Dict[str, Any]] = field(default_factory=list)
-    timestamp: str = field(default_factory=lambda: datetime.now().isoformat())
+    validation_metrics: dict[str, float] = field(default_factory=dict)
+    sensitivity: dict[str, Any] = field(default_factory=dict)
+    history: list[dict[str, Any]] = field(default_factory=list)
+    timestamp: str = field(default_factory=lambda: datetime.now(timezone.utc).isoformat())
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> dict[str, Any]:
         """
         Convert the result to a dictionary.
 
@@ -75,7 +75,7 @@ class CalibrationResult:
             json.dump(self.to_dict(), f, indent=2)
 
     @classmethod
-    def from_dict(cls, data: Dict[str, Any]) -> "CalibrationResult":
+    def from_dict(cls, data: dict[str, Any]) -> "CalibrationResult":
         """
         Create a CalibrationResult instance from a dictionary.
 

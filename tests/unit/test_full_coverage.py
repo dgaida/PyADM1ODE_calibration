@@ -1,14 +1,16 @@
-import pytest
+from unittest.mock import MagicMock
+
 import numpy as np
 import pandas as pd
-from unittest.mock import MagicMock
-from pyadm1ode_calibration.calibration.analysis.sensitivity import SensitivityAnalyzer
+import pytest
+
 from pyadm1ode_calibration.calibration.analysis.identifiability import IdentifiabilityAnalyzer
-from pyadm1ode_calibration.calibration.validation import CalibrationValidator
+from pyadm1ode_calibration.calibration.analysis.sensitivity import SensitivityAnalyzer
 from pyadm1ode_calibration.calibration.core.simulator import PlantSimulator
 from pyadm1ode_calibration.calibration.methods.initial import InitialCalibrator
 from pyadm1ode_calibration.calibration.methods.online import OnlineCalibrator
-from pyadm1ode_calibration.calibration.parameter_bounds import ParameterBounds, BoundType
+from pyadm1ode_calibration.calibration.parameter_bounds import BoundType, ParameterBounds
+from pyadm1ode_calibration.calibration.validation import CalibrationValidator
 from pyadm1ode_calibration.io.loaders.measurement_data import MeasurementData
 from pyadm1ode_calibration.io.validation.validators import DataValidator, OutlierDetector
 

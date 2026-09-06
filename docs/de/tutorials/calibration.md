@@ -1,37 +1,43 @@
 # Kalibrierungs-Tutorial
 
-Dieses Tutorial beschreibt die grundlegenden Schritte zur Kalibrierung eines ADM1-Modells.
+Die Kurzfassung der Notebooks 01 bis 03.
 
-## 1. Datenvorbereitung
-
-Messdaten müssen als Zeitreihen vorliegen. Das `MeasurementData` Objekt erwartet Spaltennamen, die den ADM1-Zustandsvariablen entsprechen.
+## 1. Daten laden und bereinigen
 
 ```python
-from pyadm1ode_calibration.io.loaders import MeasurementData
-measurements = MeasurementData.from_csv("daten.csv")
+from pyadm1ode_calibration import MeasurementData
+
+measurements = MeasurementData.from_csv("data.csv")
+measurements.remove_outliers(method="zscore", threshold=3.0)
+measurements.fill_gaps(method="interpolate", limit=3)
 ```
 
-## 2. Initialisierung des Kalibrators
+Der Index muss ein Zeitstempel sein, und die Spalten tragen die Kanalnamen, auf die sich die
+Zielgrößen beziehen (`Q_gas`, `Q_ch4`, `pH`, ...).
 
-Der `InitialCalibrator` benötigt eine Instanz des Anlagenmodells.
+## 2. Parameter auswählen
+
+Wenige anpassen. Am besten mit der Hydrolyserate der dominierenden Substratfraktion beginnen, denn
+sie bewegt die Gasproduktion am unmittelbarsten. [Konfiguration](../configuration.md) listet die
+üblichen Kandidaten samt Grenzen.
+
+## 3. Anpassen
 
 ```python
-from pyadm1ode_calibration.calibration import InitialCalibrator
+from pyadm1ode_calibration import InitialCalibrator
+
 calibrator = InitialCalibrator(plant)
-```
-
-## 3. Durchführung der Kalibrierung
-
-Wählen Sie die Parameter aus, die optimiert werden sollen. Typischerweise sind dies Hydrolysekonstanten oder Ertragskoeffizienten.
-
-```python
 result = calibrator.calibrate(
     measurements=measurements,
-    parameters=["k_dis", "k_hyd_ch"],
-    method="differential_evolution"
+    parameters=["k_hyd_ch"],
+    objectives=["Q_gas"],
+    validation_split=0.2,
 )
 ```
 
-## 4. Auswertung
+## 4. Ergebnis prüfen
 
-Prüfen Sie `result.success` und die optimierten Werte in `result.parameters`.
+`result.success` besagt nur, dass der Optimierer beendet wurde. Entscheidend ist, ob auch der Fehler
+auf dem zurückgehaltenen Teil gesunken ist: `result.validation_metrics` gegen die Trainingswerte
+halten. Eine große Lücke zwischen beiden bedeutet, dass die Anpassung dem Rauschen gefolgt ist und
+nicht der Anlage.

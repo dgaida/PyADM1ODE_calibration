@@ -1,45 +1,33 @@
 # Getting Started
 
-This guide helps you with the first steps using **PyADM1ODE_calibration**.
-
 ## Prerequisites
 
-Before you begin, ensure your environment meets the following requirements:
+- **Python** 3.10 or newer.
+- **[PyADM1ODE](https://github.com/dgaida/PyADM1ODE)**, which provides the plant model this package calibrates.
+- **Measurement data** as a time series, from CSV or a database. Useful channels are gas flow, methane content, pH and VFA.
 
-- **Python**: 3.10 or higher.  
-- **PyADM1ODE**: The base package for biogas plant simulation.  
-- **Data**: Historical plant measurement data (e.g., CH₄ production, pH value) in CSV format or in a PostgreSQL database.  
-
-## Installation
-
-Install the package directly via pip:
+## Install
 
 ```bash
 pip install pyadm1ode-calibration
 ```
 
-Or for development:
+For development, see [Installation](installation.md).
 
-```bash
-git clone https://github.com/dgaida/PyADM1ODE_calibration.git
-cd PyADM1ODE_calibration
-pip install -e ".[dev]"
-```
+## Core concepts
 
-## Core Concepts
+**`MeasurementData`** wraps one time-indexed table. Every calibration reads from it, and it also does the pre-processing: `remove_outliers`, `fill_gaps`, `get_time_window`.
 
-### 1. Data Loading (`MeasurementData`)
-All calibrations are based on the `MeasurementData` object. It manages time series of measurements and provides functions for validation and pre-processing.
+**`InitialCalibrator`** fits a fresh model to a historical window. It splits the data into training and validation, runs a global optimizer and reports both fits.
 
-### 2. Calibrators  
-- **InitialCalibrator**: Used for the initial tuning of the model to a historical dataset (batch optimization).  
-- **OnlineCalibrator**: Enables continuous adjustment of parameters during ongoing operation to respond to changes in substrate quality or biology.  
+**`OnlineCalibrator`** keeps a running model on track. `should_recalibrate` returns a decision plus its reason, and `calibrate` caps how far a single update may move a parameter.
 
-### 3. Objective Functions
-You can define and weight multiple target variables (objectives), e.g., 80% weight on methane production and 20% on the pH value.
+**`Calibrator`** is a thin facade over both. It and `OnlineCalibrator` can write a result back into the plant with `apply_calibration`, `InitialCalibrator` cannot.
 
-## Next Steps
+**Objectives** are the measured channels the fit is scored against. Several can be combined with weights, for example 80 % on gas flow and 20 % on pH.
 
-- Follow the [Tutorial for Initial Calibration](tutorials/calibration.md).  
-- Learn more about [Parameter Configuration](configuration.md).  
-- Check the [API Reference](api/index.md) for detailed information.  
+## Next steps
+
+- Work through the notebooks, starting at [Tutorials](tutorials/index.md).
+- Look up parameters and optimizers in [Configuration](configuration.md).
+- See both workflows in code under [Usage](usage/index.md).

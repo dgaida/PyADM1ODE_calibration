@@ -1,9 +1,11 @@
 """Measurement data module."""
 
-import pandas as pd
-import numpy as np
-from typing import Dict, List, Optional, Tuple, Any, Union
 from datetime import datetime
+from typing import Any
+
+import numpy as np
+import pandas as pd
+
 from ..validation.validators import DataValidator, OutlierDetector, ValidationResult
 
 
@@ -22,7 +24,7 @@ class MeasurementData:
             contextual information (e.g., plant ID, location).
     """
 
-    def __init__(self, data: pd.DataFrame, metadata: Optional[Dict[str, Any]] = None):
+    def __init__(self, data: pd.DataFrame, metadata: dict[str, Any] | None = None):
         self.data = data
         self.metadata = metadata or {}
 
@@ -38,7 +40,7 @@ class MeasurementData:
         timestamp_column: str = "timestamp",
         sep: str = ",",
         parse_dates: bool = True,
-        resample: Optional[str] = None,
+        resample: str | None = None,
         **kwargs: Any,
     ) -> "MeasurementData":
         """
@@ -66,7 +68,7 @@ class MeasurementData:
         return instance
 
     def validate(
-        self, required_columns: Optional[List[str]] = None, expected_ranges: Optional[Dict[str, Tuple[float, float]]] = None
+        self, required_columns: list[str] | None = None, expected_ranges: dict[str, tuple[float, float]] | None = None
     ) -> ValidationResult:
         """
         Validate measurement data against schema and range expectations.
@@ -91,7 +93,7 @@ class MeasurementData:
         return DataValidator.validate(self.data, required_columns=required_columns, expected_ranges=expected_ranges)
 
     def remove_outliers(
-        self, columns: Optional[List[str]] = None, method: str = "zscore", threshold: float = 3.0, **kwargs: Any
+        self, columns: list[str] | None = None, method: str = "zscore", threshold: float = 3.0, **kwargs: Any
     ) -> int:
         """
         Detect and remove outliers from specified columns.
@@ -129,7 +131,7 @@ class MeasurementData:
             n_outliers += n_col_outliers
         return n_outliers
 
-    def fill_gaps(self, columns: Optional[List[str]] = None, method: str = "interpolate", **kwargs: Any) -> None:
+    def fill_gaps(self, columns: list[str] | None = None, method: str = "interpolate", **kwargs: Any) -> None:
         """
         Fill missing values (NaNs) in the data.
 
@@ -181,7 +183,7 @@ class MeasurementData:
             raise ValueError(f"Unknown aggregation method: {aggregation}")
 
     def get_measurement(
-        self, column: str, start_time: Optional[Union[str, datetime]] = None, end_time: Optional[Union[str, datetime]] = None
+        self, column: str, start_time: str | datetime | None = None, end_time: str | datetime | None = None
     ) -> pd.Series:
         """
         Get a specific measurement series, optionally windowed.
@@ -201,7 +203,7 @@ class MeasurementData:
             series = series.loc[start_time:end_time]  # type: ignore
         return series
 
-    def get_substrate_feeds(self, substrate_columns: Optional[List[str]] = None) -> np.ndarray:
+    def get_substrate_feeds(self, substrate_columns: list[str] | None = None) -> np.ndarray:
         """
         Extract substrate feed rates as a 2D numpy array.
 
@@ -217,7 +219,7 @@ class MeasurementData:
             raise ValueError("No substrate columns found")
         return self.data[substrate_columns].values
 
-    def get_time_window(self, start_time: Union[str, datetime], end_time: Union[str, datetime]) -> "MeasurementData":
+    def get_time_window(self, start_time: str | datetime, end_time: str | datetime) -> "MeasurementData":
         """
         Create a new MeasurementData instance for a specific time window.
 
@@ -256,6 +258,6 @@ class MeasurementData:
     def __repr__(self) -> str:
         try:
             time_range = f"{self.data.index[0]} to {self.data.index[-1]}"
-        except Exception:
+        except IndexError:
             time_range = "empty"
         return f"MeasurementData(n_rows={len(self.data)}, n_columns={len(self.data.columns)}, time_range={time_range})"

@@ -1,16 +1,21 @@
 """Initial calibration module."""
 
-import numpy as np
 import time
-from typing import Dict, List, Optional, Tuple, Any, Callable
+import warnings
+from collections.abc import Callable
+from typing import Any
+
+import numpy as np
+
+from pyadm1ode_calibration.io.loaders.measurement_data import MeasurementData
+
+from ..analysis.identifiability import IdentifiabilityAnalyzer, IdentifiabilityResult, SubsetIdentifiability
+from ..analysis.sensitivity import SensitivityAnalyzer, SensitivityResult
 from ..core.base_calibrator import BaseCalibrator
 from ..core.result import CalibrationResult
+from ..optimization import MultiObjectiveFunction, ParameterConstraints, WeightedSumObjective, create_optimizer
 from ..parameter_bounds import create_default_bounds
 from ..validation import CalibrationValidator
-from ..optimization import create_optimizer, MultiObjectiveFunction, WeightedSumObjective, ParameterConstraints
-from ..analysis.sensitivity import SensitivityAnalyzer, SensitivityResult
-from ..analysis.identifiability import IdentifiabilityAnalyzer, IdentifiabilityResult
-from pyadm1ode_calibration.io.loaders.measurement_data import MeasurementData
 
 
 class InitialCalibrator(BaseCalibrator):
@@ -26,30 +31,31 @@ class InitialCalibrator(BaseCalibrator):
         verbose (bool): Whether to enable verbose output. Defaults to True.
     """
 
-    def __init__(self, plant: Any, verbose: bool = True):
-        super().__init__(plant, verbose)
+    def __init__(self, plant: Any, verbose: bool = True, time_varying_feed: bool = False):
+        super().__init__(plant, verbose, time_varying_feed=time_varying_feed)
         self.parameter_bounds = create_default_bounds()
-        self.validator = CalibrationValidator(plant, verbose=False)
+        self.validator = CalibrationValidator(plant, verbose=False, time_varying_feed=time_varying_feed)
         self.sensitivity_analyzer = SensitivityAnalyzer(plant, self.simulator, verbose)
         self.identifiability_analyzer = IdentifiabilityAnalyzer(plant, self.sensitivity_analyzer, verbose)
-        self._optimization_history: List[Dict[str, Any]] = []
+        self._optimization_history: list[dict[str, Any]] = []
         self._best_objective_value: float = float("inf")
-        self._original_parameters: Dict[str, float] = self._get_current_parameters()
+        self._original_parameters: dict[str, float] = self._get_current_parameters()
 
     def calibrate(
         self,
         measurements: MeasurementData,
-        parameters: List[str],
-        bounds: Optional[Dict[str, Tuple[float, float]]] = None,
+        parameters: list[str],
+        bounds: dict[str, tuple[float, float]] | None = None,
         method: str = "differential_evolution",
-        objectives: Optional[List[str]] = None,
-        weights: Optional[Dict[str, float]] = None,
+        objectives: list[str] | None = None,
+        weights: dict[str, float] | None = None,
         validation_split: float = 0.2,
         max_iterations: int = 100,
         population_size: int = 15,
         tolerance: float = 1e-4,
         sensitivity_analysis: bool = True,
         use_constraints: bool = False,
+        check_identifiability: bool = False,
         **kwargs: Any,
     ) -> CalibrationResult:
         """
@@ -68,6 +74,11 @@ class InitialCalibrator(BaseCalibrator):
             tolerance (float): Convergence tolerance. Defaults to 1e-4.
             sensitivity_analysis (bool): Whether to perform sensitivity analysis after calibration.
             use_constraints (bool): Whether to apply parameter constraints. Defaults to False.
+            check_identifiability (bool): Screen the parameter set for collinearity before
+                optimizing and warn when it is unidentifiable as a set. Costs
+                ``2 * len(parameters) + 1`` simulations against the several hundred a
+                global search needs, so it is worth it for anything but a one-parameter
+                fit. Defaults to False to leave existing behaviour untouched.
             **kwargs (Any): Additional keyword arguments passed to the optimizer.
 
         Returns:
@@ -83,16 +94,27 @@ class InitialCalibrator(BaseCalibrator):
         initial_params = self.parameter_bounds.get_default_values(parameters)
         param_bounds = self._setup_bounds(parameters, bounds)
 
+        # Finding out that a set could never have been identified is worth far more
+        # before the optimizer runs than after it.
+        self.subset_identifiability: SubsetIdentifiability | None = None
+        if check_identifiability and len(parameters) > 1:
+            self.subset_identifiability = self.identifiability_analyzer.analyze_subset(initial_params, train_data, objectives)
+            if not self.subset_identifiability.is_identifiable:
+                warnings.warn(
+                    f"Parameter set {parameters} is not identifiable together: " f"{self.subset_identifiability.reason}",
+                    stacklevel=2,
+                )
+            elif self.verbose:
+                print(f"  {self.subset_identifiability.reason}")
+
         # Create objective function
-        def simulator_wrapper(params: Dict[str, float]) -> Dict[str, np.ndarray]:
+        def simulator_wrapper(params: dict[str, float]) -> dict[str, np.ndarray]:
             return self.simulator.simulate_with_parameters(params, train_data)
 
-        measurements_dict: Dict[str, np.ndarray] = {}
+        measurements_dict: dict[str, np.ndarray] = {}
         for obj in objectives:
-            try:
+            if obj in train_data.data.columns:
                 measurements_dict[obj] = train_data.get_measurement(obj).values
-            except Exception:
-                continue
 
         objective_func: Callable[[np.ndarray], float]
         if weights is None:
@@ -149,10 +171,16 @@ class InitialCalibrator(BaseCalibrator):
         opt_result = optimizer.optimize(obj_func_final, initial_guess=initial_guess)
 
         # Validation
-        validation_metrics: Dict[str, float] = {}
+        validation_metrics: dict[str, float] = {}
         if len(val_data) > 0:
+            # Without the warmup the validation window would be simulated from the
+            # plant's initial state, so a late stretch of a record could never line
+            # up with its measurements no matter how good the parameters are.
             val_result = self.validator.validate(
-                parameters=opt_result.parameter_dict, measurements=val_data, objectives=objectives
+                parameters=opt_result.parameter_dict,
+                measurements=val_data,
+                objectives=objectives,
+                warmup=train_data,
             )
             for obj, metrics in val_result.items():
                 validation_metrics.update(
@@ -160,7 +188,7 @@ class InitialCalibrator(BaseCalibrator):
                 )
 
         # Sensitivity
-        sensitivity_results: Dict[str, float] = {}
+        sensitivity_results: dict[str, float] = {}
         if sensitivity_analysis and opt_result.success:
             sens = self.sensitivity_analyzer.analyze(opt_result.parameter_dict, train_data, objectives)
             sensitivity_results = {p: float(max(abs(s) for s in r.sensitivity_indices.values())) for p, r in sens.items()}
@@ -180,8 +208,8 @@ class InitialCalibrator(BaseCalibrator):
         )
 
     def sensitivity_analysis(
-        self, parameters: Dict[str, float], measurements: MeasurementData, objectives: Optional[List[str]] = None
-    ) -> Dict[str, SensitivityResult]:
+        self, parameters: dict[str, float], measurements: MeasurementData, objectives: list[str] | None = None
+    ) -> dict[str, SensitivityResult]:
         """
         Perform local sensitivity analysis for given parameters.
 
@@ -196,8 +224,13 @@ class InitialCalibrator(BaseCalibrator):
         return self.sensitivity_analyzer.analyze(parameters, measurements, objectives)
 
     def identifiability_analysis(
-        self, parameters: Dict[str, float], measurements: MeasurementData
-    ) -> Dict[str, IdentifiabilityResult]:
+        self,
+        parameters: dict[str, float],
+        measurements: MeasurementData,
+        optimization_history: list[dict[str, Any]] | None = None,
+        confidence_level: float = 0.95,
+        correlation_threshold: float = 0.8,
+    ) -> dict[str, IdentifiabilityResult]:
         """
         Perform parameter identifiability analysis.
 
@@ -206,13 +239,24 @@ class InitialCalibrator(BaseCalibrator):
         Args:
             parameters (Dict[str, float]): Parameter set to analyze.
             measurements (MeasurementData): Data window for simulation.
+            optimization_history (Optional[List[Dict[str, Any]]]): History from a previous
+                optimizer run, used to widen the confidence intervals.
+            confidence_level (float): Confidence level for the intervals.
+            correlation_threshold (float): Above this, two parameters count as correlated
+                and neither is reported as identifiable on its own.
 
         Returns:
             IdentifiabilityResult: Analysis results including correlation matrix.
         """
-        return self.identifiability_analyzer.analyze(parameters, measurements)
+        return self.identifiability_analyzer.analyze(
+            parameters,
+            measurements,
+            optimization_history=optimization_history,
+            confidence_level=confidence_level,
+            correlation_threshold=correlation_threshold,
+        )
 
-    def _split_data(self, measurements: MeasurementData, split_ratio: float) -> Tuple[MeasurementData, MeasurementData]:
+    def _split_data(self, measurements: MeasurementData, split_ratio: float) -> tuple[MeasurementData, MeasurementData]:
         """
         Split measurement data into training and validation sets.
 
@@ -230,8 +274,8 @@ class InitialCalibrator(BaseCalibrator):
         )
 
     def _setup_bounds(
-        self, parameters: List[str], custom_bounds: Optional[Dict[str, Tuple[float, float]]]
-    ) -> Dict[str, Tuple[float, float]]:
+        self, parameters: list[str], custom_bounds: dict[str, tuple[float, float]] | None
+    ) -> dict[str, tuple[float, float]]:
         """
         Configure parameter search bounds.
 
@@ -242,7 +286,7 @@ class InitialCalibrator(BaseCalibrator):
         Returns:
             Dict[str, Tuple[float, float]]: Mapping of parameter names to (min, max) tuples.
         """
-        bounds: Dict[str, Tuple[float, float]] = {}
+        bounds: dict[str, tuple[float, float]] = {}
         for param in parameters:
             if custom_bounds and param in custom_bounds:
                 bounds[param] = custom_bounds[param]

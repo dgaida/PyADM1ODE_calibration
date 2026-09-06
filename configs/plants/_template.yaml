@@ -1,0 +1,114 @@
+# Plant schema template.
+#
+# Copy this file to "configs/plants/<your-plant-id>.yaml" and adapt.
+# Full reference: pyadm1ode_calibration.io.loaders.schema.PlantSchema
+
+# Unique identifier for the plant. Used in database rows and log lines.
+plant_id: my_plant
+
+# Free-form description.
+description: "Description of the plant and its data sources."
+
+# ---- Data sources -----------------------------------------------------------
+#
+# One entry per raw data feed (file directory, database, live system).
+# Each gets a unique name; variables below refer to that name.
+
+sources:
+  # Example: ABB SCADA CSV export.
+  abb:
+    type: tabular_csv
+    preset: abb              # abb | plain | lab (extend in tabular_csv.PRESETS)
+    directory: data/         # where the CSV files live
+    timezone: Europe/Berlin  # timezone of the naive timestamps in the files
+    pattern: "*.csv"         # optional file glob
+
+  # Example: future lab data import. Uncomment when sample reports arrive.
+  # lab:
+  #   type: tabular_csv
+  #   preset: lab
+  #   directory: lab_results/
+
+# ---- Canonical variable map -------------------------------------------------
+#
+# Each entry defines one variable used downstream (in calibration,
+# validation, plots). The name on the left is the canonical name; the
+# block on the right tells the pipeline where to find it and how to
+# treat it.
+#
+# Required fields:
+#   source: name of the source declared above
+#   tag:    tag name as exposed by that source (use source.list_tags())
+#   unit:   unit of the value in the source data
+#
+# Optional fields:
+#   to:           target unit; conversion is applied during the build
+#   resample:     "1h"  (shorthand: aggregation defaults to "mean")
+#                 {freq: "15min", agg: "max"}  (full form)
+#                 supported aggs: mean, sum, first, last, min, max, median
+#   valid_range:  [min, max] in the *source* unit; out-of-range -> NaN
+#   description:  free-form note
+#   meta:         free-form mapping for plant-specific attributes
+#                 (e.g. density_kg_per_m3 for substrate dosers).
+#                 Consumed by derived-variable helpers, not by the schema.
+
+variables:
+  T_digester:
+    source: abb
+    tag: "Temp_PCS::Durchschnitt F1"
+    unit: degC
+    to: K                    # ADM1 internally uses Kelvin
+    resample: 1h
+    valid_range: [20, 55]
+    description: "Average fermenter temperature"
+
+  P_el_chp1:
+    source: abb
+    tag: "BHKW_TR::Wirkleistung"
+    unit: kW
+    resample:
+      freq: 1h
+      agg: mean
+    valid_range: [0, 600]
+
+  flare_on:
+    source: abb
+    tag: "Level_Gas::Fackel Ein"
+    unit: bool
+    resample:
+      freq: 1h
+      agg: max               # "ever true during the hour"
+
+  # Example of a variable using `meta` for plant-specific attributes:
+  feed_total:
+    source: abb
+    tag: "Dosing::Gesamtgewicht D1"
+    unit: kg
+    resample:
+      freq: 1h
+      agg: last
+    meta:
+      density_kg_per_m3: 600   # used by derived-variable helpers
+      role: solid_doser
+
+# ---- Ignored tags -----------------------------------------------------------
+#
+# Map "source::tag" -> reason. Documents sensor faults or offline
+# equipment so future operators don't have to rediscover them.
+
+ignored_tags:
+  "abb::Level_Gas::Gasblase N1": "Sensor defective: emits FLT_MAX sentinels"
+
+# ---- Substrate mix ----------------------------------------------------------
+#
+# Optional. List of substrates fed to the plant, with the fraction of
+# total dosed amount each represents. Fractions must sum to ~1.0.
+# `name` must match a substrate definition known to PyADM1ODE
+# (see data/substrates/ in the base package).
+
+substrates:
+  - name: maize_silage_milk_ripeness
+    fraction: 0.7
+  - name: cattle_manure
+    fraction: 0.3
+    description: "Rindergülle"

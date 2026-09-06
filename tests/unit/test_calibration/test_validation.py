@@ -1,10 +1,12 @@
-import pytest
+from unittest.mock import MagicMock
+
 import numpy as np
 import pandas as pd
-from unittest.mock import MagicMock
-from pyadm1ode_calibration.calibration.validation import CalibrationValidator, ValidationMetrics, ParameterCorrelation
-from pyadm1ode_calibration.io.loaders.measurement_data import MeasurementData
+import pytest
+
+from pyadm1ode_calibration.calibration.validation import CalibrationValidator, ParameterCorrelation, ValidationMetrics
 from pyadm1ode_calibration.exceptions import DataValidationError
+from pyadm1ode_calibration.io.loaders.measurement_data import MeasurementData
 
 
 @pytest.fixture
@@ -44,7 +46,7 @@ class TestCalibrationValidator:
         validator = CalibrationValidator(mock_plant, verbose=False)
         with pytest.warns(UserWarning, match="Objective 'MissingObj' not in simulation outputs"):
             metrics = validator.validate({"k_dis": 0.5}, sample_measurements, objectives=["MissingObj"])
-            assert "MissingObj" not in metrics
+        assert "MissingObj" not in metrics
 
     def test_analyze_residuals(self, mock_plant, sample_measurements):
         validator = CalibrationValidator(mock_plant, verbose=False)

@@ -15,19 +15,19 @@ Run with:
     pytest tests/unit/test_io/test_database.py -v
 """
 
-import pytest
-import pandas as pd
-import numpy as np
 from datetime import timedelta
+
+import numpy as np
+import pandas as pd
+import pytest
+from sqlalchemy import inspect
+from sqlalchemy.exc import IntegrityError, SQLAlchemyError
 
 from pyadm1ode_calibration import (
     Database,
     DatabaseConfig,
     Plant,
 )
-
-from sqlalchemy import inspect
-from sqlalchemy.exc import IntegrityError
 
 # ============================================================================
 # Fixtures
@@ -169,18 +169,22 @@ class TestDatabaseConnection:
             assert session is not None
             # Session should be committed automatically
 
+    @pytest.mark.filterwarnings("ignore::sqlalchemy.exc.SAWarning")
     def test_session_rollback_on_error(self, temp_db):
-        """Test session rollback on error."""
-        with pytest.raises(IntegrityError):
-            with temp_db.get_session() as session:
-                # Create invalid plant (duplicate ID)
-                plant1 = Plant(id="test", name="Plant 1")
-                session.add(plant1)
-                session.flush()
+        """Test session rollback on error.
 
-                plant2 = Plant(id="test", name="Plant 2")  # Duplicate ID
-                session.add(plant2)
-                session.flush()  # This should raise IntegrityError
+        Adding a second instance under an existing identity is the point of the test,
+        and SQLAlchemy warns about the conflict before the database rejects it.
+        """
+        with pytest.raises(IntegrityError), temp_db.get_session() as session:
+            # Create invalid plant (duplicate ID)
+            plant1 = Plant(id="test", name="Plant 1")
+            session.add(plant1)
+            session.flush()
+
+            plant2 = Plant(id="test", name="Plant 2")  # Duplicate ID
+            session.add(plant2)
+            session.flush()  # This should raise IntegrityError
 
 
 # ============================================================================
@@ -636,7 +640,7 @@ class TestErrorHandling:
 
     def test_invalid_connection_string(self):
         """Test invalid connection string raises error."""
-        with pytest.raises(Exception):
+        with pytest.raises(SQLAlchemyError):
             db = Database("invalid://connection")
             db.create_all_tables()
 

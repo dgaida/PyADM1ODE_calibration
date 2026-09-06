@@ -5,17 +5,19 @@ Provides a PostgreSQL interface for storing and retrieving plant configurations,
 measurement data, simulation results, and calibration history using SQLAlchemy.
 """
 
-from typing import Dict, List, Optional, Any, Union
-from datetime import datetime
-import pandas as pd
-import numpy as np
 from contextlib import contextmanager
-from sqlalchemy.orm import Session
-from sqlalchemy.exc import SQLAlchemyError, IntegrityError
+from datetime import datetime
+from typing import Any
 
-from .models import Base, Plant, Measurement, Simulation, SimulationTimeSeries, Calibration, Substrate
-from .connection import ConnectionManager, DatabaseConfig
+import numpy as np
+import pandas as pd
+from sqlalchemy.exc import IntegrityError, SQLAlchemyError
+from sqlalchemy.orm import Session
+
 from ...exceptions import DatabaseError
+from ...timeutils import utc_now
+from .connection import ConnectionManager, DatabaseConfig
+from .models import Base, Calibration, Measurement, Plant, Simulation, SimulationTimeSeries, Substrate
 
 
 class Database:
@@ -30,7 +32,7 @@ class Database:
         config (Optional[DatabaseConfig]): Database configuration object.
     """
 
-    def __init__(self, connection_string: Optional[str] = None, config: Optional[DatabaseConfig] = None):
+    def __init__(self, connection_string: str | None = None, config: DatabaseConfig | None = None):
         self.connection_manager = ConnectionManager(connection_string, config)
         self.engine = self.connection_manager.engine
         self.SessionLocal = self.connection_manager.SessionLocal
@@ -99,13 +101,13 @@ class Database:
         self,
         plant_id: str,
         name: str,
-        location: Optional[str] = None,
-        operator: Optional[str] = None,
-        V_liq: Optional[float] = None,
-        V_gas: Optional[float] = None,
-        T_ad: Optional[float] = None,
-        P_el_nom: Optional[float] = None,
-        configuration: Optional[Dict] = None,
+        location: str | None = None,
+        operator: str | None = None,
+        V_liq: float | None = None,
+        V_gas: float | None = None,
+        T_ad: float | None = None,
+        P_el_nom: float | None = None,
+        configuration: dict | None = None,
     ) -> Plant:
         """
         Register a new biogas plant in the database.
@@ -177,7 +179,7 @@ class Database:
         finally:
             session.close()
 
-    def list_plants(self) -> List[Dict[str, Any]]:
+    def list_plants(self) -> list[dict[str, Any]]:
         """
         List all registered plants.
 
@@ -282,11 +284,11 @@ class Database:
         self,
         simulation_id: str,
         plant_id: str,
-        results: List[Dict[str, Any]],
-        name: Optional[str] = None,
-        description: Optional[str] = None,
-        duration: Optional[float] = None,
-        parameters: Optional[Dict] = None,
+        results: list[dict[str, Any]],
+        name: str | None = None,
+        description: str | None = None,
+        duration: float | None = None,
+        parameters: dict | None = None,
         scenario: str = "baseline",
     ) -> Simulation:
         """
@@ -323,8 +325,8 @@ class Database:
                 avg_VFA=metrics.get("avg_VFA"),
                 total_energy=metrics.get("total_energy"),
                 status="completed",
-                started_at=datetime.utcnow(),
-                completed_at=datetime.utcnow(),
+                started_at=utc_now(),
+                completed_at=utc_now(),
             )
             try:
                 session.add(sim)
@@ -350,7 +352,7 @@ class Database:
             except IntegrityError:
                 raise ValueError(f"Simulation with ID '{simulation_id}' already exists")
 
-    def load_simulation(self, simulation_id: str) -> Optional[Dict[str, Any]]:
+    def load_simulation(self, simulation_id: str) -> dict[str, Any] | None:
         """
         Load simulation metadata and its full time series.
 
@@ -383,7 +385,7 @@ class Database:
             )
             return {**{c.name: getattr(sim, c.name) for c in Simulation.__table__.columns}, "time_series": df}
 
-    def list_simulations(self, plant_id: Optional[str] = None, scenario: Optional[str] = None) -> List[Dict[str, Any]]:
+    def list_simulations(self, plant_id: str | None = None, scenario: str | None = None) -> list[dict[str, Any]]:
         """
         List simulations matching specific criteria.
 
@@ -400,7 +402,7 @@ class Database:
                 query = query.filter(Simulation.plant_id == plant_id)
             if scenario:
                 query = query.filter(Simulation.scenario == scenario)
-            simulations = query.order_by(Simulation.created_at.desc()).all()
+            simulations = query.order_by(Simulation.created_at.desc(), Simulation.id.desc()).all()
             return [
                 {
                     "id": s.id,
@@ -420,14 +422,14 @@ class Database:
         plant_id: str,
         calibration_type: str,
         method: str,
-        parameters: Dict[str, float],
+        parameters: dict[str, float],
         objective_value: float,
-        objectives: List[str],
-        validation_metrics: Optional[Dict[str, float]] = None,
-        data_start: Optional[datetime] = None,
-        data_end: Optional[datetime] = None,
+        objectives: list[str],
+        validation_metrics: dict[str, float] | None = None,
+        data_start: datetime | None = None,
+        data_end: datetime | None = None,
         success: bool = True,
-        message: Optional[str] = None,
+        message: str | None = None,
     ) -> Calibration:
         """
         Store a calibration result.
@@ -465,9 +467,7 @@ class Database:
             session.add(cal)
             return cal
 
-    def load_calibrations(
-        self, plant_id: str, calibration_type: Optional[str] = None, limit: int = 10
-    ) -> List[Dict[str, Any]]:
+    def load_calibrations(self, plant_id: str, calibration_type: str | None = None, limit: int = 10) -> list[dict[str, Any]]:
         """
         Load past calibrations for a plant.
 
@@ -483,10 +483,10 @@ class Database:
             query = session.query(Calibration).filter(Calibration.plant_id == plant_id)
             if calibration_type:
                 query = query.filter(Calibration.calibration_type == calibration_type)
-            cals = query.order_by(Calibration.created_at.desc()).limit(limit).all()
+            cals = query.order_by(Calibration.created_at.desc(), Calibration.id.desc()).limit(limit).all()
             return [{c.name: getattr(cal, c.name) for c in Calibration.__table__.columns} for cal in cals]
 
-    def get_latest_calibration(self, plant_id: str) -> Optional[Dict[str, Any]]:
+    def get_latest_calibration(self, plant_id: str) -> dict[str, Any] | None:
         """
         Get the most recent calibration for a plant.
 
@@ -504,11 +504,11 @@ class Database:
         plant_id: str,
         substrate_name: str,
         substrate_type: str,
-        sample_date: Union[str, datetime],
-        lab_data: Dict[str, float],
-        sample_id: Optional[str] = None,
-        lab_name: Optional[str] = None,
-        notes: Optional[str] = None,
+        sample_date: str | datetime,
+        lab_data: dict[str, float],
+        sample_id: str | None = None,
+        lab_name: str | None = None,
+        notes: str | None = None,
     ) -> Substrate:
         """
         Store substrate laboratory analysis data.
@@ -556,9 +556,9 @@ class Database:
     def load_substrates(
         self,
         plant_id: str,
-        substrate_type: Optional[str] = None,
-        start_date: Optional[Union[str, datetime]] = None,
-        end_date: Optional[Union[str, datetime]] = None,
+        substrate_type: str | None = None,
+        start_date: str | datetime | None = None,
+        end_date: str | datetime | None = None,
     ) -> pd.DataFrame:
         """
         Load substrate data as a DataFrame.
@@ -612,7 +612,7 @@ class Database:
             ]
             return pd.DataFrame([{c: getattr(s, c) for c in cols} for s in substrates])
 
-    def _calculate_simulation_metrics(self, results: List[Dict[str, Any]]) -> Dict[str, float]:
+    def _calculate_simulation_metrics(self, results: list[dict[str, Any]]) -> dict[str, float]:
         """Calculate aggregate metrics from raw simulation results."""
         if not results:
             return {}
@@ -645,7 +645,7 @@ class Database:
             metrics["total_energy"] = float(np.mean(p_el) * results[-1]["time"] * 24)
         return metrics
 
-    def execute_query(self, query: str, params: Optional[Dict[str, Any]] = None) -> pd.DataFrame:
+    def execute_query(self, query: str, params: dict[str, Any] | None = None) -> pd.DataFrame:
         """
         Execute a custom read-only SQL query.
 
@@ -664,7 +664,7 @@ class Database:
             raise ValueError("Dangerous keyword detected in query")
         return pd.read_sql(query, self.engine, params=params)
 
-    def get_statistics(self, plant_id: str) -> Dict[str, Any]:
+    def get_statistics(self, plant_id: str) -> dict[str, Any]:
         """
         Get database usage statistics for a specific plant.
 

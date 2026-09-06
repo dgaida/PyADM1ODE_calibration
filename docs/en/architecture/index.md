@@ -1,55 +1,59 @@
 # Architecture
 
-This page describes the system architecture and data flow of PyADM1ODE_calibration.
-
-## System Overview
-
-The framework is modularly structured to allow flexibility in the choice of optimization algorithms and data sources.
+## Modules
 
 ```mermaid
 graph TD
-    A[User / Script] --> B[Calibrator Facade]
+    A[Script or notebook] --> B[Calibrator]
     B --> C[InitialCalibrator]
     B --> D[OnlineCalibrator]
 
-    C --> E[Optimizer Engine]
+    C --> E[Optimizer]
     D --> E
+    E --> F[PlantSimulator]
+    F --> G[PyADM1ODE plant]
 
-    E --> F[Plant Simulator]
-    F --> G[PyADM1ODE Model]
+    H[PlantSchema] --> I[MeasurementBuilder]
+    I --> J[MeasurementData]
+    K[CSV / database] --> I
+    J --> B
 
-    H[Data Loader] --> B
-    I[Database/CSV] --> H
-
-    C --> J[Validation & Metrics]
-    D --> J
+    C --> L[Sensitivity + Identifiability]
+    C --> M[CalibrationValidator]
+    D --> M
 ```
 
-## Calibration Data Flow
+`Calibrator` is a facade. The two calibrators below it share one `PlantSimulator`, which is the only
+place that talks to PyADM1ODE, and one optimizer interface, which is the only place that talks to
+SciPy. Data reaches them as a `MeasurementData` frame, no matter whether it came from a CSV, a
+database or a schema-driven builder.
 
-The typical data flow during a calibration cycle:
+## The optimization loop
 
 ```mermaid
 sequenceDiagram
-    participant U as User
     participant C as Calibrator
-    participant S as Simulator
     participant O as Optimizer
+    participant S as PlantSimulator
+    participant J as Objective
 
-    U->>C: Start calibration (data, parameters)
-    C->>O: Initialize optimization
-    loop Optimization loop
-        O->>S: Simulate with parameter set X
-        S->>O: Return simulation results
-        O->>O: Calculate error (RMSE)
+    C->>O: bounds, start values
+    loop until max_iterations
+        O->>S: candidate parameter set
+        S->>J: simulated channels
+        J->>O: weighted error
     end
-    O->>C: Return optimal parameters
-    C->>U: Calibration result
+    O->>C: best parameter set
+    C->>C: validate on the held-out split
 ```
 
-## Component Description
+One iteration is one full plant simulation over the training window, which is why the run time is
+set by the number of candidates rather than by the model. The objective converts a failed simulation
+into a large error instead of an exception, so a single unsolvable candidate cannot abort a run.
 
-- **Calibrator Facade**: Provides a simple interface for the end user.  
-- **Plant Simulator**: Encapsulates the logic for executing PyADM1ODE simulations.  
-- **Optimizer Engine**: Abstract layer for various algorithms (SciPy, custom implementations).  
-- **Data Loader**: Validates and transforms input data into a format usable by the simulator.  
+## Design decisions worth knowing
+
+- **Parameters are named, not positional**, so the mapping to the optimizer's vector lives in one place.
+- **Bounds are data**: `create_default_bounds()` carries units, defaults and a soft/hard flag for 41 parameters.
+- **Plant topologies stay Python**, because the PyADM1ODE plant API is a component graph.
+- **Stored timestamps are naive UTC**, written through `timeutils.utc_now()`.

@@ -1,11 +1,14 @@
-# API Reference Overview
+# API Reference
 
-Detailed documentation of the modules, classes, and functions of PyADM1ODE_calibration.
+Signatures and docstrings, generated from the source.
 
-## Modules
+- [**Calibration**](calibration.md): calibrators, results, bounds, analysis, validation.
+- [**IO and Data**](io.md): measurements, schema-driven loading, database.
+- [**Optimization**](optimization.md): optimizers, objective functions, constraints.
 
-- [**Calibration**](calibration.md): Core classes for initial and online calibration.  
-- [**IO & Data**](io.md): Loading, saving, and validating measurement data.  
-- [**Optimization**](optimization.md): Implemented algorithms and objective functions.  
+These names are re-exported at the top level of `pyadm1ode_calibration`:
 
-::: pyadm1ode_calibration.calibration.Calibrator
+`Calibrator`, `InitialCalibrator`, `OnlineCalibrator`, `CalibrationResult`, `CalibrationValidator`,
+`ValidationMetrics`, `ParameterBounds`, `create_default_bounds`, `MeasurementData`, `CSVHandler`,
+`Database`, `DatabaseConfig`, `DataValidator`, `OutlierDetector`, `ValidationResult`, `Plant`, and
+the exception types.

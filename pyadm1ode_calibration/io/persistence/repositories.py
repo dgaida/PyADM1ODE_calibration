@@ -6,8 +6,9 @@ from ORM-specific logic for key entities like Plants.
 """
 
 from sqlalchemy.exc import SQLAlchemyError
-from .models import Plant
+
 from ...exceptions import DatabaseError
+from .models import Plant
 
 
 class PlantRepository:

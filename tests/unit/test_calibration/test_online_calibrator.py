@@ -1,11 +1,13 @@
-import pytest
+from datetime import datetime, timedelta, timezone
+from unittest.mock import MagicMock
+
 import numpy as np
 import pandas as pd
-from unittest.mock import MagicMock
-from datetime import datetime, timedelta
+import pytest
+
+from pyadm1ode_calibration.calibration.core.result import CalibrationResult
 from pyadm1ode_calibration.calibration.methods.online import OnlineCalibrator
 from pyadm1ode_calibration.io.loaders.measurement_data import MeasurementData
-from pyadm1ode_calibration.calibration.core.result import CalibrationResult
 
 
 @pytest.fixture
@@ -62,7 +64,7 @@ class TestOnlineCalibrator:
 
         cal.trigger.variance_threshold = 0.001
         cal.trigger.consecutive_violations = 2
-        cal.state.last_calibration_time = datetime.now() - timedelta(days=2)
+        cal.state.last_calibration_time = datetime.now(timezone.utc) - timedelta(days=2)
 
         # Provide current parameters to avoid MagicMock issues
         with MagicMock():

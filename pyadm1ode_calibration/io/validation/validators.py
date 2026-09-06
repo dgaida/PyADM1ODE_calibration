@@ -1,9 +1,10 @@
 """Validators module."""
 
-import pandas as pd
-import numpy as np
-from typing import Dict, List, Optional, Tuple, Any
 from dataclasses import dataclass, field
+from typing import Any
+
+import numpy as np
+import pandas as pd
 
 
 @dataclass
@@ -22,10 +23,10 @@ class ValidationResult:
 
     is_valid: bool
     quality_score: float
-    issues: List[str] = field(default_factory=list)
-    warnings: List[str] = field(default_factory=list)
-    missing_data: Dict[str, int] = field(default_factory=dict)
-    statistics: Dict[str, Any] = field(default_factory=dict)
+    issues: list[str] = field(default_factory=list)
+    warnings: list[str] = field(default_factory=list)
+    missing_data: dict[str, int] = field(default_factory=dict)
+    statistics: dict[str, Any] = field(default_factory=dict)
 
     def print_report(self) -> None:
         """Print formatted validation report."""
@@ -56,8 +57,8 @@ class DataValidator:
     @staticmethod
     def validate(
         data: pd.DataFrame,
-        required_columns: Optional[List[str]] = None,
-        expected_ranges: Optional[Dict[str, Tuple[float, float]]] = None,
+        required_columns: list[str] | None = None,
+        expected_ranges: dict[str, tuple[float, float]] | None = None,
     ) -> ValidationResult:
         """
         Perform comprehensive data validation.

@@ -34,10 +34,13 @@ Example:
     ... )
 """
 
-import pandas as pd
-from typing import Dict, List, Optional, Union, Any
-from datetime import datetime
 import warnings
+from datetime import datetime
+from typing import Any, ClassVar
+
+import pandas as pd
+
+from ...timeutils import utc_now
 
 
 class CSVHandler:
@@ -53,7 +56,7 @@ class CSVHandler:
     """
 
     # Standard column mappings (German -> English)
-    COLUMN_MAPPINGS = {
+    COLUMN_MAPPINGS: ClassVar[dict[str, str]] = {
         # Dry matter and organic content
         "Trockensubstanz": "TS",
         "Trockensubstanzgehalt": "TS",
@@ -107,7 +110,7 @@ class CSVHandler:
     }
 
     # Unit conversions (from -> to, factor)
-    UNIT_CONVERSIONS = {
+    UNIT_CONVERSIONS: ClassVar[dict[tuple[str, str, str], float]] = {
         # Dry matter: % FM -> % FM (no conversion needed, just validation)
         ("TS", "% FM", "% FM"): 1.0,
         ("TS", "%FM", "% FM"): 1.0,
@@ -149,13 +152,13 @@ class CSVHandler:
     def load_substrate_lab_data(
         self,
         filepath: str,
-        substrate_name: Optional[str] = None,
-        substrate_type: Optional[str] = None,
-        sample_date: Optional[Union[str, datetime]] = None,
+        substrate_name: str | None = None,
+        substrate_type: str | None = None,
+        sample_date: str | datetime | None = None,
         sep: str = ",",
         encoding: str = "utf-8",
         validate: bool = True,
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """
         Load substrate characterization data from laboratory CSV.
 
@@ -219,7 +222,7 @@ class CSVHandler:
         result = {
             "substrate_name": substrate_name or row.get("substrate_name", "Unknown"),
             "substrate_type": substrate_type or row.get("substrate_type", "unknown"),
-            "sample_date": sample_date or row.get("sample_date", datetime.now()),
+            "sample_date": sample_date or row.get("sample_date", utc_now()),
         }
 
         # Add all available parameters
@@ -306,7 +309,7 @@ class CSVHandler:
         return df
 
     def export_substrate_data(
-        self, data: Union[Dict[str, Any], pd.DataFrame], filepath: str, sep: str = ",", encoding: str = "utf-8"
+        self, data: dict[str, Any] | pd.DataFrame, filepath: str, sep: str = ",", encoding: str = "utf-8"
     ) -> None:
         """
         Export substrate data to CSV.
@@ -340,7 +343,7 @@ class CSVHandler:
         sep: str = ",",
         encoding: str = "utf-8",
         parse_dates: bool = True,
-        resample: Optional[str] = None,
+        resample: str | None = None,
     ) -> pd.DataFrame:
         """
         Load time series measurement data from CSV.
@@ -418,7 +421,7 @@ class CSVHandler:
 
     def export_simulation_results(
         self,
-        results: List[Dict[str, Any]],
+        results: list[dict[str, Any]],
         filepath: str,
         sep: str = ",",
         encoding: str = "utf-8",
@@ -462,7 +465,7 @@ class CSVHandler:
             df = pd.DataFrame(rows)
         else:
             # Simple format: just time and first component's data
-            first_comp_id = list(results[0]["components"].keys())[0]
+            first_comp_id = next(iter(results[0]["components"].keys()))
             rows = []
             for result in results:
                 row = {"time": result["time"]}
@@ -477,7 +480,7 @@ class CSVHandler:
         df.to_csv(filepath, sep=sep, encoding=encoding, index=False)
         print(f"✓ Exported simulation results to {filepath} ({len(df)} time points)")
 
-    def load_simulation_results(self, filepath: str, sep: str = ",", encoding: str = "utf-8") -> List[Dict[str, Any]]:
+    def load_simulation_results(self, filepath: str, sep: str = ",", encoding: str = "utf-8") -> list[dict[str, Any]]:
         """
         Load simulation results from CSV.
 
@@ -519,7 +522,7 @@ class CSVHandler:
     # ========================================================================
 
     def load_parameter_table(
-        self, filepath: str, sep: str = ",", encoding: str = "utf-8", index_col: Optional[str] = None
+        self, filepath: str, sep: str = ",", encoding: str = "utf-8", index_col: str | None = None
     ) -> pd.DataFrame:
         """
         Load parameter table from CSV.
@@ -606,7 +609,7 @@ class CSVHandler:
                 mapping[col] = self.COLUMN_MAPPINGS[col]
             # Also check case-insensitive
             elif col.lower().strip() in {k.lower(): v for k, v in self.COLUMN_MAPPINGS.items()}:
-                original_key = [k for k in self.COLUMN_MAPPINGS if k.lower() == col.lower().strip()][0]
+                original_key = next(k for k in self.COLUMN_MAPPINGS if k.lower() == col.lower().strip())
                 mapping[col] = self.COLUMN_MAPPINGS[original_key]
 
         if mapping:
@@ -656,7 +659,7 @@ class CSVHandler:
 
         return pd.DataFrame([data])
 
-    def _validate_substrate_data(self, data: Dict[str, Any]) -> Dict[str, Any]:
+    def _validate_substrate_data(self, data: dict[str, Any]) -> dict[str, Any]:
         """
         Validate substrate data ranges.
 

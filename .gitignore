@@ -207,3 +207,16 @@ cython_debug/
 marimo/_static/
 marimo/_lsp/
 __marimo__/
+.claude/
+output/
+private_docs/
+scripts/
+
+# Material of the real plant: measurement archive, its plant config and
+# topology, and everything built directly on top of them. Kept out of the
+# package tree so no tooling can pick it up by accident.
+private/
+
+# Second line of defence, in case something lands back in the tree
+ABB_Archive_Export_Perl/
+ABB_Plots_Standalone/

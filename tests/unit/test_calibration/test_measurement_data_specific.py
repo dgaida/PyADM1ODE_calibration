@@ -1,6 +1,7 @@
-import pytest
-import pandas as pd
 import numpy as np
+import pandas as pd
+import pytest
+
 from pyadm1ode_calibration.io.loaders.measurement_data import MeasurementData
 
 

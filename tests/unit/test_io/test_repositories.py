@@ -1,7 +1,9 @@
-import pytest
 from unittest.mock import MagicMock
-from pyadm1ode_calibration.io.persistence.repositories import PlantRepository
+
+import pytest
+
 from pyadm1ode_calibration.io.persistence.models import Plant
+from pyadm1ode_calibration.io.persistence.repositories import PlantRepository
 
 
 def test_plant_repository():
