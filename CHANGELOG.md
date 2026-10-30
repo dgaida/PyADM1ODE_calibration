@@ -10,7 +10,7 @@ All notable changes to this project will be documented in this file.
 - Optional dependency groups `cmaes`, `bobyqa`, `dfols` and `optimizers`  
 
 ### Documentation  
-- Slide "So funktioniert die Kalibrierung" on the architecture page (optimization loop), moved here from the PyADM1ODE_estimate docs  
+- Slide "How calibration works" on the architecture page (optimization loop), in German and English; moved here from the PyADM1ODE_estimate docs  
 
 ## [0.1.2] - 2026-02-21
 
