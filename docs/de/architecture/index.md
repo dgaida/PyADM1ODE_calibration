@@ -30,6 +30,14 @@ CSV-Datei, einer Datenbank oder einem schemagesteuerten Builder stammen.
 
 ## Die Optimierungsschleife
 
+![So funktioniert die Kalibrierung](../../assets/slides/folie_kalibrierung_funktionsweise.svg)
+
+*Die Schleife im Überblick: Die Kalibrierung stellt Modellparameter ein, simuliert das
+Anlagenmodell, vergleicht es mit den Sensormessungen und stellt nach, bis die Abweichung klein
+genug ist. Das Beispiel zeigt die Gasmenge vor und nach einem Lauf mit 300 Simulationen.*
+
+Im Code laufen die Schritte so zwischen den Klassen ab:
+
 ```mermaid
 sequenceDiagram
     participant C as Calibrator

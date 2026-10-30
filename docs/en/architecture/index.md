@@ -30,6 +30,14 @@ database or a schema-driven builder.
 
 ## The optimization loop
 
+![How the calibration works](../../assets/slides/folie_kalibrierung_funktionsweise.svg)
+
+*The loop at a glance (slide in German): the calibration sets model parameters, simulates the
+plant model, compares it with the sensor measurements and adjusts the parameters until the deviation
+is small enough. The example shows the gas flow before and after a run of 300 simulations.*
+
+In the code, the steps run between the classes as follows:
+
 ```mermaid
 sequenceDiagram
     participant C as Calibrator

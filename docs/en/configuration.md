@@ -39,18 +39,48 @@ result = calibrator.calibrate(
 
 Pass one via `method=`. Hyphens, spaces and case are normalised, so `"Nelder-Mead"` and `"nelder_mead"` are the same.
 
-| Name | Type | Use for |
-|------|------|---------|
-| `differential_evolution`, `de` | global | initial calibration (default) |
-| `particle_swarm`, `pso` | global | alternative to DE |
-| `nelder_mead`, `nm` | local | online recalibration (default there) |
-| `powell` | local | derivative-free, no bounds needed |
-| `l_bfgs_b` | gradient | smooth objectives |
-| `slsqp` | gradient | smooth objectives with constraints |
+| Name | Type | Use for | Extra package |
+|------|------|---------|---------------|
+| `differential_evolution`, `de` | global | initial calibration (default) | – |
+| `cma_es`, `cmaes`, `cma` | global | reference evolutionary method; follows parameter correlations | `cma` |
+| `particle_swarm`, `pso` | global | alternative to DE | `pyswarm` |
+| `nelder_mead`, `nm` | local | online recalibration (default there) | – |
+| `powell` | local | derivative-free, no bounds needed | – |
+| `bobyqa` | local | Powell's trust-region successor, bounds handled natively | `Py-BOBYQA` |
+| `dfols`, `dfo_ls` | local, residuals | derivative-free Gauss-Newton for noisy sums of squares | `DFO-LS` |
+| `least_squares`, `trf` | gradient, residuals | trust-region least squares with an exact Jacobian | – |
+| `l_bfgs_b` | gradient | smooth objectives | – |
+| `slsqp` | gradient | smooth objectives with constraints | – |
+| `hybrid`, `de_powell` | global → local | DE around the start point, then Powell | – |
+| `multistart`, `multi_start` | meta | several local runs from sampled starts | – |
+
+Install the optional solvers with `pip install "pyadm1ode_calibration[optimizers]"`.
 
 Sizing matters more than the choice: differential evolution runs `population_size x len(parameters)`
 simulations per generation. With three parameters, `population_size=10` and `max_iterations=50` that
 came to 1217 simulations and 56 minutes, so budget roughly three seconds per simulated window.
+
+### Scale settings
+
+Several methods have a scale parameter that should match the expected spread of the parameters
+(for log-factors around literature values that is about 0.25). SciPy's defaults are not made for
+this: Nelder-Mead starts with a simplex of 0.00025 at a parameter of exactly 0, differential
+evolution ignores the start point, and the finite-difference step of 1e-8 used by L-BFGS-B and SLSQP
+lies far below the noise of an adaptive ODE solver.
+
+| Method | Argument | Meaning |
+|--------|----------|---------|
+| `nelder_mead` | `initial_simplex_scale` | edge length of the initial simplex |
+| `differential_evolution` | `init_sigma`, `polish` | draw the initial population around the start; skip the unbudgeted final polish |
+| `cma_es` | `sigma0`, `population_size`, `max_evaluations` | initial step size |
+| `bobyqa`, `dfols` | `rhobeg`, `max_evaluations` | initial trust-region radius |
+| `l_bfgs_b`, `slsqp` | `eps`, `jac` | finite-difference step, or an exact gradient |
+| `least_squares` | `jac`, `diff_step`, `method` | exact Jacobian, or the relative finite-difference step |
+| `hybrid` | `global_method`, `local_method`, `global_kwargs`, `local_kwargs` | the two stages |
+| `multistart` | `local_method`, `n_starts`, `spread`, `seed` | start points around the guess (`spread`) or Latin hypercube |
+
+`dfols` and `least_squares` expect the objective to return the **vector of weighted residuals**
+instead of a scalar; the recorded objective is its sum of squares.
 
 ## Objectives
 

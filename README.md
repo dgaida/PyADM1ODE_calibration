@@ -47,9 +47,16 @@ PyADM1ODE_calibration provides a complete calibration framework for [PyADM1ODE](
 | Algorithm | Type | Best For | Speed |
 |-----------|------|----------|-------|
 | Differential Evolution | Global | Initial calibration | Slow ⭐⭐ |
+| CMA-ES | Global | Correlated parameters, reference method | Slow ⭐⭐ |
 | Particle Swarm | Global | Alternative to DE | Medium ⭐⭐⭐ |
 | Nelder-Mead | Local | Online re-calibration | Fast ⭐⭐⭐⭐ |
+| Powell / BOBYQA | Local | Derivative-free refinement | Fast ⭐⭐⭐⭐ |
+| DFO-LS | Local, residuals | Noisy least squares without gradients | Fast ⭐⭐⭐⭐ |
+| Trust-region least squares | Gradient, residuals | Exact Jacobian available | Very Fast ⭐⭐⭐⭐⭐ |
 | L-BFGS-B | Gradient | Smooth problems | Very Fast ⭐⭐⭐⭐⭐ |
+| Hybrid (DE → Powell), Multi-start | Meta | Global search that keeps a good start | depends |
+
+See the configuration page for the scale settings (`init_sigma`, `initial_simplex_scale`, `sigma0`, `rhobeg`, `eps`) that matter more than the choice of method.
 
 ### 📊 Validation & Analysis
 

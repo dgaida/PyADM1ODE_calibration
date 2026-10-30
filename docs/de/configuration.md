@@ -39,19 +39,49 @@ result = calibrator.calibrate(
 
 Auswahl über `method=`. Bindestriche, Leerzeichen und Groß-/Kleinschreibung werden vereinheitlicht, `"Nelder-Mead"` und `"nelder_mead"` sind also dasselbe.
 
-| Name | Typ | Einsatz |
-|------|-----|---------|
-| `differential_evolution`, `de` | global | Initialkalibrierung (Standard) |
-| `particle_swarm`, `pso` | global | Alternative zu DE |
-| `nelder_mead`, `nm` | lokal | Online-Rekalibrierung (dort Standard) |
-| `powell` | lokal | ableitungsfrei, ohne Grenzen nutzbar |
-| `l_bfgs_b` | Gradient | glatte Zielfunktionen |
-| `slsqp` | Gradient | glatte Zielfunktionen mit Nebenbedingungen |
+| Name | Typ | Einsatz | Zusatzpaket |
+|------|-----|---------|-------------|
+| `differential_evolution`, `de` | global | Initialkalibrierung (Standard) | – |
+| `cma_es`, `cmaes`, `cma` | global | evolutionäres Referenzverfahren, folgt Parameterkorrelationen | `cma` |
+| `particle_swarm`, `pso` | global | Alternative zu DE | `pyswarm` |
+| `nelder_mead`, `nm` | lokal | Online-Rekalibrierung (dort Standard) | – |
+| `powell` | lokal | ableitungsfrei, ohne Grenzen nutzbar | – |
+| `bobyqa` | lokal | Powells Trust-Region-Nachfolger, Grenzen eingebaut | `Py-BOBYQA` |
+| `dfols`, `dfo_ls` | lokal, Residuen | ableitungsfreies Gauss-Newton für verrauschte Quadratsummen | `DFO-LS` |
+| `least_squares`, `trf` | Gradient, Residuen | Trust-Region-Least-Squares mit exakter Jacobi-Matrix | – |
+| `l_bfgs_b` | Gradient | glatte Zielfunktionen | – |
+| `slsqp` | Gradient | glatte Zielfunktionen mit Nebenbedingungen | – |
+| `hybrid`, `de_powell` | global → lokal | DE um den Startwert, danach Powell | – |
+| `multistart`, `multi_start` | Meta | mehrere lokale Läufe von gezogenen Startpunkten | – |
+
+Die optionalen Löser installiert `pip install "pyadm1ode_calibration[optimizers]"`.
 
 Wichtiger als die Wahl ist die Dimensionierung: Differential Evolution rechnet
 `population_size x len(parameters)` Simulationen je Generation. Mit drei Parametern,
 `population_size=10` und `max_iterations=50` waren das 1217 Simulationen und 56 Minuten, also grob
 drei Sekunden je simuliertem Zeitfenster.
+
+### Skaleneinstellungen
+
+Mehrere Verfahren haben einen Skalenparameter, der zur erwarteten Streuung der Parameter passen
+sollte (bei Log-Faktoren um Literaturwerte etwa 0,25). Die SciPy-Voreinstellungen sind dafür nicht
+gemacht: Nelder-Mead startet bei einem Parameter von exakt 0 mit einem Simplex von 0,00025,
+Differential Evolution ignoriert den Startwert, und die Differenzenschrittweite 1e-8 von L-BFGS-B
+und SLSQP liegt weit unter dem Rauschen eines adaptiven ODE-Lösers.
+
+| Verfahren | Argument | Bedeutung |
+|-----------|----------|-----------|
+| `nelder_mead` | `initial_simplex_scale` | Kantenlänge des Anfangssimplex |
+| `differential_evolution` | `init_sigma`, `polish` | Anfangspopulation um den Startwert ziehen; unbudgetiertes Polishing abschalten |
+| `cma_es` | `sigma0`, `population_size`, `max_evaluations` | anfängliche Schrittweite |
+| `bobyqa`, `dfols` | `rhobeg`, `max_evaluations` | anfänglicher Trust-Region-Radius |
+| `l_bfgs_b`, `slsqp` | `eps`, `jac` | Differenzenschrittweite oder exakter Gradient |
+| `least_squares` | `jac`, `diff_step`, `method` | exakte Jacobi-Matrix oder relative Differenzenschrittweite |
+| `hybrid` | `global_method`, `local_method`, `global_kwargs`, `local_kwargs` | die beiden Stufen |
+| `multistart` | `local_method`, `n_starts`, `spread`, `seed` | Startpunkte um den Startwert (`spread`) oder Latin Hypercube |
+
+`dfols` und `least_squares` erwarten von der Zielfunktion den **Vektor der gewichteten Residuen**
+statt eines Skalars; aufgezeichnet wird dessen Quadratsumme.
 
 ## Zielgrößen
 

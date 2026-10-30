@@ -71,8 +71,21 @@ docs = [
 pso = [
     "pyswarm",
 ]
+# Optional derivative-free solvers: method="cma_es", "bobyqa" and "dfols".
+cmaes = [
+    "cma>=3.3",
+]
+bobyqa = [
+    "Py-BOBYQA>=1.4",
+]
+dfols = [
+    "DFO-LS>=1.4",
+]
+optimizers = [
+    "pyadm1ode_calibration[pso,cmaes,bobyqa,dfols]",
+]
 all = [
-    "pyadm1ode_calibration[dev,docs,pso]",
+    "pyadm1ode_calibration[dev,docs,optimizers]",
 ]
 
 [project.urls]

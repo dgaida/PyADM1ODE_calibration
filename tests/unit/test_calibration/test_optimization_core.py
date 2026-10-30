@@ -329,3 +329,161 @@ class TestOptimizers:
     def test_create_optimizer_invalid(self):
         with pytest.raises(ValueError, match="Unknown optimization method"):
             create_optimizer("invalid", {"x": (0, 1)})
+
+
+def _quadratic(x):
+    """Shifted bowl with minimum at (0.3, -0.2)."""
+    return float((x[0] - 0.3) ** 2 + (x[1] + 0.2) ** 2)
+
+
+def _residuals(x):
+    return np.array([x[0] - 0.3, x[1] + 0.2])
+
+
+BOUNDS_2D = {"x": (-1.0, 1.0), "y": (-1.0, 1.0)}
+
+
+class TestNewOptimizers:
+    """The optimizers added for the kinetics-calibration study."""
+
+    def test_de_init_around_start(self):
+        opt = DifferentialEvolutionOptimizer(
+            BOUNDS_2D, max_iterations=3, population_size=4, init_sigma=0.1, polish=False, seed=1, verbose=False
+        )
+        res = opt.optimize(_quadratic, initial_guess=np.array([0.3, -0.2]))
+        # The start point is the first member, so the best value can never exceed f(x0) = 0.
+        assert res.fun <= 1e-12
+        assert all(abs(h["parameters"]["x"]) <= 1.0 for h in res.history)
+
+    def test_de_population_is_clipped(self):
+        opt = DifferentialEvolutionOptimizer(BOUNDS_2D, population_size=3, init_sigma=5.0, seed=0, verbose=False)
+        pop = opt._initial_population(np.array([0.9, -0.9]))
+        assert pop.shape == (6, 2)
+        assert np.all(pop >= -1.0) and np.all(pop <= 1.0)
+        assert np.allclose(pop[0], [0.9, -0.9])
+
+    def test_nelder_mead_initial_simplex(self):
+        opt = NelderMeadOptimizer(BOUNDS_2D, max_iterations=50, initial_simplex_scale=0.25, verbose=False)
+        simplex = opt._initial_simplex(np.array([0.9, 0.0]))
+        assert simplex.shape == (3, 2)
+        # Reflected inward because 0.9 + 0.25 would leave the box.
+        assert simplex[1, 0] == pytest.approx(0.65)
+        assert simplex[2, 1] == pytest.approx(0.25)
+        res = opt.optimize(_quadratic, initial_guess=np.array([0.0, 0.0]))
+        assert res.fun < 1e-3
+
+    def test_lbfgsb_eps_and_jac(self):
+        opt = LBFGSBOptimizer(BOUNDS_2D, eps=1e-3, verbose=False)
+        res = opt.optimize(_quadratic, initial_guess=np.zeros(2))
+        assert res.fun < 1e-6
+
+        def grad(x):
+            return np.array([2 * (x[0] - 0.3), 2 * (x[1] + 0.2)])
+
+        opt = LBFGSBOptimizer(BOUNDS_2D, jac=grad, verbose=False)
+        res = opt.optimize(_quadratic, initial_guess=np.zeros(2))
+        assert res.fun < 1e-10
+
+    def test_slsqp_eps(self):
+        opt = SLSQPOptimizer(BOUNDS_2D, eps=1e-4, verbose=False)
+        res = opt.optimize(_quadratic, initial_guess=np.zeros(2))
+        assert res.fun < 1e-6
+
+    def test_cmaes(self):
+        pytest.importorskip("cma")
+        opt = create_optimizer("cmaes", BOUNDS_2D, max_iterations=60, sigma0=0.3, seed=1, verbose=False)
+        res = opt.optimize(_quadratic, initial_guess=np.zeros(2))
+        assert res.fun < 1e-4
+        assert res.nfev == len(res.history)
+
+    def test_bobyqa(self):
+        pytest.importorskip("pybobyqa")
+        opt = create_optimizer("bobyqa", BOUNDS_2D, max_evaluations=80, rhobeg=0.2, verbose=False)
+        res = opt.optimize(_quadratic, initial_guess=np.zeros(2))
+        assert res.fun < 1e-6
+        assert res.nfev <= 80
+
+    def test_dfols(self):
+        pytest.importorskip("dfols")
+        opt = create_optimizer("dfols", BOUNDS_2D, max_evaluations=60, rhobeg=0.2, noisy=False, verbose=False)
+        res = opt.optimize(_residuals, initial_guess=np.zeros(2))
+        assert res.fun < 1e-8
+        assert res.history[0]["objective"] == pytest.approx(0.3**2 + 0.2**2)
+
+    def test_least_squares_with_jacobian(self):
+        def jac(x):
+            return np.eye(2)
+
+        opt = create_optimizer("least_squares", BOUNDS_2D, jac=jac, verbose=False)
+        res = opt.optimize(_residuals, initial_guess=np.zeros(2))
+        assert res.fun < 1e-12
+        assert res.x == pytest.approx([0.3, -0.2])
+
+    def test_hybrid_de_then_powell(self):
+        opt = create_optimizer(
+            "de_powell",
+            BOUNDS_2D,
+            global_max_iterations=2,
+            local_max_iterations=20,
+            global_kwargs={"population_size": 3, "init_sigma": 0.2, "polish": False, "seed": 0},
+            verbose=False,
+        )
+        res = opt.optimize(_quadratic, initial_guess=np.zeros(2))
+        assert res.fun < 1e-4
+        iterations = [h["iteration"] for h in res.history]
+        assert iterations == list(range(1, len(iterations) + 1))
+        assert "global:" in res.message and "local:" in res.message
+
+    def test_multistart(self):
+        opt = create_optimizer(
+            "multistart", BOUNDS_2D, local_method="powell", n_starts=3, spread=0.3, seed=0, max_iterations=20, verbose=False
+        )
+        res = opt.optimize(_quadratic, initial_guess=np.array([0.8, 0.8]))
+        assert res.fun < 1e-4
+        assert "best of 3 starts" in res.message
+
+    def test_multistart_lhs_points_are_feasible(self):
+        opt = create_optimizer("multistart", BOUNDS_2D, n_starts=4, seed=0, verbose=False)
+        starts = opt._start_points(np.zeros(2))
+        assert starts.shape == (4, 2)
+        assert np.all(starts >= -1.0) and np.all(starts <= 1.0)
+        assert np.allclose(starts[0], 0.0)
+
+    def test_create_optimizer_aliases(self):
+        from pyadm1ode_calibration.calibration.optimization.optimizer import (
+            BOBYQAOptimizer,
+            CMAESOptimizer,
+            DFOLSOptimizer,
+            HybridOptimizer,
+            LeastSquaresOptimizer,
+            MultiStartOptimizer,
+        )
+
+        assert isinstance(create_optimizer("cma", BOUNDS_2D), CMAESOptimizer)
+        assert isinstance(create_optimizer("bobyqa", BOUNDS_2D), BOBYQAOptimizer)
+        assert isinstance(create_optimizer("dfo_ls", BOUNDS_2D), DFOLSOptimizer)
+        assert isinstance(create_optimizer("trf", BOUNDS_2D), LeastSquaresOptimizer)
+        assert isinstance(create_optimizer("hybrid", BOUNDS_2D), HybridOptimizer)
+        assert isinstance(create_optimizer("multi_start", BOUNDS_2D), MultiStartOptimizer)
+
+    def test_multistart_splits_budget_between_starts(self):
+        calls = []
+
+        def counting(x):
+            calls.append(1)
+            return _quadratic(x)
+
+        opt = create_optimizer(
+            "multistart",
+            BOUNDS_2D,
+            local_method="powell",
+            local_kwargs={"max_evaluations": 30},
+            n_starts=3,
+            spread=0.3,
+            seed=0,
+            verbose=False,
+        )
+        res = opt.optimize(counting, initial_guess=np.array([0.8, 0.8]))
+        assert "best of 3 starts" in res.message
+        # Powell may overshoot maxfev by one line search, never by a whole run.
+        assert 60 < len(calls) <= 3 * 30 + 3 * 15

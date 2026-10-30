@@ -186,6 +186,31 @@ PRESETS: dict[str, dict[str, Any]] = {
     # Writes to its own file: mixing 30-day/literature-bounds runs with
     # 60-day/flat-box runs in one JSONL would let `analyze_count.py` pool two
     # different experiments.
+    # F5 follow-up: the scaled twins of the original methods plus the added
+    # algorithms (see ``methods.METHODS``), under exactly the conditions of
+    # ``shootout_series8`` so the rows drop into the same table. Windows are
+    # usually narrowed with ``--windows`` (10 first, 60 later) because a 60-day
+    # task costs six times a 10-day one.
+    "methods2": {
+        "series": BALANCED_8,
+        "methods": [
+            "nelder_mead_sigma",
+            "lbfgsb_eps",
+            "slsqp_eps",
+            "de_prior",
+            "cmaes",
+            "bobyqa",
+            "de_powell",
+            "multistart_powell",
+        ],
+        "windows": [10, 20, 30, 60],
+        "starts": ["near", "far"],
+        "param_sets": ["top5"],
+        "budget": 300,
+        "known_x0": [True],
+        "legacy_bounds": True,
+        "force_all_starts": True,
+    },
     "count60": {
         "series": BALANCED_8,
         "methods": ["powell"],
@@ -598,6 +623,7 @@ def main() -> None:
     p.add_argument("stage", choices=["screen", "calibrate", "all"])
     p.add_argument("--preset", default="main", choices=sorted(PRESETS))
     p.add_argument("--series", type=int, nargs="*", default=None, help="Override the preset's series list.")
+    p.add_argument("--windows", type=int, nargs="*", default=None, help="Override the preset's window lengths [d].")
     p.add_argument("--workers", type=int, default=max(1, (os.cpu_count() or 4) // 2))
     p.add_argument("--budget", type=int, default=None, help="Override the budget.")
     p.add_argument("--out", default=None, help="JSONL filename for the sweep.")
@@ -620,6 +646,8 @@ def main() -> None:
     cfg = dict(PRESETS[args.preset])
     if args.series is not None:
         cfg["series"] = args.series
+    if args.windows is not None:
+        cfg["windows"] = args.windows
     if args.budget is not None:
         cfg["budget"] = args.budget
     if args.fostac:

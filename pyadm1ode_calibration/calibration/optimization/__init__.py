@@ -6,9 +6,11 @@ customizable objective functions.
 
 Modules:
     optimizer: Abstract Optimizer base class and concrete implementations including
-              gradient-free methods (Nelder-Mead, Powell, differential evolution,
-              particle swarm), gradient-based methods (L-BFGS-B, SLSQP), and
-              multi-objective optimization (NSGA-II).
+              gradient-free methods (Nelder-Mead, Powell, BOBYQA, differential
+              evolution, CMA-ES, particle swarm), least-squares methods on the
+              residual vector (DFO-LS, trust-region least squares), gradient-based
+              methods (L-BFGS-B, SLSQP) and the meta-strategies hybrid
+              (global then local) and multi-start.
 
     objective: Objective function classes for single and multi-objective optimization
               including weighted sum of errors, likelihood-based objectives, and
@@ -63,25 +65,40 @@ from .objective import (
     WeightedSumObjective,
 )
 from .optimizer import (
+    BOBYQAOptimizer,
+    CMAESOptimizer,
+    DFOLSOptimizer,
     DifferentialEvolutionOptimizer,
     GradientBasedOptimizer,
     GradientFreeOptimizer,
+    HybridOptimizer,
     LBFGSBOptimizer,
+    LeastSquaresOptimizer,
+    MultiStartOptimizer,
     NelderMeadOptimizer,
     Optimizer,
     ParticleSwarmOptimizer,
+    PowellOptimizer,
+    ResidualOptimizer,
+    SLSQPOptimizer,
     create_optimizer,
 )
 
 __all__ = [
+    "BOBYQAOptimizer",
     "BoxConstraint",
+    "CMAESOptimizer",
+    "DFOLSOptimizer",
     "DifferentialEvolutionOptimizer",
     "GradientBasedOptimizer",
     "GradientFreeOptimizer",
+    "HybridOptimizer",
     "LBFGSBOptimizer",
+    "LeastSquaresOptimizer",
     "LikelihoodObjective",
     "LinearConstraint",
     "MultiObjectiveFunction",
+    "MultiStartOptimizer",
     "NelderMeadOptimizer",
     "NonlinearConstraint",
     "ObjectiveFunction",
@@ -89,6 +106,9 @@ __all__ = [
     "ParameterConstraints",
     "ParticleSwarmOptimizer",
     "PenaltyFunction",
+    "PowellOptimizer",
+    "ResidualOptimizer",
+    "SLSQPOptimizer",
     "SingleObjective",
     "WeightedSumObjective",
     "create_optimizer",

@@ -1,6 +1,17 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+## [Unreleased]
+
+### Features  
+- New optimizers: CMA-ES (`cma`), BOBYQA (`Py-BOBYQA`), DFO-LS and SciPy trust-region least squares on the residual vector, hybrid global→local (default DE → Powell) and multi-start  
+- Differential evolution can draw its initial population around the start point (`init_sigma`) and skip the unbudgeted polish step (`polish=False`)  
+- Nelder-Mead accepts `initial_simplex_scale`; L-BFGS-B and SLSQP accept a finite-difference step `eps` and an exact gradient `jac`  
+- Optional dependency groups `cmaes`, `bobyqa`, `dfols` and `optimizers`  
+
+### Documentation  
+- Slide "So funktioniert die Kalibrierung" on the architecture page (optimization loop), moved here from the PyADM1ODE_estimate docs  
+
 ## [0.1.2] - 2026-02-21
 
 ### Miscellaneous Tasks  
