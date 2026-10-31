@@ -13,6 +13,27 @@ from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy.pool import QueuePool
 
+# The bare "postgresql://" scheme maps to psycopg2 in SQLAlchemy 2.0 but to
+# psycopg (v3) from 2.1 on. The package depends on psycopg2, so bare URLs are
+# pinned to it; URLs that already name a driver are left as they are.
+POSTGRES_SCHEME = "postgresql://"
+POSTGRES_DRIVER_SCHEME = "postgresql+psycopg2://"
+
+
+def with_postgres_driver(url: str) -> str:
+    """Pin a bare PostgreSQL URL to the psycopg2 driver.
+
+    Args:
+        url: SQLAlchemy connection URL.
+
+    Returns:
+        The URL with ``postgresql+psycopg2://`` if it used the bare
+        ``postgresql://`` scheme, otherwise unchanged.
+    """
+    if url.startswith(POSTGRES_SCHEME):
+        return POSTGRES_DRIVER_SCHEME + url[len(POSTGRES_SCHEME) :]
+    return url
+
 
 @dataclass
 class DatabaseConfig:
@@ -61,6 +82,7 @@ class ConnectionManager:
                 self.connection_string = self._get_from_env()
             except ValueError:
                 raise ValueError("Either connection_string or config must be provided")
+        self.connection_string = with_postgres_driver(self.connection_string)
 
         self.engine = create_engine(
             self.connection_string,

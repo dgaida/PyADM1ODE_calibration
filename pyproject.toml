@@ -60,6 +60,8 @@ docs = [
     "mkdocs>=1.6.0",
     "mkdocs-material>=9.0.0",
     "mkdocstrings[python]>=0.20.0",
+    # mkdocstrings 1.0.6, the last release for Python 3.10, fails with pymdown-extensions 12.
+    "pymdown-extensions<12; python_version < '3.11'",
     "mkdocs-static-i18n>=1.2.0",
     "mkdocs-mermaid2-plugin>=0.6.0",
     "mike>=2.0.0",

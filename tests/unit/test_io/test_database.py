@@ -28,6 +28,7 @@ from pyadm1ode_calibration import (
     DatabaseConfig,
     Plant,
 )
+from pyadm1ode_calibration.io.persistence.connection import with_postgres_driver
 
 # ============================================================================
 # Fixtures
@@ -151,6 +152,18 @@ class TestDatabaseConnection:
         assert "postgresql" in db.connection_string
         assert "test_db" in db.connection_string
         db.engine.dispose()  # Clean up
+
+    def test_bare_postgres_url_uses_psycopg2(self):
+        """A bare postgresql:// URL is pinned to the installed psycopg2 driver."""
+        db = Database("postgresql://user:pw@localhost:5432/biogas")
+        assert db.connection_string == "postgresql+psycopg2://user:pw@localhost:5432/biogas"
+        assert db.engine.dialect.driver == "psycopg2"
+        db.engine.dispose()
+
+    def test_explicit_driver_is_kept(self):
+        """Non-PostgreSQL URLs and URLs that name a driver stay unchanged."""
+        assert with_postgres_driver("postgresql+psycopg://u@h/d") == "postgresql+psycopg://u@h/d"
+        assert with_postgres_driver("sqlite:///:memory:") == "sqlite:///:memory:"
 
     def test_create_all_tables(self, temp_db):
         """Test table creation."""
