@@ -27,7 +27,7 @@
       
       
       <link rel="icon" href="../assets/images/favicon.png">
-      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.7">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.8.0">
     
     
       
@@ -35,10 +35,10 @@
       
     
     
-      <link rel="stylesheet" href="../assets/stylesheets/main.ec1eaa64.min.css">
+      <link rel="stylesheet" href="../assets/stylesheets/main.57a0d79d.min.css">
       
         
-        <link rel="stylesheet" href="../assets/stylesheets/palette.ab4e12ef.min.css">
+        <link rel="stylesheet" href="../assets/stylesheets/palette.fb2fffe2.min.css">
       
       
 
@@ -687,6 +687,23 @@
       
     </span>
   </a>
+  
+    <nav class="md-nav" aria-label="Optimierer">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#skaleneinstellungen" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Skaleneinstellungen
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
   
 </li>
       
@@ -1567,6 +1584,23 @@
     </span>
   </a>
   
+    <nav class="md-nav" aria-label="Optimierer">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#skaleneinstellungen" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Skaleneinstellungen
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
 </li>
       
         <li class="md-nav__item">
@@ -1722,6 +1756,7 @@ wenn die Daten ihn nicht auflösen. Kosten: <code>2 * len(parameters) + 1</code>
 <th>Name</th>
 <th>Typ</th>
 <th>Einsatz</th>
+<th>Zusatzpaket</th>
 </tr>
 </thead>
 <tbody>
@@ -1729,38 +1764,140 @@ wenn die Daten ihn nicht auflösen. Kosten: <code>2 * len(parameters) + 1</code>
 <td><code>differential_evolution</code>, <code>de</code></td>
 <td>global</td>
 <td>Initialkalibrierung (Standard)</td>
+<td>–</td>
+</tr>
+<tr>
+<td><code>cma_es</code>, <code>cmaes</code>, <code>cma</code></td>
+<td>global</td>
+<td>evolutionäres Referenzverfahren, folgt Parameterkorrelationen</td>
+<td><code>cma</code></td>
 </tr>
 <tr>
 <td><code>particle_swarm</code>, <code>pso</code></td>
 <td>global</td>
 <td>Alternative zu DE</td>
+<td><code>pyswarm</code></td>
 </tr>
 <tr>
 <td><code>nelder_mead</code>, <code>nm</code></td>
 <td>lokal</td>
 <td>Online-Rekalibrierung (dort Standard)</td>
+<td>–</td>
 </tr>
 <tr>
 <td><code>powell</code></td>
 <td>lokal</td>
 <td>ableitungsfrei, ohne Grenzen nutzbar</td>
+<td>–</td>
+</tr>
+<tr>
+<td><code>bobyqa</code></td>
+<td>lokal</td>
+<td>Powells Trust-Region-Nachfolger, Grenzen eingebaut</td>
+<td><code>Py-BOBYQA</code></td>
+</tr>
+<tr>
+<td><code>dfols</code>, <code>dfo_ls</code></td>
+<td>lokal, Residuen</td>
+<td>ableitungsfreies Gauss-Newton für verrauschte Quadratsummen</td>
+<td><code>DFO-LS</code></td>
+</tr>
+<tr>
+<td><code>least_squares</code>, <code>trf</code></td>
+<td>Gradient, Residuen</td>
+<td>Trust-Region-Least-Squares mit exakter Jacobi-Matrix</td>
+<td>–</td>
 </tr>
 <tr>
 <td><code>l_bfgs_b</code></td>
 <td>Gradient</td>
 <td>glatte Zielfunktionen</td>
+<td>–</td>
 </tr>
 <tr>
 <td><code>slsqp</code></td>
 <td>Gradient</td>
 <td>glatte Zielfunktionen mit Nebenbedingungen</td>
+<td>–</td>
+</tr>
+<tr>
+<td><code>hybrid</code>, <code>de_powell</code></td>
+<td>global → lokal</td>
+<td>DE um den Startwert, danach Powell</td>
+<td>–</td>
+</tr>
+<tr>
+<td><code>multistart</code>, <code>multi_start</code></td>
+<td>Meta</td>
+<td>mehrere lokale Läufe von gezogenen Startpunkten</td>
+<td>–</td>
 </tr>
 </tbody>
 </table>
+<p>Die optionalen Löser installiert <code>pip install "pyadm1ode_calibration[optimizers]"</code>.</p>
 <p>Wichtiger als die Wahl ist die Dimensionierung: Differential Evolution rechnet
 <code>population_size x len(parameters)</code> Simulationen je Generation. Mit drei Parametern,
 <code>population_size=10</code> und <code>max_iterations=50</code> waren das 1217 Simulationen und 56 Minuten, also grob
 drei Sekunden je simuliertem Zeitfenster.</p>
+<h3 id="skaleneinstellungen">Skaleneinstellungen<a class="headerlink" href="#skaleneinstellungen" title="Permanent link">&para;</a></h3>
+<p>Mehrere Verfahren haben einen Skalenparameter, der zur erwarteten Streuung der Parameter passen
+sollte (bei Log-Faktoren um Literaturwerte etwa 0,25). Die SciPy-Voreinstellungen sind dafür nicht
+gemacht: Nelder-Mead startet bei einem Parameter von exakt 0 mit einem Simplex von 0,00025,
+Differential Evolution ignoriert den Startwert, und die Differenzenschrittweite 1e-8 von L-BFGS-B
+und SLSQP liegt weit unter dem Rauschen eines adaptiven ODE-Lösers.</p>
+<table>
+<thead>
+<tr>
+<th>Verfahren</th>
+<th>Argument</th>
+<th>Bedeutung</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>nelder_mead</code></td>
+<td><code>initial_simplex_scale</code></td>
+<td>Kantenlänge des Anfangssimplex</td>
+</tr>
+<tr>
+<td><code>differential_evolution</code></td>
+<td><code>init_sigma</code>, <code>polish</code></td>
+<td>Anfangspopulation um den Startwert ziehen; unbudgetiertes Polishing abschalten</td>
+</tr>
+<tr>
+<td><code>cma_es</code></td>
+<td><code>sigma0</code>, <code>population_size</code>, <code>max_evaluations</code></td>
+<td>anfängliche Schrittweite</td>
+</tr>
+<tr>
+<td><code>bobyqa</code>, <code>dfols</code></td>
+<td><code>rhobeg</code>, <code>max_evaluations</code></td>
+<td>anfänglicher Trust-Region-Radius</td>
+</tr>
+<tr>
+<td><code>l_bfgs_b</code>, <code>slsqp</code></td>
+<td><code>eps</code>, <code>jac</code></td>
+<td>Differenzenschrittweite oder exakter Gradient</td>
+</tr>
+<tr>
+<td><code>least_squares</code></td>
+<td><code>jac</code>, <code>diff_step</code>, <code>method</code></td>
+<td>exakte Jacobi-Matrix oder relative Differenzenschrittweite</td>
+</tr>
+<tr>
+<td><code>hybrid</code></td>
+<td><code>global_method</code>, <code>local_method</code>, <code>global_kwargs</code>, <code>local_kwargs</code></td>
+<td>die beiden Stufen</td>
+</tr>
+<tr>
+<td><code>multistart</code></td>
+<td><code>local_method</code>, <code>n_starts</code>, <code>spread</code>, <code>seed</code></td>
+<td>Startpunkte um den Startwert (<code>spread</code>) oder Latin Hypercube</td>
+</tr>
+</tbody>
+</table>
+<p><code>dfols</code> und <code>least_squares</code> erwarten von der Zielfunktion den <strong>Vektor der gewichteten Residuen</strong>
+statt eines Skalars; aufgezeichnet wird dessen Quadratsumme.</p>
 <h2 id="zielgroen">Zielgrößen<a class="headerlink" href="#zielgroen" title="Permanent link">&para;</a></h2>
 <div class="language-python highlight"><pre><span></span><code><span id="__span-2-1"><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a><span class="n">objectives</span> <span class="o">=</span> <span class="p">[</span><span class="s2">"Q_ch4"</span><span class="p">,</span> <span class="s2">"pH"</span><span class="p">,</span> <span class="s2">"VFA"</span><span class="p">]</span>
 </span><span id="__span-2-2"><a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a><span class="n">weights</span> <span class="o">=</span> <span class="p">{</span><span class="s2">"Q_ch4"</span><span class="p">:</span> <span class="mf">0.7</span><span class="p">,</span> <span class="s2">"pH"</span><span class="p">:</span> <span class="mf">0.2</span><span class="p">,</span> <span class="s2">"VFA"</span><span class="p">:</span> <span class="mf">0.1</span><span class="p">}</span>
@@ -1846,10 +1983,10 @@ Fenster mit tatsächlich konstanter Fütterung nimmt ohnehin den günstigen Weg.
     
       
       
-      <script id="__config" type="application/json">{"annotate": null, "base": "..", "features": ["navigation.tabs", "navigation.sections", "navigation.expand", "navigation.top", "navigation.tracking", "search.suggest", "search.highlight", "search.share", "content.code.copy", "content.code.annotate", "content.tooltips"], "search": "../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "In Zwischenablage kopiert", "clipboard.copy": "In Zwischenablage kopieren", "search.result.more.one": "1 weiteres Suchergebnis auf dieser Seite", "search.result.more.other": "# weitere Suchergebnisse auf dieser Seite", "search.result.none": "Keine Suchergebnisse", "search.result.one": "1 Suchergebnis", "search.result.other": "# Suchergebnisse", "search.result.placeholder": "Suchbegriff eingeben", "search.result.term.missing": "Es fehlt", "select.version": "Version ausw\u00e4hlen"}, "version": {"provider": "mike"}}</script>
+      <script id="__config" type="application/json">{"annotate": null, "base": "..", "features": ["navigation.tabs", "navigation.sections", "navigation.expand", "navigation.top", "navigation.tracking", "search.suggest", "search.highlight", "search.share", "content.code.copy", "content.code.annotate", "content.tooltips"], "search": "../assets/javascripts/workers/search.a7633da7.min.js", "tags": null, "translations": {"clipboard.copied": "In Zwischenablage kopiert", "clipboard.copy": "In Zwischenablage kopieren", "search.result.more.one": "1 weiteres Suchergebnis auf dieser Seite", "search.result.more.other": "# weitere Suchergebnisse auf dieser Seite", "search.result.none": "Keine Suchergebnisse", "search.result.one": "1 Suchergebnis", "search.result.other": "# Suchergebnisse", "search.result.placeholder": "Suchbegriff eingeben", "search.result.term.missing": "Es fehlt", "select.version": "Version ausw\u00e4hlen"}, "version": {"provider": "mike"}}</script>
     
     
-      <script src="../assets/javascripts/bundle.d7400e89.min.js"></script>
+      <script src="../assets/javascripts/bundle.c21346df.min.js"></script>
       
     
   </body>

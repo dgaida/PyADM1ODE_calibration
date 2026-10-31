@@ -27,7 +27,7 @@
       
       
       <link rel="icon" href="../../assets/images/favicon.png">
-      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.7">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.8.0">
     
     
       
@@ -35,10 +35,10 @@
       
     
     
-      <link rel="stylesheet" href="../../assets/stylesheets/main.ec1eaa64.min.css">
+      <link rel="stylesheet" href="../../assets/stylesheets/main.57a0d79d.min.css">
       
         
-        <link rel="stylesheet" href="../../assets/stylesheets/palette.ab4e12ef.min.css">
+        <link rel="stylesheet" href="../../assets/stylesheets/palette.fb2fffe2.min.css">
       
       
 
@@ -1499,6 +1499,18 @@ und <code>git-cliff</code> erzeugt daraus bei jedem Release die <code>CHANGELOG.
 <hr />
 <h1 id="changelog_1">Changelog<a class="headerlink" href="#changelog_1" title="Permanent link">&para;</a></h1>
 <p>All notable changes to this project will be documented in this file.</p>
+<h2 id="unreleased">[Unreleased]<a class="headerlink" href="#unreleased" title="Permanent link">&para;</a></h2>
+<h3 id="features">Features<a class="headerlink" href="#features" title="Permanent link">&para;</a></h3>
+<ul>
+<li>New optimizers: CMA-ES (<code>cma</code>), BOBYQA (<code>Py-BOBYQA</code>), DFO-LS and SciPy trust-region least squares on the residual vector, hybrid global→local (default DE → Powell) and multi-start  </li>
+<li>Differential evolution can draw its initial population around the start point (<code>init_sigma</code>) and skip the unbudgeted polish step (<code>polish=False</code>)  </li>
+<li>Nelder-Mead accepts <code>initial_simplex_scale</code>; L-BFGS-B and SLSQP accept a finite-difference step <code>eps</code> and an exact gradient <code>jac</code>  </li>
+<li>Optional dependency groups <code>cmaes</code>, <code>bobyqa</code>, <code>dfols</code> and <code>optimizers</code>  </li>
+</ul>
+<h3 id="documentation">Documentation<a class="headerlink" href="#documentation" title="Permanent link">&para;</a></h3>
+<ul>
+<li>Slide "How calibration works" on the architecture page (optimization loop), in German and English; moved here from the PyADM1ODE_estimate docs  </li>
+</ul>
 <h2 id="012-2026-02-21">[0.1.2] - 2026-02-21<a class="headerlink" href="#012-2026-02-21" title="Permanent link">&para;</a></h2>
 <h3 id="miscellaneous-tasks">Miscellaneous Tasks<a class="headerlink" href="#miscellaneous-tasks" title="Permanent link">&para;</a></h3>
 <ul>
@@ -1510,7 +1522,7 @@ und <code>git-cliff</code> erzeugt daraus bei jedem Release die <code>CHANGELOG.
 <li>Version bump to 0.1.1  </li>
 </ul>
 <h2 id="010-2026-02-14">[0.1.0] - 2026-02-14<a class="headerlink" href="#010-2026-02-14" title="Permanent link">&para;</a></h2>
-<h3 id="documentation">Documentation<a class="headerlink" href="#documentation" title="Permanent link">&para;</a></h3>
+<h3 id="documentation_1">Documentation<a class="headerlink" href="#documentation_1" title="Permanent link">&para;</a></h3>
 <ul>
 <li>Full migration to MkDocs with Material theme  </li>
 <li>Bilingual support (German/English) using mkdocs-static-i18n  </li>
@@ -1521,7 +1533,7 @@ und <code>git-cliff</code> erzeugt daraus bei jedem Release die <code>CHANGELOG.
 <li>Versioned documentation with mike  </li>
 <li>Integrated automated changelog generation with git-cliff  </li>
 </ul>
-<h3 id="features">Features<a class="headerlink" href="#features" title="Permanent link">&para;</a></h3>
+<h3 id="features_1">Features<a class="headerlink" href="#features_1" title="Permanent link">&para;</a></h3>
 <ul>
 <li>Automated API documentation coverage enforcement (&gt;95%)  </li>
 <li>Continuous Integration workflow for documentation building and deployment  </li>
@@ -1582,10 +1594,10 @@ und <code>git-cliff</code> erzeugt daraus bei jedem Release die <code>CHANGELOG.
     
       
       
-      <script id="__config" type="application/json">{"annotate": null, "base": "../..", "features": ["navigation.tabs", "navigation.sections", "navigation.expand", "navigation.top", "navigation.tracking", "search.suggest", "search.highlight", "search.share", "content.code.copy", "content.code.annotate", "content.tooltips"], "search": "../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "In Zwischenablage kopiert", "clipboard.copy": "In Zwischenablage kopieren", "search.result.more.one": "1 weiteres Suchergebnis auf dieser Seite", "search.result.more.other": "# weitere Suchergebnisse auf dieser Seite", "search.result.none": "Keine Suchergebnisse", "search.result.one": "1 Suchergebnis", "search.result.other": "# Suchergebnisse", "search.result.placeholder": "Suchbegriff eingeben", "search.result.term.missing": "Es fehlt", "select.version": "Version ausw\u00e4hlen"}, "version": {"provider": "mike"}}</script>
+      <script id="__config" type="application/json">{"annotate": null, "base": "../..", "features": ["navigation.tabs", "navigation.sections", "navigation.expand", "navigation.top", "navigation.tracking", "search.suggest", "search.highlight", "search.share", "content.code.copy", "content.code.annotate", "content.tooltips"], "search": "../../assets/javascripts/workers/search.a7633da7.min.js", "tags": null, "translations": {"clipboard.copied": "In Zwischenablage kopiert", "clipboard.copy": "In Zwischenablage kopieren", "search.result.more.one": "1 weiteres Suchergebnis auf dieser Seite", "search.result.more.other": "# weitere Suchergebnisse auf dieser Seite", "search.result.none": "Keine Suchergebnisse", "search.result.one": "1 Suchergebnis", "search.result.other": "# Suchergebnisse", "search.result.placeholder": "Suchbegriff eingeben", "search.result.term.missing": "Es fehlt", "select.version": "Version ausw\u00e4hlen"}, "version": {"provider": "mike"}}</script>
     
     
-      <script src="../../assets/javascripts/bundle.d7400e89.min.js"></script>
+      <script src="../../assets/javascripts/bundle.c21346df.min.js"></script>
       
     
   </body>

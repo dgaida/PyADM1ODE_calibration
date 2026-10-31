@@ -27,7 +27,7 @@
       
       
       <link rel="icon" href="../../assets/images/favicon.png">
-      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.7">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.8.0">
     
     
       
@@ -35,10 +35,10 @@
       
     
     
-      <link rel="stylesheet" href="../../assets/stylesheets/main.ec1eaa64.min.css">
+      <link rel="stylesheet" href="../../assets/stylesheets/main.57a0d79d.min.css">
       
         
-        <link rel="stylesheet" href="../../assets/stylesheets/palette.ab4e12ef.min.css">
+        <link rel="stylesheet" href="../../assets/stylesheets/palette.fb2fffe2.min.css">
       
       
 
@@ -689,6 +689,23 @@
       
     </span>
   </a>
+  
+    <nav class="md-nav" aria-label="Optimizers">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#scale-settings" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Scale settings
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
   
 </li>
       
@@ -1569,6 +1586,23 @@
     </span>
   </a>
   
+    <nav class="md-nav" aria-label="Optimizers">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#scale-settings" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Scale settings
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
 </li>
       
         <li class="md-nav__item">
@@ -1724,6 +1758,7 @@ when the data cannot resolve it, at the cost of <code>2 * len(parameters) + 1</c
 <th>Name</th>
 <th>Type</th>
 <th>Use for</th>
+<th>Extra package</th>
 </tr>
 </thead>
 <tbody>
@@ -1731,37 +1766,139 @@ when the data cannot resolve it, at the cost of <code>2 * len(parameters) + 1</c
 <td><code>differential_evolution</code>, <code>de</code></td>
 <td>global</td>
 <td>initial calibration (default)</td>
+<td>–</td>
+</tr>
+<tr>
+<td><code>cma_es</code>, <code>cmaes</code>, <code>cma</code></td>
+<td>global</td>
+<td>reference evolutionary method; follows parameter correlations</td>
+<td><code>cma</code></td>
 </tr>
 <tr>
 <td><code>particle_swarm</code>, <code>pso</code></td>
 <td>global</td>
 <td>alternative to DE</td>
+<td><code>pyswarm</code></td>
 </tr>
 <tr>
 <td><code>nelder_mead</code>, <code>nm</code></td>
 <td>local</td>
 <td>online recalibration (default there)</td>
+<td>–</td>
 </tr>
 <tr>
 <td><code>powell</code></td>
 <td>local</td>
 <td>derivative-free, no bounds needed</td>
+<td>–</td>
+</tr>
+<tr>
+<td><code>bobyqa</code></td>
+<td>local</td>
+<td>Powell's trust-region successor, bounds handled natively</td>
+<td><code>Py-BOBYQA</code></td>
+</tr>
+<tr>
+<td><code>dfols</code>, <code>dfo_ls</code></td>
+<td>local, residuals</td>
+<td>derivative-free Gauss-Newton for noisy sums of squares</td>
+<td><code>DFO-LS</code></td>
+</tr>
+<tr>
+<td><code>least_squares</code>, <code>trf</code></td>
+<td>gradient, residuals</td>
+<td>trust-region least squares with an exact Jacobian</td>
+<td>–</td>
 </tr>
 <tr>
 <td><code>l_bfgs_b</code></td>
 <td>gradient</td>
 <td>smooth objectives</td>
+<td>–</td>
 </tr>
 <tr>
 <td><code>slsqp</code></td>
 <td>gradient</td>
 <td>smooth objectives with constraints</td>
+<td>–</td>
+</tr>
+<tr>
+<td><code>hybrid</code>, <code>de_powell</code></td>
+<td>global → local</td>
+<td>DE around the start point, then Powell</td>
+<td>–</td>
+</tr>
+<tr>
+<td><code>multistart</code>, <code>multi_start</code></td>
+<td>meta</td>
+<td>several local runs from sampled starts</td>
+<td>–</td>
 </tr>
 </tbody>
 </table>
+<p>Install the optional solvers with <code>pip install "pyadm1ode_calibration[optimizers]"</code>.</p>
 <p>Sizing matters more than the choice: differential evolution runs <code>population_size x len(parameters)</code>
 simulations per generation. With three parameters, <code>population_size=10</code> and <code>max_iterations=50</code> that
 came to 1217 simulations and 56 minutes, so budget roughly three seconds per simulated window.</p>
+<h3 id="scale-settings">Scale settings<a class="headerlink" href="#scale-settings" title="Permanent link">&para;</a></h3>
+<p>Several methods have a scale parameter that should match the expected spread of the parameters
+(for log-factors around literature values that is about 0.25). SciPy's defaults are not made for
+this: Nelder-Mead starts with a simplex of 0.00025 at a parameter of exactly 0, differential
+evolution ignores the start point, and the finite-difference step of 1e-8 used by L-BFGS-B and SLSQP
+lies far below the noise of an adaptive ODE solver.</p>
+<table>
+<thead>
+<tr>
+<th>Method</th>
+<th>Argument</th>
+<th>Meaning</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>nelder_mead</code></td>
+<td><code>initial_simplex_scale</code></td>
+<td>edge length of the initial simplex</td>
+</tr>
+<tr>
+<td><code>differential_evolution</code></td>
+<td><code>init_sigma</code>, <code>polish</code></td>
+<td>draw the initial population around the start; skip the unbudgeted final polish</td>
+</tr>
+<tr>
+<td><code>cma_es</code></td>
+<td><code>sigma0</code>, <code>population_size</code>, <code>max_evaluations</code></td>
+<td>initial step size</td>
+</tr>
+<tr>
+<td><code>bobyqa</code>, <code>dfols</code></td>
+<td><code>rhobeg</code>, <code>max_evaluations</code></td>
+<td>initial trust-region radius</td>
+</tr>
+<tr>
+<td><code>l_bfgs_b</code>, <code>slsqp</code></td>
+<td><code>eps</code>, <code>jac</code></td>
+<td>finite-difference step, or an exact gradient</td>
+</tr>
+<tr>
+<td><code>least_squares</code></td>
+<td><code>jac</code>, <code>diff_step</code>, <code>method</code></td>
+<td>exact Jacobian, or the relative finite-difference step</td>
+</tr>
+<tr>
+<td><code>hybrid</code></td>
+<td><code>global_method</code>, <code>local_method</code>, <code>global_kwargs</code>, <code>local_kwargs</code></td>
+<td>the two stages</td>
+</tr>
+<tr>
+<td><code>multistart</code></td>
+<td><code>local_method</code>, <code>n_starts</code>, <code>spread</code>, <code>seed</code></td>
+<td>start points around the guess (<code>spread</code>) or Latin hypercube</td>
+</tr>
+</tbody>
+</table>
+<p><code>dfols</code> and <code>least_squares</code> expect the objective to return the <strong>vector of weighted residuals</strong>
+instead of a scalar; the recorded objective is its sum of squares.</p>
 <h2 id="objectives">Objectives<a class="headerlink" href="#objectives" title="Permanent link">&para;</a></h2>
 <div class="language-python highlight"><pre><span></span><code><span id="__span-2-1"><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a><span class="n">objectives</span> <span class="o">=</span> <span class="p">[</span><span class="s2">"Q_ch4"</span><span class="p">,</span> <span class="s2">"pH"</span><span class="p">,</span> <span class="s2">"VFA"</span><span class="p">]</span>
 </span><span id="__span-2-2"><a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a><span class="n">weights</span> <span class="o">=</span> <span class="p">{</span><span class="s2">"Q_ch4"</span><span class="p">:</span> <span class="mf">0.7</span><span class="p">,</span> <span class="s2">"pH"</span><span class="p">:</span> <span class="mf">0.2</span><span class="p">,</span> <span class="s2">"VFA"</span><span class="p">:</span> <span class="mf">0.1</span><span class="p">}</span>
@@ -1847,10 +1984,10 @@ really is constant takes the cheap path either way.</p>
     
       
       
-      <script id="__config" type="application/json">{"annotate": null, "base": "../..", "features": ["navigation.tabs", "navigation.sections", "navigation.expand", "navigation.top", "navigation.tracking", "search.suggest", "search.highlight", "search.share", "content.code.copy", "content.code.annotate", "content.tooltips"], "search": "../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": {"provider": "mike"}}</script>
+      <script id="__config" type="application/json">{"annotate": null, "base": "../..", "features": ["navigation.tabs", "navigation.sections", "navigation.expand", "navigation.top", "navigation.tracking", "search.suggest", "search.highlight", "search.share", "content.code.copy", "content.code.annotate", "content.tooltips"], "search": "../../assets/javascripts/workers/search.a7633da7.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": {"provider": "mike"}}</script>
     
     
-      <script src="../../assets/javascripts/bundle.d7400e89.min.js"></script>
+      <script src="../../assets/javascripts/bundle.c21346df.min.js"></script>
       
     
   </body>
