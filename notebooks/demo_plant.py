@@ -17,6 +17,9 @@ minute.
 
 from __future__ import annotations
 
+import contextlib
+import io
+from collections.abc import Sequence
 from pathlib import Path
 
 import numpy as np
@@ -65,17 +68,52 @@ def build_demo_plant(days: float = 5.0) -> BiogasPlant:
     return plant
 
 
-def feed_frame(days: float = 5.0, start: str = "2024-01-01") -> pd.DataFrame:
-    """Hourly feed table - the input side of a measurement frame."""
+#: Feed columns of the measurement frame, in the order of :data:`SUBSTRATES`.
+FEED_COLUMNS = ("Q_sub_maize", "Q_sub_manure", "Q_sub_grass")
+
+#: Channels :func:`add_measurement_noise` turns into "measurements".
+MEASURED_CHANNELS = ("Q_gas", "Q_ch4", "P_el", "pH", "VFA")
+
+
+def feed_frame(
+    days: float = 5.0,
+    start: str | pd.Timestamp = "2024-01-01",
+    changes: Sequence[tuple[float, Sequence[float]]] = (),
+) -> pd.DataFrame:
+    """Hourly feed table - the input side of a measurement frame.
+
+    Args:
+        days: Length of the table.
+        start: First timestamp.
+        changes: Feed changes as ``(day, [maize, manure, grass])`` pairs. From that
+            day on, counted from ``start``, the plant gets the given mix [m3/d].
+            Without changes the feed is :data:`FEED` throughout.
+    """
     index = pd.date_range(start, periods=int(days * 24), freq="h")
-    return pd.DataFrame(
-        {
-            "timestamp": index,
-            "Q_sub_maize": FEED[0],
-            "Q_sub_manure": FEED[1],
-            "Q_sub_grass": FEED[2],
-        }
-    )
+    frame = pd.DataFrame({"timestamp": index})
+    day = np.arange(len(index)) / 24.0
+    for i, column in enumerate(FEED_COLUMNS):
+        frame[column] = FEED[i]
+    for change_day, mix in changes:
+        for column, value in zip(FEED_COLUMNS, mix):
+            frame.loc[day >= change_day, column] = float(value)
+    return frame
+
+
+def add_measurement_noise(frame: pd.DataFrame, simulated: dict, noise: float, rng: np.random.Generator) -> MeasurementData:
+    """Turn a simulation into noisy "measurements" on top of its feed table.
+
+    Args:
+        frame: Feed table the simulation was run with.
+        simulated: Simulator output for that table.
+        noise: Relative Gaussian noise added to every measured channel.
+        rng: Random generator, so a sequence of windows draws fresh noise.
+    """
+    out = frame.copy()
+    for channel in MEASURED_CHANNELS:
+        values = np.asarray(simulated[channel], dtype=float)
+        out[channel] = values * (1.0 + rng.normal(0.0, noise, values.size))
+    return MeasurementData(out)
 
 
 def make_twin_measurements(
@@ -101,14 +139,46 @@ def make_twin_measurements(
         parameters or TRUE_PARAMETERS, MeasurementData(frame)
     )
 
-    rng = np.random.default_rng(seed)
-    out = frame.copy()
-    for channel in ("Q_gas", "Q_ch4", "P_el", "pH", "VFA"):
-        values = np.asarray(simulated[channel], dtype=float)
-        out[channel] = values * (1.0 + rng.normal(0.0, noise, values.size))
-    return MeasurementData(out)
+    return add_measurement_noise(frame, simulated, noise, np.random.default_rng(seed))
 
 
-def simulate(plant: BiogasPlant, measurements: MeasurementData, parameters: dict[str, float]) -> dict:
-    """Run one simulation over the measurement window - a one-line shorthand."""
-    return PlantSimulator(plant, verbose=False).simulate_with_parameters(parameters, measurements)
+def simulate(
+    plant: BiogasPlant,
+    measurements: MeasurementData,
+    parameters: dict[str, float],
+    time_varying_feed: bool = False,
+) -> dict:
+    """Run one simulation over the measurement window - a one-line shorthand.
+
+    The plant is rewound afterwards, so it can be called again from the same state.
+
+    Args:
+        plant: Plant to simulate.
+        measurements: Window that supplies the feed and the time axis.
+        parameters: Parameter values for this run.
+        time_varying_feed: Apply the feed hour by hour instead of its mean.
+    """
+    simulator = PlantSimulator(plant, verbose=False, time_varying_feed=time_varying_feed)
+    return simulator.simulate_with_parameters(parameters, measurements)
+
+
+def advance(plant: BiogasPlant, window: MeasurementData | pd.DataFrame, parameters: dict[str, float]) -> dict:
+    """Run the plant through a window and keep the state it ends in.
+
+    This is the opposite of :func:`simulate`: the plant is not rewound, so the next
+    window continues where this one stopped, as a real plant does.
+
+    Args:
+        plant: Plant to advance.
+        window: Window or feed table that supplies the hourly feed.
+        parameters: Parameter values the plant runs with in this window.
+
+    Returns:
+        The simulator output of the window.
+    """
+    if isinstance(window, pd.DataFrame):
+        window = MeasurementData(window)
+    simulator = PlantSimulator(plant, verbose=False, time_varying_feed=True)
+    # pyadm1 prints a progress line every 100 steps of a constant-feed run.
+    with contextlib.redirect_stdout(io.StringIO()):
+        return simulator.simulate_with_parameters(parameters, window, restore_state=False)

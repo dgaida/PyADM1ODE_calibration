@@ -11,6 +11,8 @@ Key modules:
 - exceptions: Custom error types.
 """
 
+from importlib.metadata import PackageNotFoundError, version
+
 from .calibration import (
     CalibrationResult,
     CalibrationValidator,
@@ -39,7 +41,10 @@ from .io import (
     ValidationResult,
 )
 
-__version__ = "0.1.2"
+try:
+    __version__ = version("pyadm1ode_calibration")
+except PackageNotFoundError:  # pragma: no cover - the package is not installed
+    __version__ = "unknown"
 
 __all__ = [
     "CSVHandler",

@@ -11,6 +11,7 @@ All notable changes to this project will be documented in this file.
 
 ### Documentation  
 - Slide "How calibration works" on the architecture page (optimization loop), in German and English; moved here from the PyADM1ODE_estimate docs  
+- Notebook 06 (online recalibration) rebuilt as a running plant with a digital twin: calibrate on the last four days, check the twin while the plant stays put, let `k_dis_PF` drift, recalibrate; three rounds, one figure  
 
 ## [0.1.2] - 2026-02-21
 

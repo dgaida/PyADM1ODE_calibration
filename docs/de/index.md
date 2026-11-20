@@ -55,7 +55,7 @@ Wenn Sie PyADM1ODE_calibration in Ihrer Forschung verwenden, zitieren Sie bitte:
 
 ```bibtex
 @software{pyadm1_calibration,
-  author = {Gaida, Daniel},
+  author = {Nordhoff, Tim Yago and Gaida, Daniel},
   title = {PyADM1ODE\_calibration: Parameter Calibration Framework for Biogas Plant Models},
   year = {2026},
   url = {https://github.com/dgaida/PyADM1ODE_calibration}
